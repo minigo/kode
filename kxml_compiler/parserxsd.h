@@ -33,24 +33,24 @@ namespace RNG {
 
 class KSCHEMA_EXPORT ParserXsd
 {
-  public:
+public:
     ParserXsd();
 
     Schema::Document parse( QFile & );
     Schema::Document parse( const QString & );
     void setVerbose( bool verbose );
 
-  protected:
+protected:
     Schema::Document parse( const XSD::Parser &parser );
 
     void setType( Schema::Node &node, const XSD::SimpleType &simpleType );
 
     void setAnnotations( Schema::Annotatable &annotatable,
-      XSD::Annotation::List annotations );
+                         XSD::Annotation::List annotations );
 
-  private:
+private:
     Schema::Document mDocument;
-    bool mVerbose;
+    bool _verbose;
 };
 
 }

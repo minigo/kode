@@ -30,7 +30,7 @@
 
 class KXMLCOMMON_EXPORT QName
 {
-  public:
+public:
     typedef QList<QName> List;
 
     QName();
@@ -51,7 +51,7 @@ class KXMLCOMMON_EXPORT QName
 
     bool isEmpty() const;
 
-  private:
+private:
     void parse( const QString& );
 
     QString mNameSpace;

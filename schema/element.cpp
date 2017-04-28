@@ -28,7 +28,7 @@ class Element::Private
 {
 public:
     Private()
-      : mMinOccurs( 1 ), mMaxOccurs( 1 ), mQualified( false ), mOccurrence( 0 )
+        : mMinOccurs( 1 ), mMaxOccurs( 1 ), mQualified( false ), mOccurrence( 0 )
     {}
 
     QName mType;
@@ -45,150 +45,150 @@ public:
 };
 
 Element::Element()
-  : XmlElement(), d(new Private)
+    : XmlElement(), d(new Private)
 {
 }
 
 Element::Element( const QString &nameSpace )
-  : XmlElement( nameSpace ), d(new Private)
+    : XmlElement( nameSpace ), d(new Private)
 {
 }
 
 Element::Element( const Element &other )
-  : XmlElement( other ), d(new Private)
+    : XmlElement( other ), d(new Private)
 {
-  *d = *other.d;
+    *d = *other.d;
 }
 
 Element::~Element()
 {
-  delete d;
+    delete d;
 }
 
 Element &Element::operator=( const Element &other )
 {
-  if ( this == &other )
+    if ( this == &other )
+        return *this;
+
+    *d = *other.d;
+    XmlElement::operator=( other );
+
     return *this;
-
-  *d = *other.d;
-  XmlElement::operator=( other );
-
-  return *this;
 }
 
 void Element::setType( const QName &type )
 {
-  d->mType = type;
+    d->mType = type;
 }
 
 QName Element::type() const
 {
-  return d->mType;
+    return d->mType;
 }
 
 void Element::setDocumentation( const QString &documentation )
 {
-  d->mDocumentation = documentation;
+    d->mDocumentation = documentation;
 }
 
 QString Element::documentation() const
 {
-  return d->mDocumentation;
+    return d->mDocumentation;
 }
 
 void Element::setGroupId( int group )
 {
-  d->mGroupId = group;
+    d->mGroupId = group;
 }
 
 int Element::groupId() const
 {
-  return d->mGroupId;
+    return d->mGroupId;
 }
 
 void Element::setMinOccurs( int minOccurs )
 {
-  d->mMinOccurs = minOccurs;
+    d->mMinOccurs = minOccurs;
 }
 
 int Element::minOccurs() const
 {
-  return d->mMinOccurs;
+    return d->mMinOccurs;
 }
 
 void Element::setMaxOccurs( int maxOccurs )
 {
-  d->mMaxOccurs = maxOccurs;
+    d->mMaxOccurs = maxOccurs;
 }
 
 int Element::maxOccurs() const
 {
-  return d->mMaxOccurs;
+    return d->mMaxOccurs;
 }
 
 void Element::setDefaultValue( const QString &defaultValue )
 {
-  d->mDefaultValue = defaultValue;
+    d->mDefaultValue = defaultValue;
 }
 
 QString Element::defaultValue() const
 {
-  return d->mDefaultValue;
+    return d->mDefaultValue;
 }
 
 void Element::setFixedValue( const QString &fixedValue )
 {
-  d->mFixedValue = fixedValue;
+    d->mFixedValue = fixedValue;
 }
 
 QString Element::fixedValue() const
 {
-  return d->mFixedValue;
+    return d->mFixedValue;
 }
 
 void Element::setIsQualified( bool isQualified )
 {
-  d->mQualified = isQualified;
+    d->mQualified = isQualified;
 }
 
 bool Element::isQualified() const
 {
-  return d->mQualified;
+    return d->mQualified;
 }
 
 void Element::setOccurrence( int occurrence )
 {
-  d->mOccurrence = occurrence;
+    d->mOccurrence = occurrence;
 }
 
 int Element::occurrence() const
 {
-  return d->mOccurrence;
+    return d->mOccurrence;
 }
 
 void Element::setReference( const QName &reference )
 {
-  d->mReference = reference;
+    d->mReference = reference;
 }
 
 QName Element::reference() const
 {
-  return d->mReference;
+    return d->mReference;
 }
 
 bool Element::isResolved() const
 {
-  return !d->mType.isEmpty();
+    return !d->mType.isEmpty();
 }
 
 void Element::setCompositor( const Compositor &c )
 {
-  d->mCompositor = c;
+    d->mCompositor = c;
 }
 
 Compositor Element::compositor() const
 {
-  return d->mCompositor;
+    return d->mCompositor;
 }
 
 }

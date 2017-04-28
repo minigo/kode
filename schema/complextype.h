@@ -37,12 +37,12 @@ namespace XSD {
 
 class SCHEMA_EXPORT ComplexType : public XSDType
 {
-  public:
+public:
     typedef QList<ComplexType> List;
 
     typedef enum {
-      Restriction,
-      Extension
+        Restriction,
+        Extension
     } Derivation;
 
     ComplexType();
@@ -81,7 +81,7 @@ class SCHEMA_EXPORT ComplexType : public XSDType
     void addAttribute( const Attribute &attribute );
     void addElement( const Element &element );
 
-  private:
+private:
     class Private;
     Private *d;
 };

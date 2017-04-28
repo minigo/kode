@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.3)
+
 project( kode )
 set(CMAKE_MODULE_PATH "${kode_SOURCE_DIR}/cmake/modules")
 

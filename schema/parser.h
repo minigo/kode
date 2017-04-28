@@ -40,7 +40,7 @@ namespace XSD {
 
 class SCHEMA_EXPORT Parser
 {
-  public:
+public:
     enum { UNBOUNDED = 100000 };
 
     Parser( const QString &nameSpace = QString() );
@@ -71,11 +71,11 @@ class SCHEMA_EXPORT Parser
      */
     static QString schemaUri();
 
-  protected:
-    bool parse( ParserContext *context, QXmlInputSource *source );
+protected:
+    bool parse (ParserContext *context, QXmlInputSource *source);
 
-  private:
-    void parseImport( ParserContext *context, const QDomElement& );
+private:
+    void parseImport (ParserContext *context, const QDomElement&);
     /**
      * @brief Parse include element.
      * The <include> element must include a external schema within the same target namespace
@@ -93,13 +93,13 @@ class SCHEMA_EXPORT Parser
 
     void all( ParserContext *context, const QDomElement&, ComplexType& );
     void parseCompositor( ParserContext *context,
-      const QDomElement&, ComplexType& );
+                          const QDomElement&, ComplexType& );
 
     void setOccurrenceAttributes( Element &newElement,
-      const QDomElement &element );
+                                  const QDomElement &element );
 
     Element parseElement( ParserContext *context, const QDomElement &,
-      const QString &nameSpace, const QDomElement &occurrenceElement );
+                          const QString &nameSpace, const QDomElement &occurrenceElement );
 
     Attribute parseAttribute( ParserContext *context, const QDomElement& );
     void addAny( ParserContext *context, const QDomElement&, ComplexType& );
@@ -111,19 +111,21 @@ class SCHEMA_EXPORT Parser
     void parseSimpleContent( ParserContext *context, const QDomElement&, ComplexType& );
 
 
-    void importSchema( ParserContext *context, const QString &location );
-    /**
-     * @brief Read and include the given schema into the current schema.
-     * @param context Current parser context.
-     * @param localtion Schema location.
-     */
-    void includeSchema( ParserContext *context, const QString &location );
+    void importSchema (ParserContext *context, const QString &location);
+
+    //!
+    //! \brief Read and include the given schema into the current schema.
+    //! \param context Current parser context.
+    //! \param localtion Schema location.
+    //!
+    void includeSchema (ParserContext *context, const QString &location);
+
     QStringList joinNamespaces( const QStringList&, const QStringList& );
 
-    Element findElement( const QName &name );
-    Attribute findAttribute( const QName &name );
-    AttributeGroup findAttributeGroup( const QName &name );
-    void resolveForwardDeclarations();
+    Element findElement (const QName &name);
+    Attribute findAttribute (const QName &name);
+    AttributeGroup findAttributeGroup (const QName &name);
+    void resolveForwardDeclarations ();
 
     class Private;
     Private *d;

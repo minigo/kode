@@ -28,13 +28,13 @@
 class NSManager;
 class MessageHandler;
 
-/**
-  A container class which is passed to XML parsing
-  methods to provide additional contextual information.
- */
+//!
+//!  A container class which is passed to XML parsing
+//! methods to provide additional contextual information.
+//!
 class KXMLCOMMON_EXPORT ParserContext
 {
-  public:
+public:
     /**
       Constructs a ParserContext.
      */
@@ -75,7 +75,7 @@ class KXMLCOMMON_EXPORT ParserContext
      */
     QString documentBaseUrl() const;
 
-  private:
+private:
     NSManager *mNamespaceManager;
     MessageHandler *mMessageHandler;
     QString mDocumentBaseUrl;

@@ -25,22 +25,22 @@
 
 class WriterCreator
 {
-  public:
+public:
     WriterCreator( KODE::File &, Schema::Document &document, const QString &dtd );
 
     void createFileWriter( const QString &className,
-      const QString &errorStream );
+                           const QString &errorStream );
 
     void createElementWriter( KODE::Class &c, const Schema::Element &e );
 
-  protected:
+protected:
     void createIndenter( KODE::File & );
 
     QString dataToStringConverter( const QString &data, Schema::Node::Type );
 
     KODE::Code createAttributeWriter( const Schema::Element &element );
 
-  private:
+private:
     KODE::File &mFile;
     Schema::Document &mDocument;
     QString mDtd;
