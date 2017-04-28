@@ -33,30 +33,30 @@ class KXMLCOMMON_EXPORT QName
 public:
     typedef QList<QName> List;
 
-    QName();
-    QName( const QString &name );
-    QName( const QString &nameSpace, const QString &localName );
+    QName ();
+    QName (const QString &name);
+    QName (const QString &nameSpace, const QString &localName);
 
-    void operator=( const QString &name );
+    void operator = (const QString &name);
 
-    QString localName() const;
-    QString prefix() const;
-    QString qname() const;
+    QString localName () const;
+    QString prefix () const;
+    QString qname () const;
 
-    void setNameSpace( const QString &nameSpace );
-    QString nameSpace() const;
+    void setNameSpace (const QString &nameSpace);
+    QString nameSpace () const;
 
-    bool operator==( const QName& ) const;
-    bool operator!=( const QName& ) const;
+    bool operator == (const QName&) const;
+    bool operator != (const QName&) const;
 
-    bool isEmpty() const;
+    bool isEmpty () const;
 
 private:
-    void parse( const QString& );
+    void parse (const QString&);
 
-    QString mNameSpace;
-    QString mLocalName;
-    QString mPrefix;
+    QString _nameSpace;
+    QString _localName;
+    QString _prefix;
 };
 
 #endif

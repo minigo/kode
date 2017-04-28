@@ -25,60 +25,59 @@
 
 QString Namer::upperFirst( const QString &str )
 {
-  return KODE::Style::upperFirst( str );
+    return KODE::Style::upperFirst( str );
 }
 
 QString Namer::lowerFirst( const QString &str )
 {
-  return KODE::Style::lowerFirst( str );
+    return KODE::Style::lowerFirst( str );
 }
 
 QString Namer::getClassName( const Schema::Attribute &attribute )
 {
-  return getClassName( attribute.name() );
+    return getClassName( attribute.name() );
 }
 
-QString Namer::getClassName( const Schema::Element &element )
-{
-  return getClassName( element.name() );
+QString Namer::getClassName (const Schema::Element &element) {
+    return getClassName (element.name ());
 }
 
-QString Namer::getClassName( const QString &elementName )
+QString Namer::getClassName (const QString &elementName)
 {
-  QString name;
-  QStringList parts = elementName.split( "_" );
-  foreach( QString part, parts ) {
-    name += upperFirst( part );
-  }
-  return name;
+    QString name;
+    QStringList parts = elementName.split ("_");
+    foreach (QString part, parts)
+        name += upperFirst (part);
+
+    return name;
 }
 
 QString Namer::getAccessor( const Schema::Element &element )
 {
-  return getAccessor( element.name() );
+    return getAccessor( element.name() );
 }
 
 QString Namer::getAccessor( const Schema::Attribute &attribute )
 {
-  return getAccessor( attribute.name() );
+    return getAccessor( attribute.name() );
 }
 
 QString Namer::getAccessor( const QString &elementName )
 {
-  return lowerFirst( getClassName( elementName ) );
+    return lowerFirst( getClassName( elementName ) );
 }
 
 QString Namer::getMutator( const Schema::Element &element )
 {
-  return getMutator( element.name() );
+    return getMutator( element.name() );
 }
 
 QString Namer::getMutator( const Schema::Attribute &attribute )
 {
-  return getMutator( attribute.name() );
+    return getMutator( attribute.name() );
 }
 
 QString Namer::getMutator( const QString &elementName )
 {
-  return "set" + getClassName( elementName );
+    return "set" + getClassName( elementName );
 }

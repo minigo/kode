@@ -97,8 +97,8 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
                 qDebug() << "  Mixed";
             e.setText (true);
         }
-        else if (complexType.contentModel() == XSD::XSDType::SIMPLE &&
-                  !complexType.baseTypeName().isEmpty())
+        else if (complexType.contentModel () == XSD::XSDType::SIMPLE &&
+                  !complexType.baseTypeName ().isEmpty())
         {
             if (complexType.baseTypeName().qname() == "xs:string")
                 e.setBaseType( Schema::Node::String );
@@ -119,38 +119,42 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
             e.setType (Schema::Node::ComplexType);
         }
 
-        foreach (XSD::Element subElement, complexType.elements ()) {
+        foreach (XSD::Element subElement, complexType.elements ())
+        {
             if (_verbose) {
-                qDebug() << "  Element: " << subElement.name();
-                qDebug() << "    " << subElement.minOccurs() << ","
-                         << subElement.maxOccurs();
+                qDebug() << "  Element:" << subElement.name();
+                qDebug() << "  " << subElement.minOccurs () << ","
+                         << subElement.maxOccurs ();
             }
 
-            Schema::Relation eRelation( subElement.name() );
+            Schema::Relation eRelation (subElement.name ());
             eRelation.setMinOccurs (subElement.minOccurs ());
-            if (subElement.maxOccurs() == XSD::Parser::UNBOUNDED)
+            if (subElement.maxOccurs () == XSD::Parser::UNBOUNDED)
                 eRelation.setMaxOccurs (Schema::Relation::Unbounded);
             else
                 eRelation.setMaxOccurs (subElement.maxOccurs ());
 
             XSD::Compositor compositor = subElement.compositor();
-            if ( _verbose )
-                qDebug() << "  Compositor " << compositor.type();
+            if (_verbose)
+                qDebug () << "  Compositor" << compositor.type ();
 
-            if ( compositor.type() == XSD::Compositor::Choice ) {
+            if (compositor.type () == XSD::Compositor::Choice) {
                 QString choice;
-                foreach( QName qname, compositor.children() ) {
-                    if ( !choice.isEmpty() ) choice += '+';
+                foreach (QName qname, compositor.children ()) {
+                    if (!choice.isEmpty ())
+                        choice += '+';
+
                     choice += qname.qname();
                 }
-                eRelation.setChoice( choice );
+                eRelation.setChoice (choice);
             }
-            e.addElementRelation( eRelation );
+            e.addElementRelation (eRelation);
         }
 
-        foreach (XSD::Attribute attribute, complexType.attributes ()) {
+        foreach (XSD::Attribute attribute, complexType.attributes ())
+        {
             if ( _verbose )
-                qDebug() << "  Attribute: " << attribute.name();
+                qDebug() << "  Attribute:" << attribute.name();
 
             Schema::Relation aRelation (attribute.name ());
             e.addAttributeRelation (aRelation);
@@ -160,22 +164,22 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
             a.setName (attribute.name ());
 
             if (!attribute.type ().isEmpty ()) {
-                if ( attribute.type().qname() == "xs:string" )
-                    a.setType( Schema::Node::String );
-                else if ( attribute.type().qname() == "xs:integer" )
-                    a.setType( Schema::Node::Integer );
-                else if ( attribute.type().qname() == "xs:decimal" )
+                if (attribute.type().qname() == "xs:string")
+                    a.setType (Schema::Node::String);
+                else if (attribute.type().qname() == "xs:integer")
+                    a.setType (Schema::Node::Integer);
+                else if (attribute.type().qname() == "xs:decimal")
                     a.setType (Schema::Node::Decimal);
-                else if ( attribute.type().qname() == "xs:date" )
-                    a.setType( Schema::Node::Date );
+                else if (attribute.type().qname() == "xs:date")
+                    a.setType (Schema::Node::Date);
                 else {
-                    XSD::SimpleType simpleType = types.simpleType( attribute.type() );
-                    setType( a, simpleType );
+                    XSD::SimpleType simpleType = types.simpleType (attribute.type ());
+                    setType (a, simpleType);
                 }
             }
 
-            a.setRequired (attribute.isUsed());
-            a.setDefaultValue (attribute.defaultValue());
+            a.setRequired (attribute.isUsed ());
+            a.setDefaultValue (attribute.defaultValue ());
 
             mDocument.addAttribute (a);
         }

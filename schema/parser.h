@@ -71,6 +71,11 @@ public:
      */
     static QString schemaUri();
 
+    //------------------------- Debug methods
+
+    void printDebugInfo () const;
+    void printComplexTypeInfo (const QString &name) const;
+
 protected:
     bool parse (ParserContext *context, QXmlInputSource *source);
 

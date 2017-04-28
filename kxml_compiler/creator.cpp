@@ -48,7 +48,7 @@
 
 #include <iostream>
 
-Creator::ClassFlags::ClassFlags( const Schema::Element &element )
+Creator::ClassFlags::ClassFlags (const Schema::Element &element)
 {
     m_hasId = element.hasRelation( "id" );
     m_hasUpdatedTimestamp = element.hasRelation( "updated_at" );
@@ -67,7 +67,7 @@ bool Creator::ClassFlags::hasId() const
 
 Creator::Creator( const Schema::Document &document, XmlParserType p )
     : mDocument( document ), mXmlParserType( p ),
-      mVerbose( false ), mUseKde( false )
+      _verbose( false ), mUseKde( false )
 {
     setExternalClassNames();
 }
@@ -76,7 +76,7 @@ Creator::Creator( const Schema::Document &document, XmlParserType p )
 
 void Creator::setVerbose( bool verbose )
 {
-    mVerbose = verbose;
+    _verbose = verbose;
 }
 
 void Creator::setUseKde( bool useKde )
@@ -84,30 +84,25 @@ void Creator::setUseKde( bool useKde )
     mUseKde = useKde;
 }
 
-bool Creator::useKde() const
-{
+bool Creator::useKde () const {
     return mUseKde;
 }
 
-void Creator::setCreateCrudFunctions( bool enabled )
-{
-    mCreateCrudFunctions = enabled;
+void Creator::setCreateCrudFunctions (bool enabled) {
+    _createCrudFunctions = enabled;
 }
 
-void Creator::setLicense( const KODE::License &l )
-{
-    mFile.setLicense( l );
+void Creator::setLicense (const KODE::License &l) {
+    mFile.setLicense (l);
 }
 
-void Creator::setExportDeclaration( const QString &name )
-{
-    mExportDeclaration = name;
+void Creator::setExportDeclaration (const QString &name) {
+    _exportDeclaration = name;
 }
 
-void Creator::setExternalClassPrefix( const QString &prefix )
+void Creator::setExternalClassPrefix (const QString &prefix)
 {
     mExternalClassPrefix = prefix;
-
     setExternalClassNames();
 }
 
@@ -140,7 +135,7 @@ void Creator::createProperty( KODE::Class &c,
         mutator.addArgument( "const " + type + " &v" );
     }
     mutator.addBodyLine( v.name() + " = v;" );
-    if ( mCreateCrudFunctions ) {
+    if ( _createCrudFunctions ) {
         if ( name != "UpdatedAt" && name != "CreatedAt" ) {
             if ( description.hasProperty( "UpdatedAt" ) ) {
                 mutator.addBodyLine( "setUpdatedAt( QDateTime::currentDateTime() );" );
@@ -263,7 +258,7 @@ ClassDescription Creator::createClassDescription(
 
         if ( targetElement.text() && !targetElement.hasAttributeRelations() &&
              !r.isList() ) {
-            if ( mVerbose ) {
+            if ( _verbose ) {
                qDebug() << "  FLATTEN";
             }
             if ( targetElement.type() == Schema::Element::Integer ) {
@@ -301,38 +296,36 @@ ClassDescription Creator::createClassDescription(
     return description;
 }
 
-void Creator::createClass( const Schema::Element &element )
+void Creator::createClass (const Schema::Element &element)
 {
-    QString className = Namer::getClassName( element  );
+    qDebug () << element.name ();
+    QString className = Namer::getClassName (element);
 
-    if ( mVerbose ) {
-        qDebug() <<"Creator::createClass()" << element.identifier() << className;
-        foreach( Schema::Relation r, element.elementRelations() ) {
+    if (_verbose) {
+        qDebug () <<"[Creator][createClass]" << element.identifier() << className;
+        foreach (Schema::Relation r, element.elementRelations ())
             qDebug() << "  SUBELEMENTS" << r.target();
-        }
     }
 
-    if ( mProcessedClasses.contains( className ) ) {
-        if ( mVerbose ) {
+    if (_processedClasses.contains (className)) {
+        if (_verbose)
             qDebug() << "  ALREADY DONE";
-        }
         return;
     }
 
-    mProcessedClasses.append( className );
+    _processedClasses.append( className );
 
     ClassDescription description = createClassDescription( element );
 
     KODE::Class c( className );
 
-    if ( !mExportDeclaration.isEmpty() ) {
-        c.setExportDeclaration( mExportDeclaration );
-    }
+    if (!_exportDeclaration.isEmpty ())
+        c.setExportDeclaration (_exportDeclaration);
 
-    bool hasCreatedAt = description.hasProperty( "CreatedAt" );
-    bool hasUpdatedAt = description.hasProperty( "UpdatedAt" );
+    bool hasCreatedAt = description.hasProperty ("CreatedAt");
+    bool hasUpdatedAt = description.hasProperty ("UpdatedAt");
 
-    if ( mCreateCrudFunctions ) {
+    if ( _createCrudFunctions ) {
         if ( hasCreatedAt || hasUpdatedAt ) {
             KODE::Function constructor( className, "" );
             KODE::Code code;
@@ -376,7 +369,7 @@ void Creator::createClass( const Schema::Element &element )
 
             createProperty( c, description, p.type() + "::List", listName );
 
-            if ( mCreateCrudFunctions && p.targetHasId() ) {
+            if ( _createCrudFunctions && p.targetHasId() ) {
                 createCrudFunctions( c, p.type() );
             }
         } else {
@@ -471,23 +464,23 @@ void Creator::printFiles (KODE::Printer &printer)
         mParserClass.addHeaderInclude( file().filenameHeader() );
         parserFile.insertClass( mParserClass );
 
-        if ( mVerbose ) {
+        if ( _verbose ) {
             qDebug() <<"Print external parser header" << parserFile.filenameHeader();
         }
         printer.printHeader( parserFile );
-        if ( mVerbose ) {
+        if ( _verbose ) {
             qDebug() <<"Print external parser implementation"
                     << parserFile.filenameImplementation();
         }
         printer.printImplementation( parserFile );
     }
 
-    if ( mVerbose ) {
+    if ( _verbose ) {
         qDebug() <<"Print header" << file().filenameHeader();
     }
     printer.printHeader( file() );
 
-    if ( mVerbose ) {
+    if ( _verbose ) {
         qDebug() <<"Print implementation" << file().filenameImplementation();
     }
     printer.printImplementation( file() );

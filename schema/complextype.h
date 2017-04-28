@@ -45,10 +45,10 @@ public:
         Extension
     } Derivation;
 
-    ComplexType();
-    ComplexType( const QString &nameSpace );
-    ComplexType( const ComplexType &other );
-    ~ComplexType();
+    ComplexType ();
+    ComplexType (const QString &nameSpace);
+    ComplexType (const ComplexType &other);
+    virtual ~ComplexType ();
 
     ComplexType &operator=( const ComplexType &other );
 
@@ -67,7 +67,7 @@ public:
     QName baseTypeName() const;
 
     void setElements( const Element::List &elements );
-    Element::List elements() const;
+    Element::List elements () const;
 
     void setAttributes( const Attribute::List &attributes );
     Attribute::List attributes() const;

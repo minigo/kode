@@ -36,47 +36,47 @@ namespace XSD {
 
 class SCHEMA_EXPORT XSDType : public XmlElement
 {
-  public:
+public:
     typedef QList<const XSDType*> List;
 
     enum ContentModel
     {
-      SIMPLE = 0,
-      COMPLEX,
-      MIXED
+        SIMPLE = 0,
+        COMPLEX,
+        MIXED
     };
 
     enum
     {
-      INVALID = 0,
-      STRING = 1,
-      INTEGER,
-      INT,
-      BYTE,
-      UBYTE,
-      POSINT,
-      UINT,
-      LONG,
-      ULONG,
-      SHORT,
-      USHORT,
-      DECIMAL,
-      FLOAT,
-      DOUBLE,
-      BOOLEAN,
-      TIME,
-      DATETIME,
-      DATE,
-      TOKEN,
-      QNAME,
-      NCNAME,
-      NMTOKEN,
-      NMTOKENS,
-      BASE64BIN,
-      HEXBIN,
-      ANY,
-      ANYTYPE,
-      ANYURI
+        INVALID = 0,
+        STRING = 1,
+        INTEGER,
+        INT,
+        BYTE,
+        UBYTE,
+        POSINT,
+        UINT,
+        LONG,
+        ULONG,
+        SHORT,
+        USHORT,
+        DECIMAL,
+        FLOAT,
+        DOUBLE,
+        BOOLEAN,
+        TIME,
+        DATETIME,
+        DATE,
+        TOKEN,
+        QNAME,
+        NCNAME,
+        NMTOKEN,
+        NMTOKENS,
+        BASE64BIN,
+        HEXBIN,
+        ANY,
+        ANYTYPE,
+        ANYURI
     };
 
     XSDType();
@@ -91,10 +91,10 @@ class SCHEMA_EXPORT XSDType : public XmlElement
 
     virtual bool isSimple() const
     {
-      return true;
+        return true;
     }
 
-  private:
+private:
     class Private;
     Private *d;
 };

@@ -33,11 +33,11 @@ namespace XSD {
 
 class SCHEMA_EXPORT XmlElement
 {
-  public:
+public:
     XmlElement();
     XmlElement( const QString &nameSpace );
     XmlElement( const XmlElement &other );
-    ~XmlElement();
+    virtual ~XmlElement();
 
     XmlElement &operator=( const XmlElement &other );
 
@@ -53,7 +53,7 @@ class SCHEMA_EXPORT XmlElement
     void setAnnotations( const Annotation::List & );
     Annotation::List annotations() const;
 
-  private:
+private:
     class Private;
     Private *d;
 };

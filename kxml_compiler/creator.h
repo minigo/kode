@@ -95,8 +95,8 @@ class Creator
     void createProperty( KODE::Class &c, const ClassDescription &,
       const QString &type, const QString &name );
 
-    ClassDescription createClassDescription( const Schema::Element &element );
-    void createClass( const Schema::Element &element );
+    ClassDescription createClassDescription (const Schema::Element &element);
+    void createClass (const Schema::Element &element);
 
     void registerListTypedef( const QString &type );
 
@@ -129,15 +129,15 @@ class Creator
     KODE::File mFile;
     KODE::Class mParserClass;
     KODE::Class mWriterClass;
-    QStringList mProcessedClasses;
+    QStringList _processedClasses;
     QStringList mListTypedefs;
 
     QString mBaseName;
     QString mDtd;
-    bool mVerbose;
+    bool _verbose;
     bool mUseKde;
-    bool mCreateCrudFunctions;
-    QString mExportDeclaration;
+    bool _createCrudFunctions;
+    QString _exportDeclaration;
 };
 
 class ParserCreator

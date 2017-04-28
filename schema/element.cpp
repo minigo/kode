@@ -81,8 +81,7 @@ void Element::setType( const QName &type )
     d->mType = type;
 }
 
-QName Element::type() const
-{
+QName Element::type () const {
     return d->mType;
 }
 

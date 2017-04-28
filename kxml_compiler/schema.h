@@ -31,45 +31,45 @@ namespace Schema {
 
 class KSCHEMA_EXPORT Relation
 {
-  public:
+public:
     typedef QList<Relation> List;
     
     enum { Unbounded = -1 };
 
-    Relation();
-    Relation( const QString &targetName );
-  
-    void setMinOccurs( int );
-    void setMaxOccurs( int );
-  
-    int minOccurs() const;
-    int maxOccurs() const;
-  
-    bool isOptional() const;
-    bool isRequired() const;
-    bool isList() const;
+    Relation ();
+    Relation (const QString &targetName);
 
-    void setTarget( const QString &identifier );
-    QString target() const;
+    void setMinOccurs (int);
+    void setMaxOccurs (int);
 
-    void setChoice( const QString & );
-    QString choice() const;
+    int minOccurs () const;
+    int maxOccurs () const;
 
-    QString asString( const QString &type = QString() ) const;
+    bool isOptional () const;
+    bool isRequired () const;
+    bool isList () const;
 
-  private:
-    QString mTarget;
+    void setTarget (const QString &identifier);
+    QString target () const;
 
-    int mMinOccurs;
-    int mMaxOccurs;
+    void setChoice (const QString &);
+    QString choice () const;
+
+    QString asString (const QString &type = QString ()) const;
+
+private:
+    QString _target;
+
+    int _minOccurs;
+    int _maxOccurs;
     
-    QString mChoice;
+    QString _choice;
 };
 
 class KSCHEMA_EXPORT Annotatable
 {
-  public:
-  
+public:
+
     void setDocumentation( const QString & );
     QString documentation() const;
 
@@ -81,16 +81,16 @@ class KSCHEMA_EXPORT Annotatable
     */
     QList<QDomElement> annotations() const;
     
-  private:
+private:
     QString mDocumentation;
     QList<QDomElement> mAnnotations;
 };
 
 class KSCHEMA_EXPORT Node : public Annotatable
 {
-  public:
+public:
     enum Type { None, String, NormalizedString, Token, Integer, Date,
-      Enumeration, ComplexType, DateTime, Decimal };
+                Enumeration, ComplexType, DateTime, Decimal };
     Node();
     virtual ~Node();
 
@@ -113,18 +113,18 @@ class KSCHEMA_EXPORT Node : public Annotatable
     void setEnumerationValues( const QStringList & );
     QStringList enumerationValues() const;
 
-  private:
+private:
     Type mType;
-    QString mIdentifier;
-    QString mName;
-    Type mBaseType;
+    QString _identifier;
+    QString _name;
+    Type _baseType;
 
-    QStringList mEnumerationValues;
+    QStringList _enumerationValues;
 };
 
 class KSCHEMA_EXPORT Attribute : public Node
 {
-  public:
+public:
     typedef QList<Attribute> List;
 
     Attribute();
@@ -136,54 +136,54 @@ class KSCHEMA_EXPORT Attribute : public Node
     void setDefaultValue(const QString defVal);
 
     QString ref() const;
-  private:
+private:
     bool mRequired;
     QString mDefVal;
 };
 
 class KSCHEMA_EXPORT Element : public Node
 {
-  public:
+public:
     typedef QList<Element> List;
-  
-    Element();
 
-    QString ref() const;
+    Element ();
 
-    bool mixed() const;
+    QString ref () const;
 
-    void setText( bool );
-    bool text() const;
+    bool mixed () const;
 
-    bool hasRelation( const QString &identifier ) const;
+    void setText (bool);
+    bool text () const;
 
-    void addElementRelation( const Relation & );
-    bool hasElementRelation( const Element & ) const;
-    bool hasElementRelation( const QString &identifier ) const;
-    Relation &elementRelation( const Element & );
-    Relation::List elementRelations() const;
-    bool hasElementRelations() const;
+    bool hasRelation (const QString &identifier) const;
 
-    void addAttributeRelation( const Relation & );
-    bool hasAttributeRelation( const Attribute & ) const;
-    bool hasAttributeRelation( const QString &identifier ) const;
-    Relation::List attributeRelations() const;
-    bool hasAttributeRelations() const;
+    void addElementRelation (const Relation &);
+    bool hasElementRelation (const Element &) const;
+    bool hasElementRelation (const QString &identifier) const;
+    Relation &elementRelation (const Element &);
+    Relation::List elementRelations () const;
+    bool hasElementRelations () const;
 
-    bool isEmpty() const;
+    void addAttributeRelation (const Relation &);
+    bool hasAttributeRelation (const Attribute &) const;
+    bool hasAttributeRelation (const QString &identifier) const;
+    Relation::List attributeRelations () const;
+    bool hasAttributeRelations () const;
 
-  private:
-    bool mText;
+    bool isEmpty () const;
 
-    Relation::List mElementRelations;
-    Relation::List mAttributeRelations;
+private:
+    bool _text;
 
-    Relation mNullRelation;
+    Relation::List _elementRelations;
+    Relation::List _attributeRelations;
+
+    Relation _nullRelation;
 };
 
 class KSCHEMA_EXPORT Document : public Annotatable
 {
-  public:
+public:
     Document();
 
     void setStartElement( const Element & );
@@ -207,17 +207,17 @@ class KSCHEMA_EXPORT Document : public Annotatable
 
     bool isEmpty() const;
 
-  protected:
+protected:
     void findUsedElements( const Element &e ) const;
     bool addUsedElement( const Element &element ) const;
 
-  private:
-    Element mStartElement;
+private:
+    Element _startElement;
 
-    Element::List mElements;
-    Attribute::List mAttributes;
+    Element::List _elements;
+    Attribute::List _attributes;
 
-    mutable Element::List mUsedElements;
+    mutable Element::List _usedElements;
 };
 
 }

@@ -32,7 +32,7 @@ namespace KODE {
  */
 class KODE_EXPORT Variable
 {
-  public:
+public:
     typedef QList<Variable> List;
 
     /**
@@ -103,7 +103,7 @@ class KODE_EXPORT Variable
      */
     QString initializer() const;
 
-  private:
+private:
     class Private;
     Private *d;
 };

@@ -31,7 +31,7 @@ namespace XSD {
 
 class SCHEMA_EXPORT Types
 {
-  public:
+public:
     Types();
     Types( const Types &other );
     ~Types();
@@ -60,7 +60,7 @@ class SCHEMA_EXPORT Types
 
     SimpleType simpleType( const QName & ) const;
 
-  private:
+private:
     class Private;
     Private *d;
 };
