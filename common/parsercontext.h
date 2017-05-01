@@ -77,8 +77,8 @@ public:
 
 private:
     NSManager *mNamespaceManager;
-    MessageHandler *mMessageHandler;
-    QString mDocumentBaseUrl;
+    MessageHandler *_messageHandler;
+    QString _documentBaseUrl;
 };
 
 #endif

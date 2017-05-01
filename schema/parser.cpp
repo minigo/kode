@@ -41,7 +41,7 @@ namespace XSD {
 
 class Parser::Private {
 public:
-    QString mNameSpace;
+    QString _nameSpace;
 
     SimpleType::List _simpleTypes;
     ComplexType::List _complexTypes;
@@ -53,10 +53,12 @@ public:
     QStringList _importedSchemas;
     QStringList _includedSchemas;
     QStringList _namespaces;
+
+    QString _soursePath;
 };
 
 Parser::Parser(const QString &nameSpace) : d(new Private) {
-    d->mNameSpace = nameSpace;
+    d->_nameSpace = nameSpace;
 }
 
 Parser::Parser(const Parser &other) : d(new Private) { *d = *other.d; }
@@ -75,7 +77,8 @@ Parser &Parser::operator=(const Parser &other) {
     return *this;
 }
 
-void Parser::clear() {
+void Parser::clear ()
+{
     d->_importedSchemas.clear();
     d->_namespaces.clear();
     d->_complexTypes.clear();
@@ -85,23 +88,29 @@ void Parser::clear() {
     d->_attributeGroups.clear();
 }
 
-bool Parser::parseFile(ParserContext *context, QFile &file) {
-    QXmlInputSource source(&file);
-    return parse(context, &source);
+bool Parser::parseFile (ParserContext *context, QFile &file)
+{
+    QFileInfo fi (file);
+    d->_soursePath = fi.path ();
+
+    QXmlInputSource source (&file);
+    return parse (context, &source);
 }
 
-bool Parser::parseString(ParserContext *context, const QString &data) {
+bool Parser::parseString (ParserContext *context, const QString &data)
+{
     QXmlInputSource source;
-    source.setData(data);
-    return parse(context, &source);
+    source.setData (data);
+    return parse (context, &source);
 }
 
-bool Parser::parse(ParserContext *context, QXmlInputSource *source) {
+bool Parser::parse (ParserContext *context, QXmlInputSource *source)
+{
     QXmlSimpleReader reader;
     reader.setFeature(
                 QLatin1String("http://xml.org/sax/features/namespace-prefixes"), true);
 
-    QDomDocument document(QLatin1String("KWSDL"));
+    QDomDocument document (QLatin1String("KWSDL"));
 
     QString errorMsg;
     int errorLine, errorCol;
@@ -113,49 +122,50 @@ bool Parser::parse(ParserContext *context, QXmlInputSource *source) {
 
     QDomElement element = doc.documentElement();
     const QName name = element.tagName();
-    if (name.localName() != QLatin1String("schema")) {
+    if (name.localName() != QLatin1String ("schema")) {
         qDebug("document element is '%s'", qPrintable(element.tagName()));
         return false;
     }
 
-    return parseSchemaTag(context, element);
+    return parseSchemaTag (context, element);
 }
 
-bool Parser::parseSchemaTag(ParserContext *context, const QDomElement &root) {
-    QName name = root.tagName();
-    if (name.localName() != QLatin1String("schema"))
+bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
+{
+    QName name = root.tagName ();
+    if (name.localName() != QLatin1String ("schema"))
         return false;
 
-    NSManager *parentManager = context->namespaceManager();
+    NSManager *parentManager = context->namespaceManager ();
     NSManager namespaceManager;
 
     // copy namespaces from wsdl
     if (parentManager)
         namespaceManager = *parentManager;
 
-    context->setNamespaceManager(&namespaceManager);
+    context->setNamespaceManager (&namespaceManager);
 
-    QDomNamedNodeMap attributes = root.attributes();
+    QDomNamedNodeMap attributes = root.attributes ();
     for (int i = 0; i < attributes.count(); ++i) {
-        QDomAttr attribute = attributes.item(i).toAttr();
-        if (attribute.name().startsWith(QLatin1String("xmlns:"))) {
-            QString prefix = attribute.name().mid(6);
-            context->namespaceManager()->setPrefix(prefix, attribute.value());
+        QDomAttr attribute = attributes.item (i).toAttr ();
+        if (attribute.name ().startsWith (QLatin1String("xmlns:"))) {
+            QString prefix = attribute.name ().mid (6);
+            context->namespaceManager ()->setPrefix (prefix, attribute.value ());
         }
     }
 
-    if (root.hasAttribute(QLatin1String("targetNamespace")))
-        d->mNameSpace = root.attribute(QLatin1String("targetNamespace"));
+    if (root.hasAttribute (QLatin1String ("targetNamespace")))
+        d->_nameSpace = root.attribute (QLatin1String ("targetNamespace"));
 
     // mTypesTable.setTargetNamespace( mNameSpace );
 
-    QDomElement element = root.firstChildElement();
-    while (!element.isNull()) {
+    QDomElement element = root.firstChildElement ();
+    while (!element.isNull ()) {
         QName name = element.tagName();
-        if (name.localName() == QLatin1String("import")) {
-            parseImport(context, element);
+        if (name.localName () == QLatin1String ("import")) {
+            parseImport (context, element);
         } else if (name.localName () == QLatin1String ("element")) {
-            addGlobalElement (parseElement (context, element, d->mNameSpace, element));
+            addGlobalElement (parseElement (context, element, d->_nameSpace, element));
         } else if (name.localName() == QLatin1String("complexType")) {
             ComplexType ct = parseComplexType(context, element);
             d->_complexTypes.append(ct);
@@ -177,14 +187,15 @@ bool Parser::parseSchemaTag(ParserContext *context, const QDomElement &root) {
 
     context->setNamespaceManager(parentManager);
     d->_namespaces = joinNamespaces(d->_namespaces, namespaceManager.uris());
-    d->_namespaces = joinNamespaces(d->_namespaces, QStringList(d->mNameSpace));
+    d->_namespaces = joinNamespaces(d->_namespaces, QStringList(d->_nameSpace));
 
     resolveForwardDeclarations();
 
     return true;
 }
 
-void Parser::parseImport(ParserContext *context, const QDomElement &element) {
+void Parser::parseImport (ParserContext *context, const QDomElement &element)
+{
     QString location = element.attribute("schemaLocation");
 
     if (location.isEmpty())
@@ -197,21 +208,22 @@ void Parser::parseImport(ParserContext *context, const QDomElement &element) {
         else
             d->_importedSchemas.append(location);
 
-        importSchema(context, location);
+        importSchema (context, location);
     }
 }
 
-void Parser::parseInclude(ParserContext *context, const QDomElement &element) {
-    QString location = element.attribute("schemaLocation");
+void Parser::parseInclude (ParserContext *context, const QDomElement &element)
+{
+    QString location = element.attribute ("schemaLocation");
 
     if (!location.isEmpty()) {
         // don't include a schema twice
-        if (d->_includedSchemas.contains(location))
+        if (d->_includedSchemas.contains (location))
             return;
         else
-            d->_includedSchemas.append(location);
+            d->_includedSchemas.append (location);
 
-        includeSchema(context, location);
+        includeSchema (context, location);
     } else {
         context->messageHandler()->warning(
                     QString("include tag found at (%1, %2) contains no schemaLocation tag.")
@@ -239,7 +251,7 @@ Annotation::List Parser::parseAnnotation(ParserContext *,
 
 ComplexType Parser::parseComplexType(ParserContext *context,
                                      const QDomElement &element) {
-    ComplexType newType(d->mNameSpace);
+    ComplexType newType(d->_nameSpace);
 
     newType.setName(element.attribute("name"));
 
@@ -519,7 +531,7 @@ Attribute Parser::parseAttribute(ParserContext *context,
 
 SimpleType Parser::parseSimpleType(ParserContext *context,
                                    const QDomElement &element) {
-    SimpleType st(d->mNameSpace);
+    SimpleType st(d->_nameSpace);
 
     st.setName(element.attribute("name"));
 
@@ -672,7 +684,7 @@ void Parser::parseSimpleContent(ParserContext *context,
     while (!childElement.isNull()) {
         QName name = childElement.tagName();
         if (name.localName() == "restriction") {
-            SimpleType st(d->mNameSpace);
+            SimpleType st(d->_nameSpace);
 
             if (childElement.hasAttribute("base")) {
                 QName typeName(childElement.attribute("base"));
@@ -771,27 +783,28 @@ AttributeGroup Parser::parseAttributeGroup(ParserContext *context,
     return group;
 }
 
-QString Parser::targetNamespace() const { return d->mNameSpace; }
+QString Parser::targetNamespace() const { return d->_nameSpace; }
 
-void Parser::importSchema(ParserContext *context, const QString &location) {
+void Parser::importSchema (ParserContext *context, const QString &location)
+{
     FileProvider provider;
     QString fileName;
-    QString schemaLocation(location);
+    QString schemaLocation (location);
 
     QString newlocation = location;
-    QFileInfo fi(newlocation.replace("\\", "/"));
+    QFileInfo fi (newlocation.replace("\\", "/"));
     if (!fi.exists()) {
         QUrl url(location);
         QDir dir(location);
         if ((url.scheme().isEmpty() || url.scheme() == "file") && dir.isRelative())
             schemaLocation = context->documentBaseUrl() + '/' + location;
     } else
-        schemaLocation = fi.absoluteFilePath();
+        schemaLocation = fi.absoluteFilePath ();
 
     qDebug() << "[Parser][includeSchema] Importing schema at"
              << qPrintable(schemaLocation);
 
-    if (provider.get(schemaLocation, fileName)) {
+    if (provider.get (schemaLocation, fileName)) {
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
             qCritical() << "[Parser][includeSchema] Unable to open file"
@@ -837,20 +850,21 @@ void Parser::importSchema(ParserContext *context, const QString &location) {
 }
 
 // TODO: Try to merge import and include schema
-void Parser::includeSchema(ParserContext *context, const QString &location) {
+void Parser::includeSchema (ParserContext *context, const QString &location)
+{
     FileProvider provider;
     QString fileName;
-    QString schemaLocation(location);
+    QString schemaLocation (location);
 
     QString newlocation = location;
-    QFileInfo fi(newlocation.replace("\\", "/"));
-    if (!fi.exists()) {
-        QUrl url(location);
-        QDir dir(location);
+    QFileInfo fi (newlocation.replace ("\\", "/"));
+    if (!fi.exists ()) {
+        QUrl url (location);
+        QDir dir (location);
         if ((url.scheme().isEmpty() || url.scheme() == "file") && dir.isRelative())
             schemaLocation = context->documentBaseUrl() + '/' + location;
     } else
-        schemaLocation = fi.absoluteFilePath();
+        schemaLocation = fi.absoluteFilePath ();
 
     qDebug() << "[Parser][includeSchema] Including schema at"
              << qPrintable(schemaLocation);
@@ -888,7 +902,7 @@ void Parser::includeSchema(ParserContext *context, const QString &location) {
         if (tagName.localName() == "schema") {
             // For include, targetNamespace must be the same as the current document.
             if (node.hasAttribute(QLatin1String("targetNamespace"))) {
-                if (node.attribute(QLatin1String("targetNamespace")) != d->mNameSpace) {
+                if (node.attribute(QLatin1String("targetNamespace")) != d->_nameSpace) {
                     context->messageHandler()->error(
                                 QLatin1String("Included schema must be in the same namespace of "
                                               "the resulting schema."));

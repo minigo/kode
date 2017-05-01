@@ -30,7 +30,7 @@
 
 class KXMLCOMMON_EXPORT NSManager
 {
-  public:
+public:
     NSManager();
 
     void setPrefix( const QString &prefix, const QString &uri );
@@ -53,7 +53,7 @@ class KXMLCOMMON_EXPORT NSManager
 
     void dump() const;
 
-  private:
+private:
     QMultiMap<QString, QString> mMap;
 };
 

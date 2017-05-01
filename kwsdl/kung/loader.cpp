@@ -30,77 +30,76 @@
 
 #include "loader.h"
 
-Loader::Loader()
-  : QObject( 0 )
+Loader::Loader ()
+    : QObject (0x00)
 {
-  setObjectName( "KWSDL::Loader" );
-  
-  mContext = new ParserContext();
+    setObjectName ("KWSDL::Loader");
+    _context = new ParserContext ();
 }
 
-void Loader::setWSDLUrl( const QString &wsdlUrl )
+void Loader::setWSDLUrl (const QString &wsdlUrl)
 {
-  mWSDLUrl = wsdlUrl;
-  mWSDLBaseUrl = mWSDLUrl.left( mWSDLUrl.lastIndexOf( '/' ) );
+    _wsdlUrl = wsdlUrl;
+    _wsdlBaseUrl = _wsdlUrl.left (_wsdlUrl.lastIndexOf ('/'));
 
-  mContext->setDocumentBaseUrl( mWSDLBaseUrl );
+    _context->setDocumentBaseUrl (_wsdlBaseUrl);
 }
 
 void Loader::run()
 {
-  download();
+    download();
 }
 
 void Loader::download()
 {
-  FileProvider provider;
+    FileProvider provider;
 
-  QString fileName;
-  if ( provider.get( mWSDLUrl, fileName ) ) {
-    QFile file( fileName );
-    if ( !file.open( QIODevice::ReadOnly ) ) {
-      qDebug( "Unable to download wsdl file %s", qPrintable( mWSDLUrl ) );
-      provider.cleanUp();
-      return;
+    QString fileName;
+    if ( provider.get( _wsdlUrl, fileName ) ) {
+        QFile file( fileName );
+        if ( !file.open( QIODevice::ReadOnly ) ) {
+            qDebug( "Unable to download wsdl file %s", qPrintable( _wsdlUrl ) );
+            provider.cleanUp();
+            return;
+        }
+
+        QString errorMsg;
+        int errorLine, errorCol;
+        QDomDocument doc;
+        if ( !doc.setContent( &file, true, &errorMsg, &errorLine, &errorCol ) ) {
+            qDebug( "%s at (%d,%d)", qPrintable( errorMsg ), errorLine, errorCol );
+            return;
+        }
+
+        parse( doc.documentElement() );
+
+        provider.cleanUp();
     }
-
-    QString errorMsg;
-    int errorLine, errorCol;
-    QDomDocument doc;
-    if ( !doc.setContent( &file, true, &errorMsg, &errorLine, &errorCol ) ) {
-      qDebug( "%s at (%d,%d)", qPrintable( errorMsg ), errorLine, errorCol );
-      return;
-    }
-
-    parse( doc.documentElement() );
-
-    provider.cleanUp();
-  }
 }
 
 void Loader::parse( const QDomElement &element )
 {
-  KWSDL::Definitions def;
-  KWSDL::WSDL kwsdl;
+    KWSDL::Definitions def;
+    KWSDL::WSDL kwsdl;
 
-  NSManager namespaceManager;
-  MessageHandler messageHandler;
-  mContext->setNamespaceManager(&namespaceManager);
-  mContext->setMessageHandler(&messageHandler);
+    NSManager namespaceManager;
+    MessageHandler messageHandler;
+    _context->setNamespaceManager(&namespaceManager);
+    _context->setMessageHandler(&messageHandler);
 
-  def.loadXML( mContext, element );
+    def.loadXML( _context, element );
 
-  kwsdl.setDefinitions(def);
+    kwsdl.setDefinitions(def);
 
-  execute(kwsdl);
+    execute(kwsdl);
 }
 
 void Loader::execute(const KWSDL::WSDL &wsdl)
 {
-  mDispatcher = new Dispatcher;
-  mDispatcher->setWSDL( wsdl );
+    mDispatcher = new Dispatcher;
+    mDispatcher->setWSDL( wsdl );
 
-  mDispatcher->run();
+    mDispatcher->run();
 }
 
 #include "loader.moc"

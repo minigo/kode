@@ -103,8 +103,8 @@ private:
     void setOccurrenceAttributes( Element &newElement,
                                   const QDomElement &element );
 
-    Element parseElement( ParserContext *context, const QDomElement &,
-                          const QString &nameSpace, const QDomElement &occurrenceElement );
+    Element parseElement (ParserContext *context, const QDomElement &,
+                          const QString &nameSpace, const QDomElement &occurrenceElement);
 
     Attribute parseAttribute( ParserContext *context, const QDomElement& );
     void addAny( ParserContext *context, const QDomElement&, ComplexType& );

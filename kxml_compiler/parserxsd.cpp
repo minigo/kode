@@ -73,8 +73,8 @@ Schema::Document ParserXsd::parse (QFile &file)
 
     XSD::Parser parser;
     if (!parser.parseFile (&context, file)) {
-        qDebug() << "Error parsing file " << file.fileName();
-        return Schema::Document();
+        qDebug () << "[ParserXsd][parse] Error parsing file " << file.fileName();
+        return Schema::Document ();
     } else
         return parse (parser);
 }

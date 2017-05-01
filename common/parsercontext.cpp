@@ -22,8 +22,8 @@
 #include "parsercontext.h"
 
 ParserContext::ParserContext()
-  : mNamespaceManager( 0 ),
-    mMessageHandler( 0 )
+    : mNamespaceManager( 0 ),
+      _messageHandler( 0 )
 {
 }
 
@@ -33,30 +33,28 @@ ParserContext::~ParserContext()
 
 void ParserContext::setNamespaceManager( NSManager *manager )
 {
-  mNamespaceManager = manager;
+    mNamespaceManager = manager;
 }
 
 NSManager* ParserContext::namespaceManager() const
 {
-  return mNamespaceManager;
+    return mNamespaceManager;
 }
 
 void ParserContext::setMessageHandler( MessageHandler *handler )
 {
-  mMessageHandler = handler;
+    _messageHandler = handler;
 }
 
-MessageHandler* ParserContext::messageHandler() const
-{
-  return mMessageHandler;
+MessageHandler* ParserContext::messageHandler () const {
+    return _messageHandler;
 }
 
-void ParserContext::setDocumentBaseUrl( const QString &url )
-{
-  mDocumentBaseUrl = url;
+void ParserContext::setDocumentBaseUrl (const QString &url) {
+    _documentBaseUrl = url;
 }
 
 QString ParserContext::documentBaseUrl() const
 {
-  return mDocumentBaseUrl;
+    return _documentBaseUrl;
 }

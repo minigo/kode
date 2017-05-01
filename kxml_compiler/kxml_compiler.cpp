@@ -81,12 +81,12 @@ int main( int argc, char **argv )
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     bool verbose = args->isSet("verbose");
 
-    if ( args->count() < 1 ) {
-        kError() <<"Too few arguments.";
+    if (args->count() < 1) {
+        qCritical () << "Too few arguments.";
         return 1;
     }
-    if ( args->count() > 1 ) {
-        kError() <<"Too many arguments.";
+    if (args->count() > 1) {
+        qCritical () << "Too many arguments.";
         return 1;
     }
 
@@ -96,17 +96,17 @@ int main( int argc, char **argv )
     else if (!baseDir.endsWith ( "/" ))
         baseDir.append ( "/" );
 
-    QString schemaFilename = args->url( 0 ).path();
+    QString schemaFilename = args->url (0).path ();
 
-    QString baseName = args->url( 0 ).fileName();
+    QString baseName = args->url (0).fileName ();
     int pos = baseName.lastIndexOf( '.' );
-    if ( pos > 0 ) baseName = baseName.left( pos );
-    baseName.remove( "_" );
+    if (pos > 0)
+        baseName = baseName.left (pos);
+    baseName.remove ("_");
 
-
-    QFile schemaFile( schemaFilename );
-    if ( !schemaFile.open( QIODevice::ReadOnly ) ) {
-        kError() <<"Unable to open '" << schemaFilename <<"'";
+    QFile schemaFile (schemaFilename);
+    if (!schemaFile.open (QIODevice::ReadOnly)) {
+        qCritical () << "Unable to open" << schemaFilename;
         return 1;
     }
 
@@ -131,7 +131,7 @@ int main( int argc, char **argv )
         int errorLine, errorCol;
         QDomDocument doc;
         if ( !doc.setContent( &schemaFile, false, &errorMsg, &errorLine, &errorCol ) ) {
-            kError() << errorMsg <<" at" << errorLine <<"," << errorCol;
+            qCritical () << errorMsg <<" at" << errorLine <<"," << errorCol;
             return 1;
         }
 
@@ -139,7 +139,7 @@ int main( int argc, char **argv )
         p.setVerbose( verbose );
         RNG::Element *start = p.parse( doc.documentElement() );
         if ( !start ) {
-            kError() <<"Could not find start element";
+            qCritical () <<"Could not find start element";
             return 1;
         }
 

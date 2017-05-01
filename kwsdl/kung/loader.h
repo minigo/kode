@@ -49,11 +49,11 @@ class Loader : public QObject
     void execute( const KWSDL::WSDL& );
 
   private:
-    QString mWSDLUrl;
-    QString mWSDLBaseUrl;
+    QString _wsdlUrl;
+    QString _wsdlBaseUrl;
 
     Dispatcher *mDispatcher;
-    ParserContext *mContext;
+    ParserContext *_context;
 };
 
 #endif
