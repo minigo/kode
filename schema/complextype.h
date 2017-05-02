@@ -66,7 +66,7 @@ public:
     void setBaseTypeName( const QName &baseTypeName );
     QName baseTypeName() const;
 
-    void setElements( const Element::List &elements );
+    void setElements (const Element::List &elements);
     Element::List elements () const;
 
     void setAttributes( const Attribute::List &attributes );

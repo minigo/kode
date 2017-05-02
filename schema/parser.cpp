@@ -34,8 +34,8 @@
 #include <common/nsmanager.h>
 #include <common/parsercontext.h>
 
-static const QString XMLSchemaURI("http://www.w3.org/2001/XMLSchema");
-static const QString WSDLSchemaURI("http://schemas.xmlsoap.org/wsdl/");
+static const QString XMLSchemaURI ("http://www.w3.org/2001/XMLSchema");
+static const QString WSDLSchemaURI ("http://schemas.xmlsoap.org/wsdl/");
 
 namespace XSD {
 
@@ -54,7 +54,7 @@ public:
     QStringList _includedSchemas;
     QStringList _namespaces;
 
-    QString _soursePath;
+    QString _path;
 };
 
 Parser::Parser(const QString &nameSpace) : d(new Private) {
@@ -91,7 +91,7 @@ void Parser::clear ()
 bool Parser::parseFile (ParserContext *context, QFile &file)
 {
     QFileInfo fi (file);
-    d->_soursePath = fi.path ();
+    d->_path = fi.path ();
 
     QXmlInputSource source (&file);
     return parse (context, &source);
@@ -110,7 +110,7 @@ bool Parser::parse (ParserContext *context, QXmlInputSource *source)
     reader.setFeature(
                 QLatin1String("http://xml.org/sax/features/namespace-prefixes"), true);
 
-    QDomDocument document (QLatin1String("KWSDL"));
+    //QDomDocument document (QLatin1String("KWSDL"));
 
     QString errorMsg;
     int errorLine, errorCol;
@@ -121,9 +121,9 @@ bool Parser::parse (ParserContext *context, QXmlInputSource *source)
     }
 
     QDomElement element = doc.documentElement();
-    const QName name = element.tagName();
-    if (name.localName() != QLatin1String ("schema")) {
-        qDebug("document element is '%s'", qPrintable(element.tagName()));
+    const QName name = QName (element.tagName ());
+    if (name.localName () != QLatin1String ("schema")) {
+        qDebug () << "[Parser][parse] Document element is" << qPrintable (element.tagName());
         return false;
     }
 
@@ -132,8 +132,8 @@ bool Parser::parse (ParserContext *context, QXmlInputSource *source)
 
 bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
 {
-    QName name = root.tagName ();
-    if (name.localName() != QLatin1String ("schema"))
+    QName name = QName (root.tagName ());
+    if (name.localName () != QLatin1String ("schema"))
         return false;
 
     NSManager *parentManager = context->namespaceManager ();
@@ -148,7 +148,7 @@ bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
     QDomNamedNodeMap attributes = root.attributes ();
     for (int i = 0; i < attributes.count(); ++i) {
         QDomAttr attribute = attributes.item (i).toAttr ();
-        if (attribute.name ().startsWith (QLatin1String("xmlns:"))) {
+        if (attribute.name ().startsWith (QLatin1String ("xmlns:"))) {
             QString prefix = attribute.name ().mid (6);
             context->namespaceManager ()->setPrefix (prefix, attribute.value ());
         }
@@ -161,25 +161,25 @@ bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
 
     QDomElement element = root.firstChildElement ();
     while (!element.isNull ()) {
-        QName name = element.tagName();
+        QName name = QName (element.tagName ());
         if (name.localName () == QLatin1String ("import")) {
             parseImport (context, element);
         } else if (name.localName () == QLatin1String ("element")) {
             addGlobalElement (parseElement (context, element, d->_nameSpace, element));
-        } else if (name.localName() == QLatin1String("complexType")) {
-            ComplexType ct = parseComplexType(context, element);
-            d->_complexTypes.append(ct);
-        } else if (name.localName() == QLatin1String("simpleType")) {
+        } else if (name.localName() == QLatin1String ("complexType")) {
+            ComplexType ct = parseComplexType (context, element);
+            d->_complexTypes.append (ct);
+        } else if (name.localName() == QLatin1String ("simpleType")) {
             SimpleType st = parseSimpleType(context, element);
-            d->_simpleTypes.append(st);
-        } else if (name.localName() == QLatin1String("attribute")) {
+            d->_simpleTypes.append (st);
+        } else if (name.localName() == QLatin1String ("attribute")) {
             addGlobalAttribute(parseAttribute(context, element));
-        } else if (name.localName() == QLatin1String("attributeGroup")) {
+        } else if (name.localName() == QLatin1String ("attributeGroup")) {
             d->_attributeGroups.append(parseAttributeGroup(context, element));
-        } else if (name.localName() == QLatin1String("annotation")) {
+        } else if (name.localName() == QLatin1String ("annotation")) {
             d->_annotations = parseAnnotation(context, element);
-        } else if (name.localName() == QLatin1String("include")) {
-            parseInclude(context, element);
+        } else if (name.localName() == QLatin1String ("include")) {
+            parseInclude (context, element);
         }
 
         element = element.nextSiblingElement();
@@ -189,24 +189,25 @@ bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
     d->_namespaces = joinNamespaces(d->_namespaces, namespaceManager.uris());
     d->_namespaces = joinNamespaces(d->_namespaces, QStringList(d->_nameSpace));
 
-    resolveForwardDeclarations();
+    resolveForwardDeclarations ();
 
+    printComplexTypeInfo ("modelIdentificationType");
     return true;
 }
 
 void Parser::parseImport (ParserContext *context, const QDomElement &element)
 {
-    QString location = element.attribute("schemaLocation");
+    QString location = element.attribute ("schemaLocation");
 
-    if (location.isEmpty())
-        location = element.attribute("namespace");
+    if (location.isEmpty ())
+        location = element.attribute ("namespace");
 
-    if (!location.isEmpty()) {
+    if (!location.isEmpty ()) {
         // don't import a schema twice
-        if (d->_importedSchemas.contains(location))
+        if (d->_importedSchemas.contains (location))
             return;
         else
-            d->_importedSchemas.append(location);
+            d->_importedSchemas.append (location);
 
         importSchema (context, location);
     }
@@ -216,7 +217,7 @@ void Parser::parseInclude (ParserContext *context, const QDomElement &element)
 {
     QString location = element.attribute ("schemaLocation");
 
-    if (!location.isEmpty()) {
+    if (!location.isEmpty ()) {
         // don't include a schema twice
         if (d->_includedSchemas.contains (location))
             return;
@@ -231,14 +232,14 @@ void Parser::parseInclude (ParserContext *context, const QDomElement &element)
     }
 }
 
-Annotation::List Parser::parseAnnotation(ParserContext *,
-                                         const QDomElement &element) {
+Annotation::List Parser::parseAnnotation (ParserContext *, const QDomElement &element)
+{
     Annotation::List result;
 
     QDomElement e;
     for (e = element.firstChildElement(); !e.isNull();
          e = e.nextSiblingElement()) {
-        QName name = e.tagName();
+        QName name = QName (e.tagName ());
         if (name.localName() == "documentation") {
             result.append(Annotation(e));
         } else if (name.localName() == "appinfo") {
@@ -249,115 +250,114 @@ Annotation::List Parser::parseAnnotation(ParserContext *,
     return result;
 }
 
-ComplexType Parser::parseComplexType(ParserContext *context,
-                                     const QDomElement &element) {
-    ComplexType newType(d->_nameSpace);
+ComplexType Parser::parseComplexType (ParserContext *context, const QDomElement &element)
+{
+    ComplexType newType (d->_nameSpace);
+    newType.setName (element.attribute ("name"));
 
-    newType.setName(element.attribute("name"));
+    if (element.hasAttribute ("mixed"))
+        newType.setContentModel (XSDType::MIXED);
 
-    if (element.hasAttribute("mixed"))
-        newType.setContentModel(XSDType::MIXED);
-
-    QDomElement childElement = element.firstChildElement();
+    QDomElement childElement = element.firstChildElement ();
 
     AttributeGroup::List attributeGroups;
 
     while (!childElement.isNull()) {
-        QName name = childElement.tagName();
-        if (name.localName() == "all") {
-            all(context, childElement, newType);
+        QName name = QName (childElement.tagName ());
+        if (name.localName () == "all") {
+            all (context, childElement, newType);
         } else if (name.localName() == "sequence") {
-            parseCompositor(context, childElement, newType);
+            parseCompositor (context, childElement, newType);
         } else if (name.localName() == "choice") {
-            parseCompositor(context, childElement, newType);
+            parseCompositor (context, childElement, newType);
         } else if (name.localName() == "attribute") {
-            newType.addAttribute(parseAttribute(context, childElement));
+            newType.addAttribute (parseAttribute (context, childElement));
         } else if (name.localName() == "attributeGroup") {
-            AttributeGroup g = parseAttributeGroup(context, childElement);
+            AttributeGroup g = parseAttributeGroup (context, childElement);
             attributeGroups.append(g);
-        } else if (name.localName() == "anyAttribute") {
+        } else if (name.localName () == "anyAttribute") {
             addAnyAttribute(context, childElement, newType);
-        } else if (name.localName() == "complexContent") {
-            parseComplexContent(context, childElement, newType);
-        } else if (name.localName() == "simpleContent") {
-            parseSimpleContent(context, childElement, newType);
-        } else if (name.localName() == "annotation") {
-            Annotation::List annotations = parseAnnotation(context, childElement);
-            newType.setDocumentation(annotations.documentation());
-            newType.setAnnotations(annotations);
-        }
+        } else if (name.localName () == "complexContent") {
+            parseComplexContent (context, childElement, newType);
+        } else if (name.localName () == "simpleContent") {
+            parseSimpleContent (context, childElement, newType);
+        } else if (name.localName () == "annotation") {
+            Annotation::List annotations = parseAnnotation (context, childElement);
+            newType.setDocumentation (annotations.documentation ());
+            newType.setAnnotations (annotations);
+        } else
+            qCritical () << "[Parser][parseComplexType] Undefined LocalName" << name.localName ();
 
         childElement = childElement.nextSiblingElement();
     }
 
-    newType.setAttributeGroups(attributeGroups);
-
+    newType.setAttributeGroups (attributeGroups);
     return newType;
 }
 
-void Parser::all(ParserContext *context, const QDomElement &element,
-                 ComplexType &ct) {
-    QDomElement childElement = element.firstChildElement();
+void Parser::all (ParserContext *context, const QDomElement &element,
+                  ComplexType &ct)
+{
+    QDomElement childElement = element.firstChildElement ();
 
     while (!childElement.isNull()) {
-        QName name = childElement.tagName();
-        if (name.localName() == "element") {
-            ct.addElement(
-                        parseElement(context, childElement, ct.nameSpace(), childElement));
+        QName name = QName (childElement.tagName ());
+        if (name.localName () == "element") {
+            ct.addElement (parseElement(context, childElement, ct.nameSpace(), childElement));
         } else if (name.localName() == "annotation") {
-            Annotation::List annotations = parseAnnotation(context, childElement);
-            ct.setDocumentation(annotations.documentation());
-            ct.setAnnotations(annotations);
+            Annotation::List annotations = parseAnnotation (context, childElement);
+            ct.setDocumentation (annotations.documentation ());
+            ct.setAnnotations (annotations);
         }
 
-        childElement = childElement.nextSiblingElement();
+        childElement = childElement.nextSiblingElement ();
     }
 }
 
-void Parser::parseCompositor(ParserContext *context, const QDomElement &element,
-                             ComplexType &ct) {
-    QName name = element.tagName();
-    bool isChoice = name.localName() == "choice";
-    bool isSequence = name.localName() == "sequence";
+void Parser::parseCompositor (ParserContext *context, const QDomElement &element,
+                              ComplexType &ct)
+{
+    QName name = QName (element.tagName ());
+    bool isChoice = name.localName () == "choice";
+    bool isSequence = name.localName () == "sequence";
 
     Compositor compositor;
     if (isChoice)
-        compositor.setType(Compositor::Choice);
+        compositor.setType (Compositor::Choice);
     else if (isSequence)
-        compositor.setType(Compositor::Sequence);
+        compositor.setType (Compositor::Sequence);
 
-    if (isChoice || isSequence) {
+    if (isChoice || isSequence)
+    {
         Element::List newElements;
+        QDomElement childElement = element.firstChildElement ();
 
-        QDomElement childElement = element.firstChildElement();
-
-        while (!childElement.isNull()) {
-            QName csName = childElement.tagName();
-            if (csName.localName() == "element") {
+        while (!childElement.isNull())
+        {
+            QName csName = QName (childElement.tagName ());
+            if (csName.localName () == "element") {
                 Element newElement;
-                if (isChoice) {
-                    newElement =
-                            parseElement(context, childElement, ct.nameSpace(), element);
-                } else {
-                    newElement =
-                            parseElement(context, childElement, ct.nameSpace(), childElement);
-                }
-                newElements.append(newElement);
-                compositor.addChild(csName);
+                if (isChoice)
+                    newElement = parseElement (context, childElement, ct.nameSpace (), element);
+                else
+                    newElement = parseElement (context, childElement, ct.nameSpace (), childElement);
+
+                newElements.append (newElement);
+                compositor.addChild (csName);
             } else if (csName.localName() == "any") {
-                addAny(context, childElement, ct);
+                addAny (context, childElement, ct);
             } else if (isChoice) {
-                parseCompositor(context, childElement, ct);
+                parseCompositor (context, childElement, ct);
             } else if (isSequence) {
-                parseCompositor(context, childElement, ct);
+                parseCompositor (context, childElement, ct);
             }
 
-            childElement = childElement.nextSiblingElement();
+            childElement = childElement.nextSiblingElement ();
         }
 
         foreach (Element e, newElements) {
-            e.setCompositor(compositor);
-            ct.addElement(e);
+            e.setCompositor (compositor);
+            ct.addElement (e);
         }
     }
 }
@@ -366,24 +366,21 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
                               const QString &nameSpace,
                               const QDomElement &occurrenceElement)
 {
-    //старт
-
     Element newElement (nameSpace);
     newElement.setName (element.attribute ("name"));
 
-    if (element.hasAttribute("form")) {
-        if (element.attribute("form") == "qualified")
-            newElement.setIsQualified(true);
-        else if (element.attribute("form") == "unqualified")
-            newElement.setIsQualified(false);
+    if (element.hasAttribute ("form")) {
+        if (element.attribute ("form") == "qualified")
+            newElement.setIsQualified (true);
+        else if (element.attribute ("form") == "unqualified")
+            newElement.setIsQualified (false);
         else
-            newElement.setIsQualified(false);
+            newElement.setIsQualified (false);
     }
 
-    if (element.hasAttribute("ref")) {
-        QName reference = element.attribute("ref");
-        reference.setNameSpace(
-                    context->namespaceManager()->uri(reference.prefix()));
+    if (element.hasAttribute ("ref")) {
+        QName reference = QName (element.attribute ("ref"));
+        reference.setNameSpace (context->namespaceManager ()->uri (reference.prefix ()));
 
         newElement.setReference (reference);
     }
@@ -393,42 +390,42 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
     newElement.setDefaultValue (element.attribute ("default"));
     newElement.setFixedValue (element.attribute ("fixed"));
 
-    bool nill = false;
-    if (element.hasAttribute ("nillable"))
-        nill = true;
+    //bool nill = false;
+    //if (element.hasAttribute ("nillable"))
+    //    nill = true;
 
-    QName anyType("http://www.w3.org/2001/XMLSchema", "any");
+    //QName anyType ("http://www.w3.org/2001/XMLSchema", "any");
 
     if (element.hasAttribute ("type")) {
-        QName typeName = element.attribute ("type");
+        QName typeName = QName (element.attribute ("type"));
         typeName.setNameSpace (context->namespaceManager()->uri (typeName.prefix()));
         newElement.setType (typeName);
     } else {
         QDomElement childElement = element.firstChildElement();
 
         while (!childElement.isNull()) {
-            QName childName = childElement.tagName();
+            QName childName = QName (childElement.tagName ());
             if (childName.localName() == "complexType") {
-                ComplexType ct = parseComplexType(context, childElement);
+                ComplexType ct = parseComplexType (context, childElement);
 
-                ct.setName(newElement.name() + "Anonymous");
-                d->_complexTypes.append(ct);
+                ct.setName (newElement.name () + "Anonymous");
+                d->_complexTypes.append (ct);
 
-                newElement.setType(ct.qualifiedName());
-            } else if (childName.localName() == "simpleType") {
-                SimpleType st = parseSimpleType(context, childElement);
+                newElement.setType (ct.qualifiedName ());
+            } else if (childName.localName () == "simpleType") {
+                SimpleType st = parseSimpleType (context, childElement);
 
-                st.setName(newElement.name() + "Anonymous");
-                d->_simpleTypes.append(st);
+                st.setName (newElement.name () + "Anonymous");
+                d->_simpleTypes.append (st);
 
-                newElement.setType(st.qualifiedName());
+                newElement.setType (st.qualifiedName ());
             } else if (childName.localName() == "annotation") {
-                Annotation::List annotations = parseAnnotation(context, childElement);
-                newElement.setDocumentation(annotations.documentation());
-                newElement.setAnnotations(annotations);
+                Annotation::List annotations = parseAnnotation (context, childElement);
+                newElement.setDocumentation (annotations.documentation ());
+                newElement.setAnnotations (annotations);
             }
 
-            childElement = childElement.nextSiblingElement();
+            childElement = childElement.nextSiblingElement ();
         }
     }
 
@@ -472,7 +469,7 @@ Attribute Parser::parseAttribute(ParserContext *context,
     newAttribute.setName(element.attribute("name"));
 
     if (element.hasAttribute("type")) {
-        QName typeName = element.attribute("type");
+        QName typeName = QName (element.attribute("type"));
         typeName.setNameSpace(context->namespaceManager()->uri(typeName.prefix()));
         newAttribute.setType(typeName);
     }
@@ -510,7 +507,7 @@ Attribute Parser::parseAttribute(ParserContext *context,
     QDomElement childElement = element.firstChildElement();
 
     while (!childElement.isNull()) {
-        QName childName = childElement.tagName();
+        QName childName = QName (childElement.tagName ());
         if (childName.localName() == "simpleType") {
             SimpleType st = parseSimpleType(context, childElement);
             st.setName(newAttribute.name());
@@ -538,7 +535,7 @@ SimpleType Parser::parseSimpleType(ParserContext *context,
     QDomElement childElement = element.firstChildElement();
 
     while (!childElement.isNull()) {
-        QName name = childElement.tagName();
+        QName name = QName (childElement.tagName ());
         if (name.localName() == "restriction") {
             st.setSubType(SimpleType::TypeRestriction);
 
@@ -584,11 +581,11 @@ void Parser::parseRestriction(ParserContext *, const QDomElement &element,
     QDomElement childElement = element.firstChildElement();
 
     while (!childElement.isNull()) {
-        QName tagName = childElement.tagName();
+        QName tagName = QName (childElement.tagName ());
         if (!st.isValidFacet(tagName.localName())) {
-            qDebug("<restriction>: %s is not a valid facet for the simple type",
-                   qPrintable(childElement.tagName()));
-            childElement = childElement.nextSiblingElement();
+            qDebug ("<restriction>: %s is not a valid facet for the simple type",
+                    qPrintable (childElement.tagName()));
+            childElement = childElement.nextSiblingElement ();
             continue;
         }
 
@@ -598,9 +595,10 @@ void Parser::parseRestriction(ParserContext *, const QDomElement &element,
     }
 }
 
-void Parser::parseComplexContent(ParserContext *context,
-                                 const QDomElement &element,
-                                 ComplexType &complexType) {
+void Parser::parseComplexContent (ParserContext *context,
+                                  const QDomElement &element,
+                                  ComplexType &complexType)
+{
     QName typeName;
 
     if (element.attribute("mixed") == "true") {
@@ -613,7 +611,7 @@ void Parser::parseComplexContent(ParserContext *context,
     QDomElement childElement = element.firstChildElement();
 
     while (!childElement.isNull()) {
-        QName name = childElement.tagName();
+        QName name = QName (childElement.tagName ());
 
         if (name.localName() == "restriction" || name.localName() == "extension") {
             typeName = childElement.attribute("base");
@@ -651,7 +649,7 @@ void Parser::parseComplexContent(ParserContext *context,
             } else {
                 QDomElement ctElement = childElement.firstChildElement();
                 while (!ctElement.isNull()) {
-                    QName name = ctElement.tagName();
+                    QName name = QName (ctElement.tagName ());
 
                     if (name.localName() == "all") {
                         all(context, ctElement, complexType);
@@ -682,7 +680,7 @@ void Parser::parseSimpleContent(ParserContext *context,
     QDomElement childElement = element.firstChildElement();
 
     while (!childElement.isNull()) {
-        QName name = childElement.tagName();
+        QName name = QName (childElement.tagName ());
         if (name.localName() == "restriction") {
             SimpleType st(d->_nameSpace);
 
@@ -707,7 +705,7 @@ void Parser::parseSimpleContent(ParserContext *context,
 
                 QDomElement ctElement = childElement.firstChildElement();
                 while (!ctElement.isNull()) {
-                    QName name = ctElement.tagName();
+                    QName name = QName (ctElement.tagName ());
                     if (name.localName() == "attribute")
                         complexType.addAttribute(parseAttribute(context, ctElement));
 
@@ -720,22 +718,23 @@ void Parser::parseSimpleContent(ParserContext *context,
     }
 }
 
-void Parser::addGlobalElement(const Element &newElement) {
+void Parser::addGlobalElement (const Element &newElement)
+{
     // don't add elements twice
     bool found = false;
     for (int i = 0; i < d->_elements.count(); ++i) {
-        if (d->_elements[i].qualifiedName() == newElement.qualifiedName()) {
+        if (d->_elements[i].qualifiedName () == newElement.qualifiedName ()) {
             found = true;
             break;
         }
     }
 
-    if (!found) {
-        d->_elements.append(newElement);
-    }
+    if (!found)
+        d->_elements.append (newElement);
 }
 
-void Parser::addGlobalAttribute(const Attribute &newAttribute) {
+void Parser::addGlobalAttribute (const Attribute &newAttribute)
+{
     // don't add attributes twice
     bool found = false;
     for (int i = 0; i < d->_attributes.count(); ++i) {
@@ -745,23 +744,22 @@ void Parser::addGlobalAttribute(const Attribute &newAttribute) {
         }
     }
 
-    if (!found) {
+    if (!found)
         d->_attributes.append(newAttribute);
-    }
 }
 
-AttributeGroup Parser::parseAttributeGroup(ParserContext *context,
-                                           const QDomElement &element) {
+AttributeGroup Parser::parseAttributeGroup (ParserContext *context,
+                                            const QDomElement &element) {
     Attribute::List attributes;
 
     AttributeGroup group;
 
-    if (element.hasAttribute("ref")) {
+    if (element.hasAttribute ("ref")) {
         QName reference;
-        reference = element.attribute("ref");
-        reference.setNameSpace(
+        reference = element.attribute ("ref");
+        reference.setNameSpace (
                     context->namespaceManager()->uri(reference.prefix()));
-        group.setReference(reference);
+        group.setReference (reference);
 
         return group;
     }
@@ -777,75 +775,87 @@ AttributeGroup Parser::parseAttributeGroup(ParserContext *context,
         }
     }
 
-    group.setName(element.attribute("name"));
-    group.setAttributes(attributes);
+    group.setName (element.attribute ("name"));
+    group.setAttributes (attributes);
 
     return group;
 }
 
-QString Parser::targetNamespace() const { return d->_nameSpace; }
+QString Parser::targetNamespace () const {
+    return d->_nameSpace;
+}
 
 void Parser::importSchema (ParserContext *context, const QString &location)
 {
     FileProvider provider;
     QString fileName;
-    QString schemaLocation (location);
+    QString schemaLocation;
+    QString newlocation;
 
-    QString newlocation = location;
-    QFileInfo fi (newlocation.replace("\\", "/"));
-    if (!fi.exists()) {
-        QUrl url(location);
-        QDir dir(location);
-        if ((url.scheme().isEmpty() || url.scheme() == "file") && dir.isRelative())
-            schemaLocation = context->documentBaseUrl() + '/' + location;
-    } else
-        schemaLocation = fi.absoluteFilePath ();
+    if (location.startsWith ("http://") || location.startsWith ("https://")) {
+        QUrl url (location);
+        QDir dir (location);
+        if ((url.scheme ().isEmpty () || url.scheme () == "file") && dir.isRelative())
+            schemaLocation = context->documentBaseUrl () + '/' + location;
+    } else {
+        if (d->_path.endsWith ("/"))
+            newlocation = d->_path + QString (location).replace ("\\", "/");
+        else
+            newlocation = d->_path + "/" + QString (location).replace ("\\", "/");
 
-    qDebug() << "[Parser][includeSchema] Importing schema at"
-             << qPrintable(schemaLocation);
-
-    if (provider.get (schemaLocation, fileName)) {
-        QFile file(fileName);
-        if (!file.open(QIODevice::ReadOnly)) {
-            qCritical() << "[Parser][includeSchema] Unable to open file"
-                        << qPrintable(file.fileName());
+        QFileInfo fi (newlocation);
+        if (!fi.exists ()) {
+            qCritical () << "[Parser][includeSchema] Could not find file"
+                         << fi.absoluteFilePath ();
             return;
         }
 
-        QXmlInputSource source(&file);
-        QXmlSimpleReader reader;
-        reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+        schemaLocation = fi.absoluteFilePath ();
+    }
 
-        QDomDocument doc("kwsdl");
+    qDebug () << "[Parser][includeSchema] Importing schema at"
+              << qPrintable (schemaLocation);
+
+    if (provider.get (schemaLocation, fileName)) {
+        QFile file (fileName);
+        if (!file.open (QIODevice::ReadOnly)) {
+            qCritical () << "[Parser][includeSchema] Unable to open file"
+                         << qPrintable (file.fileName());
+            return;
+        }
+
+        QXmlInputSource source (&file);
+        QXmlSimpleReader reader;
+        reader.setFeature ("http://xml.org/sax/features/namespace-prefixes", true);
+
+        QDomDocument doc ("kwsdl");
         QString errorMsg;
         int errorLine, errorColumn;
-        bool ok =
-                doc.setContent(&source, &reader, &errorMsg, &errorLine, &errorColumn);
+        bool ok = doc.setContent (&source, &reader, &errorMsg, &errorLine, &errorColumn);
         if (!ok) {
             qDebug() << "[Parser][importSchema] Could not set content"
                      << "File" << fileName << "Line" << errorLine << "Column"
-                     << errorColumn << "Error" << qPrintable(errorMsg);
+                     << errorColumn << "Error" << qPrintable (errorMsg);
             return;
         }
 
         NSManager *parentManager = context->namespaceManager();
         NSManager namespaceManager;
-        context->setNamespaceManager(&namespaceManager);
+        context->setNamespaceManager (&namespaceManager);
 
-        QDomElement node = doc.documentElement();
-        QName tagName = node.tagName();
+        QDomElement node = doc.documentElement ();
+        QName tagName = QName (node.tagName ());
         if (tagName.localName() == "schema")
-            parseSchemaTag(context, node);
+            parseSchemaTag (context, node);
         else
-            qDebug() << "[Parser][importSchema] No schema tag found in schema file"
-                     << qPrintable(schemaLocation);
+            qDebug () << "[Parser][importSchema] No schema tag found in schema file"
+                      << qPrintable (schemaLocation);
 
-        d->_namespaces = joinNamespaces(d->_namespaces, namespaceManager.uris());
-        context->setNamespaceManager(parentManager);
+        d->_namespaces = joinNamespaces (d->_namespaces, namespaceManager.uris());
+        context->setNamespaceManager (parentManager);
 
-        file.close();
-
-        provider.cleanUp();
+        file.close ();
+        provider.cleanUp ();
     }
 }
 
@@ -854,111 +864,133 @@ void Parser::includeSchema (ParserContext *context, const QString &location)
 {
     FileProvider provider;
     QString fileName;
-    QString schemaLocation (location);
+    QString schemaLocation;
+    QString newlocation;
 
-    QString newlocation = location;
-    QFileInfo fi (newlocation.replace ("\\", "/"));
-    if (!fi.exists ()) {
+    if (location.startsWith ("http://") || location.startsWith ("https://")) {
         QUrl url (location);
         QDir dir (location);
-        if ((url.scheme().isEmpty() || url.scheme() == "file") && dir.isRelative())
-            schemaLocation = context->documentBaseUrl() + '/' + location;
-    } else
-        schemaLocation = fi.absoluteFilePath ();
+        if ((url.scheme ().isEmpty () || url.scheme () == "file") && dir.isRelative())
+            schemaLocation = context->documentBaseUrl () + '/' + location;
+    } else {
+        if (d->_path.endsWith ("/"))
+            newlocation = d->_path + QString (location).replace ("\\", "/");
+        else
+            newlocation = d->_path + "/" + QString (location).replace ("\\", "/");
 
-    qDebug() << "[Parser][includeSchema] Including schema at"
-             << qPrintable(schemaLocation);
-
-    if (provider.get(schemaLocation, fileName)) {
-        QFile file(fileName);
-        if (!file.open(QIODevice::ReadOnly)) {
-            qDebug() << "[Parser][includeSchema] Unable to open file"
-                     << qPrintable(file.fileName());
+        QFileInfo fi (newlocation);
+        if (!fi.exists ()) {
+            qCritical () << "[Parser][includeSchema] Could not find file"
+                         << fi.absoluteFilePath ();
             return;
         }
 
-        QXmlInputSource source(&file);
-        QXmlSimpleReader reader;
-        reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+        schemaLocation = fi.absoluteFilePath ();
+    }
 
-        QDomDocument doc("kwsdl");
+    qDebug () << "[Parser][includeSchema] Including schema at"
+              << qPrintable (schemaLocation);
+
+    if (provider.get (schemaLocation, fileName)) {
+        QFile file (fileName);
+        if (!file.open (QIODevice::ReadOnly)) {
+            qDebug() << "[Parser][includeSchema] Unable to open file"
+                     << qPrintable (file.fileName ());
+            return;
+        }
+
+        QXmlInputSource source (&file);
+        QXmlSimpleReader reader;
+        reader.setFeature ("http://xml.org/sax/features/namespace-prefixes", true);
+
+        QDomDocument doc ("kwsdl");
         QString errorMsg;
         int errorLine, errorColumn;
-        bool ok =
-                doc.setContent(&source, &reader, &errorMsg, &errorLine, &errorColumn);
+        bool ok = doc.setContent (&source, &reader, &errorMsg, &errorLine, &errorColumn);
         if (!ok) {
             qDebug() << "[Parser][includeSchema] Could not set content"
                      << "File" << fileName << "Line" << errorLine << "Column"
-                     << errorColumn << "Error" << qPrintable(errorMsg);
+                     << errorColumn << "Error" << qPrintable (errorMsg);
             return;
         }
 
-        NSManager *parentManager = context->namespaceManager();
+        NSManager *parentManager = context->namespaceManager ();
         NSManager namespaceManager;
-        context->setNamespaceManager(&namespaceManager);
+        context->setNamespaceManager (&namespaceManager);
 
-        QDomElement node = doc.documentElement();
-        QName tagName = node.tagName();
+        QDomElement node = doc.documentElement ();
+        QName tagName = QName (node.tagName ());
         if (tagName.localName() == "schema") {
             // For include, targetNamespace must be the same as the current document.
-            if (node.hasAttribute(QLatin1String("targetNamespace"))) {
-                if (node.attribute(QLatin1String("targetNamespace")) != d->_nameSpace) {
-                    context->messageHandler()->error(
-                                QLatin1String("Included schema must be in the same namespace of "
-                                              "the resulting schema."));
+            if (node.hasAttribute (QLatin1String("targetNamespace"))) {
+                if (node.attribute (QLatin1String("targetNamespace")) != d->_nameSpace) {
+                    context->messageHandler ()->error (
+                                QLatin1String ("Included schema must be in the same namespace of "
+                                               "the resulting schema."));
                     return;
                 }
             }
-            parseSchemaTag(context, node);
-        } else {
+            parseSchemaTag (context, node);
+        } else
             qDebug() << "[Parser][includeSchema] No schema tag found in schema file"
-                     << qPrintable(schemaLocation);
-        }
+                     << qPrintable (schemaLocation);
 
-        d->_namespaces = joinNamespaces(d->_namespaces, namespaceManager.uris());
-        context->setNamespaceManager(parentManager);
+        d->_namespaces = joinNamespaces (d->_namespaces, namespaceManager.uris());
+        context->setNamespaceManager (parentManager);
 
-        file.close();
-
-        provider.cleanUp();
+        file.close ();
+        provider.cleanUp ();
     }
 }
 
-QString Parser::schemaUri() { return XMLSchemaURI; }
+QString Parser::schemaUri () {
+    return XMLSchemaURI;
+}
 
-void Parser::printDebugInfo() const {
-    qDebug() << "[Parser][printDebugInfo] Debug info";
-    qDebug() << "Complex types";
+void Parser::printDebugInfo () const
+{
+    qDebug () << "[Parser][printDebugInfo] Debug info";
+    qDebug () << "Complex types";
     for (int i = 0; i < d->_complexTypes.size(); ++i)
         qDebug() << "Name:" << d->_complexTypes[i].name();
 }
 
-void Parser::printComplexTypeInfo(const QString &name) const {
+void Parser::printComplexTypeInfo (const QString &name) const
+{
     int i = 0;
     for (; i < d->_complexTypes.size(); ++i)
         if (d->_complexTypes[i].name() == name)
             break;
 
     if (i == d->_complexTypes.size()) {
-        qWarning() << "[Parser][printComplexTypeInfo] Could noty find complex type"
+        qWarning () << "[Parser][printComplexTypeInfo] Could noty find complex type"
                    << name;
         return;
     }
 
-    qDebug() << "[Parser][printComplexTypeInfo] Complex type info";
-    qDebug() << "Name:" << d->_complexTypes[i].name();
-    qDebug() << "NameSpace:" << d->_complexTypes[i].nameSpace();
-    qDebug() << "BaseTypeName:" << d->_complexTypes[i].baseTypeName().qname();
-    qDebug() << "Elements:";
+    qDebug () << "[Parser][printComplexTypeInfo] Complex type info";
+    qDebug () << "Name:" << d->_complexTypes[i].name();
+    qDebug () << "NameSpace:" << d->_complexTypes[i].nameSpace();
+    qDebug () << "BaseTypeName:" << d->_complexTypes[i].baseTypeName().qname();
+    qDebug () << "Elements:";
 
-    for (int j = 0; j < d->_complexTypes[i].elements().size(); ++j) {
-        qDebug() << "    name:" << d->_complexTypes[i].elements()[j].name();
-    }
+    for (int j = 0; j < d->_complexTypes[i].elements().size(); ++j)
+        qDebug () << "    name:" << d->_complexTypes[i].elements()[j].name()
+                  << "type" << d->_complexTypes[i].elements()[j].type ().qname ();
 }
 
-QStringList Parser::joinNamespaces(const QStringList &list,
-                                   const QStringList &namespaces) {
-    QStringList retval(list);
+void Parser::printElementInfo (const Element &value) const
+{
+    qDebug () << "[Parser][printElementInfo] Element";
+    qDebug () << "[Parser][printElementInfo] name" << value.name ();
+    qDebug () << "[Parser][printElementInfo] type" << value.type ().localName ();
+    qDebug () << "[Parser][printElementInfo] qname" << value.type ().qname ();
+}
+
+QStringList Parser::joinNamespaces (const QStringList &list,
+                                    const QStringList &namespaces)
+{
+    QStringList retval (list);
 
     for (int i = 0; i < namespaces.count(); ++i) {
         if (!retval.contains(namespaces[i]))
@@ -968,51 +1000,56 @@ QStringList Parser::joinNamespaces(const QStringList &list,
     return retval;
 }
 
-Element Parser::findElement(const QName &name) {
+Element Parser::findElement (const QName &name)
+{
     for (int i = 0; i < d->_elements.count(); ++i) {
         if (d->_elements[i].nameSpace() == name.nameSpace() &&
                 d->_elements[i].name() == name.localName())
             return d->_elements[i];
     }
 
-    return Element();
+    return Element ();
 }
 
-Attribute Parser::findAttribute(const QName &name) {
+Attribute Parser::findAttribute (const QName &name)
+{
     for (int i = 0; i < d->_attributes.count(); ++i) {
         if (d->_attributes[i].nameSpace() == name.nameSpace() &&
                 d->_attributes[i].name() == name.localName())
             return d->_attributes[i];
     }
 
-    return Attribute();
+    return Attribute ();
 }
 
-AttributeGroup Parser::findAttributeGroup(const QName &name) {
+AttributeGroup Parser::findAttributeGroup (const QName &name)
+{
     foreach (AttributeGroup g, d->_attributeGroups) {
         if (g.nameSpace() == name.nameSpace() && g.name() == name.localName()) {
             return g;
         }
     }
 
-    return AttributeGroup();
+    return AttributeGroup ();
 }
 
-void Parser::resolveForwardDeclarations() {
-    for (int i = 0; i < d->_complexTypes.count(); ++i) {
+void Parser::resolveForwardDeclarations ()
+{
+    for (int i = 0; i < d->_complexTypes.count(); ++i)
+    {
         Element::List elements = d->_complexTypes[i].elements();
         for (int j = 0; j < elements.count(); ++j) {
             Element element = elements[j];
-            if (!element.isResolved()) {
-                Element refElement = findElement(element.reference());
+            if (!element.isResolved ()) {
+                Element refElement = findElement (element.reference ());
                 Element resolvedElement = refElement;
-                resolvedElement.setMinOccurs(element.minOccurs());
-                resolvedElement.setMaxOccurs(element.maxOccurs());
-                resolvedElement.setCompositor(element.compositor());
+                resolvedElement.setMinOccurs (element.minOccurs());
+                resolvedElement.setMaxOccurs (element.maxOccurs());
+                resolvedElement.setCompositor (element.compositor());
                 elements[j] = resolvedElement;
             }
         }
-        d->_complexTypes[i].setElements(elements);
+        d->_complexTypes[i].setElements (elements);
 
         Attribute::List attributes = d->_complexTypes[i].attributes();
 
@@ -1034,24 +1071,27 @@ void Parser::resolveForwardDeclarations() {
             }
         }
 
-        d->_complexTypes[i].setAttributes(attributes);
+        d->_complexTypes[i].setAttributes (attributes);
     }
 }
 
-Types Parser::types() const {
+Types Parser::types () const
+{
     Types types;
 
-    types.setSimpleTypes(d->_simpleTypes);
-    types.setComplexTypes(d->_complexTypes);
-    types.setElements(d->_elements);
-    types.setAttributes(d->_attributes);
-    types.setAttributeGroups(d->_attributeGroups);
-    types.setNamespaces(d->_namespaces);
+    types.setSimpleTypes (d->_simpleTypes);
+    types.setComplexTypes (d->_complexTypes);
+    types.setElements (d->_elements);
+    types.setAttributes (d->_attributes);
+    types.setAttributeGroups (d->_attributeGroups);
+    types.setNamespaces (d->_namespaces);
 
     return types;
 }
 
-Annotation::List Parser::annotations() const { return d->_annotations; }
+Annotation::List Parser::annotations () const {
+    return d->_annotations;
+}
 }
 
 // kate: space-indent on; indent-width 2; encoding utf-8; replace-tabs on;

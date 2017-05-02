@@ -34,8 +34,8 @@ public:
     typedef QList<QName> List;
 
     QName ();
-    QName (const QString &name);
-    QName (const QString &nameSpace, const QString &localName);
+    explicit QName (const QString &name);
+    explicit QName (const QString &nameSpace, const QString &localName);
 
     void operator = (const QString &name);
 

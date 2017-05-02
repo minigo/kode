@@ -298,7 +298,7 @@ ClassDescription Creator::createClassDescription(
 
 void Creator::createClass (const Schema::Element &element)
 {
-    qDebug () << element.name ();
+    //qDebug () << element.name ();
     QString className = Namer::getClassName (element);
 
     if (_verbose) {

@@ -27,147 +27,147 @@ namespace XSD {
 class ComplexType::Private
 {
 public:
-    Private()
-      : mAnonymous(false), mIsArray(false)
+    Private ()
+        : _anonymous (false)
+        , _isArray (false)
     {}
 
-    QString mDocumentation;
+    QString _documentation;
 
-    Element::List mElements;
+    Element::List _elements;
     Attribute::List mAttributes;
     AttributeGroup::List mAttributeGroups;
 
-    bool mAnonymous;
-    bool mIsArray;
+    bool _anonymous;
+    bool _isArray;
 
-    Derivation mBaseDerivation;
-    QName mBaseTypeName;
+    Derivation _baseDerivation;
+    QName _baseTypeName;
 };
 
-ComplexType::ComplexType( const QString &nameSpace )
-  : XSDType( nameSpace ), d(new Private)
+ComplexType::ComplexType (const QString &nameSpace)
+    : XSDType (nameSpace)
+    , d (new Private)
 {
 }
 
 ComplexType::ComplexType()
-  : XSDType(), d(new Private)
+    : XSDType(), d(new Private)
 {
 }
 
 ComplexType::ComplexType( const ComplexType &other )
-  : XSDType( other ), d(new Private)
+    : XSDType( other ), d(new Private)
 {
-  *d = *other.d;
+    *d = *other.d;
 }
 
 ComplexType::~ComplexType()
 {
-  delete d;
+    delete d;
 }
 
 ComplexType &ComplexType::operator=( const ComplexType &other )
 {
-  if ( this == &other )
+    if ( this == &other )
+        return *this;
+
+    *d = *other.d;
+
     return *this;
-
-  *d = *other.d;
-
-  return *this;
 }
 
 void ComplexType::setDocumentation( const QString &documentation )
 {
-  d->mDocumentation = documentation;
+    d->_documentation = documentation;
 }
 
 QString ComplexType::documentation() const
 {
-  return d->mDocumentation;
+    return d->_documentation;
 }
 
 void ComplexType::setBaseTypeName( const QName &baseTypeName )
 {
-  d->mBaseTypeName = baseTypeName;
+    d->_baseTypeName = baseTypeName;
 }
 
 QName ComplexType::baseTypeName() const
 {
-  return d->mBaseTypeName;
+    return d->_baseTypeName;
 }
 
 void ComplexType::setBaseDerivation( Derivation derivation )
 {
-  d->mBaseDerivation = derivation;
+    d->_baseDerivation = derivation;
 }
 
 ComplexType::Derivation ComplexType::baseDerivation() const
 {
-  return d->mBaseDerivation;
+    return d->_baseDerivation;
 }
 
 bool ComplexType::isSimple() const
 {
-  return false;
+    return false;
 }
 
 void ComplexType::setIsArray( bool isArray )
 {
-  d->mIsArray = isArray;
+    d->_isArray = isArray;
 }
 
 bool ComplexType::isArray() const
 {
-  return d->mIsArray;
+    return d->_isArray;
 }
 
 void ComplexType::setAnonymous( bool anonymous )
 {
-  d->mAnonymous = anonymous;
+    d->_anonymous = anonymous;
 }
 
 bool ComplexType::isAnonymous() const
 {
-  return d->mAnonymous;
+    return d->_anonymous;
 }
 
-void ComplexType::setElements( const Element::List &elements )
-{
-  d->mElements = elements;
+void ComplexType::setElements (const Element::List &elements) {
+    d->_elements = elements;
 }
 
-Element::List ComplexType::elements() const
-{
-  return d->mElements;
+Element::List ComplexType::elements () const {
+    return d->_elements;
 }
 
 void ComplexType::setAttributes( const Attribute::List &attributes )
 {
-  d->mAttributes = attributes;
+    d->mAttributes = attributes;
 }
 
 Attribute::List ComplexType::attributes() const
 {
-  return d->mAttributes;
+    return d->mAttributes;
 }
 
 void ComplexType::setAttributeGroups( const AttributeGroup::List &attributeGroups )
 {
-  d->mAttributeGroups = attributeGroups;
+    d->mAttributeGroups = attributeGroups;
 }
 
 AttributeGroup::List ComplexType::attributeGroups() const
 {
-  return d->mAttributeGroups;
+    return d->mAttributeGroups;
 }
 
 void ComplexType::addAttribute( const Attribute &attribute )
 {
-  d->mAttributes.append( attribute );
+    d->mAttributes.append( attribute );
 }
 
 void ComplexType::addElement( const Element &element )
 {
-  d->mElements.append( element );
+    d->_elements.append( element );
 }
 
 }

@@ -126,7 +126,7 @@ int main( int argc, char **argv )
             qCritical () <<"Error parsing schema" << schemaFilename;;
             return 1;
         }
-    } else if ( args->isSet( "rng" ) || fi.suffix() == "rng" ) {
+    } else if (args->isSet( "rng" ) || fi.suffix() == "rng") {
         QString errorMsg;
         int errorLine, errorCol;
         QDomDocument doc;
@@ -157,7 +157,7 @@ int main( int argc, char **argv )
         }
 #endif
 
-        schemaDocument = p.convertToSchema( start );
+        schemaDocument = p.convertToSchema (start);
     } else if ( args->isSet( "xml" ) || fi.suffix() == "xml" ) {
         ParserXml schemaParser;
         schemaParser.setVerbose( verbose );
@@ -180,16 +180,14 @@ int main( int argc, char **argv )
     else
         pt = Creator::XmlParserDom;
 
-    Creator c( schemaDocument, pt );
-    c.setVerbose( verbose );
-    c.setUseKde( args->isSet( "use-kde" ) );
-    c.setCreateCrudFunctions( args->isSet( "create-crud-functions" ) );
-    if ( args->isSet( "namespace" ) ) {
-        c.file().setNameSpace( args->getOption( "namespace" ) );
-    }
-    if ( args->isSet( "export" ) ) {
-        c.setExportDeclaration( args->getOption( "export" ) );
-    }
+    Creator c (schemaDocument, pt);
+    c.setVerbose (verbose);
+    c.setUseKde (args->isSet ("use-kde"));
+    c.setCreateCrudFunctions (args->isSet ("create-crud-functions"));
+    if (args->isSet ("namespace"))
+        c.file ().setNameSpace (args->getOption ("namespace"));
+    if ( args->isSet( "export" ))
+        c.setExportDeclaration (args->getOption ("export"));
 
     if ( args->isSet( "license" ) ) {
         QString l = args->getOption( "license" );

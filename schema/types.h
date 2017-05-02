@@ -44,8 +44,8 @@ public:
     void setComplexTypes( const ComplexType::List &complexTypes );
     ComplexType::List complexTypes() const;
 
-    void setElements( const Element::List &elements );
-    Element::List elements() const;
+    void setElements (const Element::List &elements);
+    Element::List elements () const;
 
     void setAttributes( const Attribute::List &attributes );
     Attribute::List attributes() const;

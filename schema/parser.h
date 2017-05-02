@@ -43,17 +43,17 @@ class SCHEMA_EXPORT Parser
 public:
     enum { UNBOUNDED = 100000 };
 
-    Parser( const QString &nameSpace = QString() );
-    Parser( const Parser &other );
-    ~Parser();
+    Parser (const QString &nameSpace = QString::null);
+    Parser (const Parser &other);
+    ~Parser ();
 
-    Parser &operator=( const Parser &other );
+    Parser &operator = (const Parser &other);
 
-    Types types() const;
+    Types types () const;
 
-    Annotation::List annotations() const;
+    Annotation::List annotations () const;
 
-    void clear();
+    void clear ();
 
     /**
       Parse schema from file. The file has to be open. Returns true on success,
@@ -75,6 +75,7 @@ public:
 
     void printDebugInfo () const;
     void printComplexTypeInfo (const QString &name) const;
+    void printElementInfo (const Element &value) const;
 
 protected:
     bool parse (ParserContext *context, QXmlInputSource *source);
@@ -89,16 +90,16 @@ private:
      * @param element DOM element to parse.
      */
     void parseInclude( ParserContext *context, const QDomElement& element);
-    void addGlobalElement( const Element & );
+    void addGlobalElement (const Element &);
     void addGlobalAttribute( const Attribute & );
     AttributeGroup parseAttributeGroup( ParserContext *context, const QDomElement& );
 
     Annotation::List parseAnnotation( ParserContext *context, const QDomElement& );
-    ComplexType parseComplexType( ParserContext *context, const QDomElement& );
+    ComplexType parseComplexType (ParserContext *context, const QDomElement&);
 
     void all( ParserContext *context, const QDomElement&, ComplexType& );
-    void parseCompositor( ParserContext *context,
-                          const QDomElement&, ComplexType& );
+    void parseCompositor (ParserContext *context,
+                          const QDomElement&, ComplexType&);
 
     void setOccurrenceAttributes( Element &newElement,
                                   const QDomElement &element );

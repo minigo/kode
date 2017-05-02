@@ -82,8 +82,8 @@ public:
     QList<QDomElement> annotations() const;
     
 private:
-    QString mDocumentation;
-    QList<QDomElement> mAnnotations;
+    QString _documentation;
+    QList<QDomElement> _annotations;
 };
 
 class KSCHEMA_EXPORT Node : public Annotatable
@@ -94,27 +94,27 @@ public:
     Node();
     virtual ~Node();
 
-    void setType( Type );
-    Type type() const;
+    void setType (Type);
+    Type type () const;
     
-    void setIdentifier( const QString & );
-    QString identifier() const;
+    void setIdentifier (const QString &);
+    QString identifier () const;
     
-    void setName( const QString & );
-    QString name() const;
+    void setName (const QString &);
+    QString name () const;
 
-    void setBaseType( Type );
-    Type baseType() const;
+    void setBaseType (Type);
+    Type baseType () const;
 
-    virtual QString ref() const = 0;
+    virtual QString ref () const = 0;
 
-    bool isValid() const;
+    bool isValid () const;
 
-    void setEnumerationValues( const QStringList & );
-    QStringList enumerationValues() const;
+    void setEnumerationValues (const QStringList &);
+    QStringList enumerationValues () const;
 
 private:
-    Type mType;
+    Type _type;
     QString _identifier;
     QString _name;
     Type _baseType;
@@ -137,8 +137,8 @@ public:
 
     QString ref() const;
 private:
-    bool mRequired;
-    QString mDefVal;
+    bool _required;
+    QString _defVal;
 };
 
 class KSCHEMA_EXPORT Element : public Node
@@ -189,27 +189,26 @@ public:
     void setStartElement( const Element & );
     Element startElement() const;
 
-    void addElement( const Element & );
+    void addElement (const Element &);
     Element::List elements() const;
-    bool hasElement( const Element & );
-    Element element( const QString &identifier ) const;
-    Element element( const Relation & ) const;
+    bool hasElement (const Element &);
+    Element element (const QString &identifier) const;
+    Element element (const Relation &) const;
 
-    void addAttribute( const Attribute & );
-    Attribute::List attributes() const;
-    bool hasAttribute( const Attribute & );
-    Attribute attribute( const QString &identifier ) const;
-    Attribute attribute( const Relation & ) const;
+    void addAttribute (const Attribute &);
+    Attribute::List attributes () const;
+    bool hasAttribute (const Attribute &);
+    Attribute attribute (const QString &identifier) const;
+    Attribute attribute (const Relation &) const;
 
-    Element::List usedElements() const;
+    Element::List usedElements () const;
 
-    void dump() const;
-
-    bool isEmpty() const;
+    void dump () const;
+    bool isEmpty () const;
 
 protected:
-    void findUsedElements( const Element &e ) const;
-    bool addUsedElement( const Element &element ) const;
+    void findUsedElements (const Element &e) const;
+    bool addUsedElement (const Element &element) const;
 
 private:
     Element _startElement;

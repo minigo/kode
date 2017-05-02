@@ -32,19 +32,19 @@ class Job;
 class KJob;
 class KXMLCOMMON_EXPORT FileProvider : QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     FileProvider();
 
     bool get( const QString &url, QString &target );
     void cleanUp();
 
-  private slots:
+private slots:
     void slotData( KIO::Job*, const QByteArray& );
     void slotResult( KJob* );
 
-  private:
+private:
     QString mFileName;
     QByteArray mData;
     bool mBlocked;

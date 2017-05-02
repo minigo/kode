@@ -48,15 +48,15 @@ Schema::Document ParserXsd::parse (const QString &data)
     NSManager namespaceManager;
     MessageHandler messageHandler;
     ParserContext context;
-    context.setNamespaceManager( &namespaceManager );
-    context.setMessageHandler( &messageHandler );
+    context.setNamespaceManager (&namespaceManager);
+    context.setMessageHandler (&messageHandler);
 
     XSD::Parser parser;
-    if ( !parser.parseString( &context, data ) ) {
-        qDebug() << "Error parsing data.";
-        return Schema::Document();
+    if (!parser.parseString (&context, data)) {
+        qDebug() << "[ParserXsd][parse] Error parsing data.";
+        return Schema::Document ();
     } else {
-        return parse( parser );
+        return parse (parser);
     }
 }
 
@@ -97,15 +97,15 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
                 qDebug() << "  Mixed";
             e.setText (true);
         }
-        else if (complexType.contentModel () == XSD::XSDType::SIMPLE &&
-                  !complexType.baseTypeName ().isEmpty())
+        else if (complexType.contentModel() == XSD::XSDType::SIMPLE &&
+                  !complexType.baseTypeName().isEmpty())
         {
             if (complexType.baseTypeName().qname() == "xs:string")
-                e.setBaseType( Schema::Node::String );
+                e.setBaseType (Schema::Node::String);
             else if (complexType.baseTypeName().qname() == "xs:normalizedString")
-                e.setBaseType( Schema::Node::NormalizedString );
+                e.setBaseType (Schema::Node::NormalizedString);
             else if (complexType.baseTypeName().qname() == "xs:token")
-                e.setBaseType( Schema::Node::Token );
+                e.setBaseType (Schema::Node::Token);
         }
 
         if (element.type().qname() == "xs:string")
@@ -122,8 +122,8 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
         foreach (XSD::Element subElement, complexType.elements ())
         {
             if (_verbose) {
-                qDebug() << "  Element:" << subElement.name();
-                qDebug() << "  " << subElement.minOccurs () << ","
+                qDebug () << "      Element:" << subElement.name ();
+                qDebug () << "      " << subElement.minOccurs () << ","
                          << subElement.maxOccurs ();
             }
 
@@ -134,7 +134,7 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
             else
                 eRelation.setMaxOccurs (subElement.maxOccurs ());
 
-            XSD::Compositor compositor = subElement.compositor();
+            XSD::Compositor compositor = subElement.compositor ();
             if (_verbose)
                 qDebug () << "  Compositor" << compositor.type ();
 
@@ -144,7 +144,7 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
                     if (!choice.isEmpty ())
                         choice += '+';
 
-                    choice += qname.qname();
+                    choice += qname.qname ();
                 }
                 eRelation.setChoice (choice);
             }
@@ -181,23 +181,23 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
             a.setRequired (attribute.isUsed ());
             a.setDefaultValue (attribute.defaultValue ());
 
-            mDocument.addAttribute (a);
+            _document.addAttribute (a);
         }
 
         setAnnotations (e, element.annotations ());
 
-        mDocument.addElement (e);
+        _document.addElement (e);
 
-        if (mDocument.startElement().isEmpty())
-            mDocument.setStartElement (e);
+        if (_document.startElement().isEmpty())
+            _document.setStartElement (e);
     }
 
-    setAnnotations (mDocument, parser.annotations());
+    setAnnotations (_document, parser.annotations());
 
     if ( _verbose )
         qDebug() << "[ParserXsd][parse] Done";
 
-    return mDocument;
+    return _document;
 }
 
 void ParserXsd::setAnnotations (Schema::Annotatable &annotatable, XSD::Annotation::List annotations)
@@ -205,9 +205,10 @@ void ParserXsd::setAnnotations (Schema::Annotatable &annotatable, XSD::Annotatio
     QString documentation;
     QList<QDomElement> domElements;
     foreach (XSD::Annotation a, annotations) {
-        if (a.isDocumentation() ) documentation.append( a.documentation());
-        if (a.isAppinfo() )
-            domElements.append( a.domElement() );
+        if (a.isDocumentation ())
+            documentation.append (a.documentation ());
+        if (a.isAppinfo ())
+            domElements.append (a.domElement ());
     }
     annotatable.setDocumentation( documentation );
     annotatable.setAnnotations( domElements );
@@ -215,18 +216,14 @@ void ParserXsd::setAnnotations (Schema::Annotatable &annotatable, XSD::Annotatio
 
 void ParserXsd::setType (Schema::Node &node, const XSD::SimpleType &simpleType)
 {
-    if (simpleType.subType() == XSD::SimpleType::TypeRestriction) {
-        if ( simpleType.facetType() == XSD::SimpleType::NONE ) {
+    if (simpleType.subType () == XSD::SimpleType::TypeRestriction) {
+        if ( simpleType.facetType () == XSD::SimpleType::NONE) {
             // Nothing to do.
-        } else if ( simpleType.facetType() == XSD::SimpleType::ENUM ) {
-            node.setType( Schema::Node::Enumeration );
-            node.setEnumerationValues( simpleType.facetEnums() );
-        } else {
-            qDebug() << "SimpleType::facetType(): " << simpleType.facetType()
-                     << " not supported.";
-        }
-    } else {
-        qDebug() << "SimpleType::subType: " << simpleType.subType()
-                 << " not supported.";
-    }
+        } else if (simpleType.facetType () == XSD::SimpleType::ENUM) {
+            node.setType (Schema::Node::Enumeration);
+            node.setEnumerationValues (simpleType.facetEnums ());
+        } else
+            qDebug () << "[SimpleType][facetType]" << simpleType.facetType () << "not supported.";
+    } else
+        qDebug () << "[SimpleType][subType]" << simpleType.subType () << "not supported.";
 }

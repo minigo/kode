@@ -34,52 +34,52 @@ namespace XSD {
 
 class SCHEMA_EXPORT Element : public XmlElement
 {
-  public:
+public:
     typedef QList<Element> List;
 
-    Element();
-    Element( const QString &nameSpace );
-    Element( const Element &other );
-    ~Element();
+    Element ();
+    Element (const QString &nameSpace);
+    Element (const Element &other);
+    ~Element ();
 
-    Element &operator=( const Element &other );
+    Element &operator = (const Element &other);
 
-    void setType( const QName &type );
-    QName type() const;
+    void setType (const QName &type);
+    QName type () const;
 
-    void setDocumentation( const QString &documentation );
-    QString documentation() const;
+    void setDocumentation (const QString &documentation);
+    QString documentation () const;
 
-    void setGroupId( int group );
-    int groupId() const;
+    void setGroupId (int group);
+    int groupId () const;
 
-    void setMinOccurs( int minOccurs );
-    int minOccurs() const;
+    void setMinOccurs (int minOccurs);
+    int minOccurs () const;
 
-    void setMaxOccurs( int maxOccurs );
-    int maxOccurs() const;
+    void setMaxOccurs (int maxOccurs);
+    int maxOccurs () const;
 
-    void setDefaultValue( const QString &defaultValue );
-    QString defaultValue() const;
+    void setDefaultValue (const QString &defaultValue);
+    QString defaultValue () const;
 
-    void setFixedValue( const QString &fixedValue );
-    QString fixedValue() const;
+    void setFixedValue (const QString &fixedValue);
+    QString fixedValue () const;
 
-    void setIsQualified( bool isQualified );
-    bool isQualified() const;
+    void setIsQualified (bool isQualified);
+    bool isQualified () const;
 
-    void setOccurrence( int occurrence );
-    int occurrence() const;
+    void setOccurrence (int occurrence);
+    int occurrence () const;
 
-    void setReference( const QName &reference );
-    QName reference() const;
+    void setReference (const QName &reference);
+    QName reference () const;
 
-    bool isResolved() const;
+    bool isResolved () const;
 
-    void setCompositor( const Compositor & );
-    Compositor compositor() const;
+    void setCompositor (const Compositor &);
+    Compositor compositor () const;
 
-  private:
+private:
     class Private;
     Private *d;
 };
