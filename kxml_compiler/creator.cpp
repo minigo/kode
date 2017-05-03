@@ -66,8 +66,8 @@ bool Creator::ClassFlags::hasId() const
 
 
 Creator::Creator( const Schema::Document &document, XmlParserType p )
-    : mDocument( document ), mXmlParserType( p ),
-      _verbose( false ), mUseKde( false )
+    : _document( document ), _xmlParserType( p ),
+      _verbose( false ), _useKde( false )
 {
     setExternalClassNames();
 }
@@ -81,11 +81,11 @@ void Creator::setVerbose( bool verbose )
 
 void Creator::setUseKde( bool useKde )
 {
-    mUseKde = useKde;
+    _useKde = useKde;
 }
 
 bool Creator::useKde () const {
-    return mUseKde;
+    return _useKde;
 }
 
 void Creator::setCreateCrudFunctions (bool enabled) {
@@ -93,7 +93,7 @@ void Creator::setCreateCrudFunctions (bool enabled) {
 }
 
 void Creator::setLicense (const KODE::License &l) {
-    mFile.setLicense (l);
+    _file.setLicense (l);
 }
 
 void Creator::setExportDeclaration (const QString &name) {
@@ -102,19 +102,19 @@ void Creator::setExportDeclaration (const QString &name) {
 
 void Creator::setExternalClassPrefix (const QString &prefix)
 {
-    mExternalClassPrefix = prefix;
+    _externalClassPrefix = prefix;
     setExternalClassNames();
 }
 
 void Creator::setExternalClassNames()
 {
-    mParserClass.setName( mExternalClassPrefix + "Parser" );
-    mWriterClass.setName( mExternalClassPrefix + "Writer" );
+    _parserClass.setName( _externalClassPrefix + "Parser" );
+    _writerClass.setName( _externalClassPrefix + "Writer" );
 }
 
 KODE::File &Creator::file()
 {
-    return mFile;
+    return _file;
 }
 
 void Creator::createProperty( KODE::Class &c,
@@ -234,7 +234,7 @@ ClassDescription Creator::createClassDescription(
     ClassDescription description( Namer::getClassName( element ) );
 
     foreach( Schema::Relation r, element.attributeRelations() ) {
-        Schema::Attribute a = mDocument.attribute( r );
+        Schema::Attribute a = _document.attribute( r );
         if ( a.enumerationValues().count() ) {
             if (!description.hasEnum(a.name())) {
                 description.addEnum(KODE::Enum(Namer::getClassName( a.name() ) + "Enum", a.enumerationValues()));
@@ -252,14 +252,14 @@ ClassDescription Creator::createClassDescription(
     }
 
     foreach( Schema::Relation r, element.elementRelations() ) {
-        Schema::Element targetElement = mDocument.element( r );
+        Schema::Element targetElement = _document.element( r );
 
         QString targetClassName = Namer::getClassName( targetElement );
 
         if ( targetElement.text() && !targetElement.hasAttributeRelations() &&
              !r.isList() ) {
             if ( _verbose ) {
-               qDebug() << "  FLATTEN";
+                qDebug() << "  FLATTEN";
             }
             if ( targetElement.type() == Schema::Element::Integer ) {
                 description.addProperty( "int", targetClassName );
@@ -271,7 +271,7 @@ ClassDescription Creator::createClassDescription(
                 description.addProperty( "QString", targetClassName );
             }
         } else {
-            if ( !mFile.hasClass( targetClassName ) ) {
+            if ( !_file.hasClass( targetClassName ) ) {
                 createClass( targetElement );
             }
 
@@ -298,26 +298,44 @@ ClassDescription Creator::createClassDescription(
 
 void Creator::createClass (const Schema::Element &element)
 {
-    //qDebug () << element.name ();
+    if (element.isEmpty ()) {
+        qCritical () << "[Creator][createClass] Could not create class for the empty element"
+                     << element.name ()
+                     << element.identifier ();
+        return;
+    }
+
+    if (!element.isValid ()) {
+        qCritical () << "[Creator][createClass] Could not create class for the invalid element"
+                     << element.name ()
+                     << element.identifier ();
+        return;
+    }
+
     QString className = Namer::getClassName (element);
+    if (className.isEmpty ()) {
+        qCritical () << "[Creator][createClass] Could not create class"
+                     << element.name ()
+                     << element.identifier ();
+        return;
+    }
 
     if (_verbose) {
-        qDebug () <<"[Creator][createClass]" << element.identifier() << className;
+        qDebug () << "[Creator][createClass]" << element.identifier() << className;
         foreach (Schema::Relation r, element.elementRelations ())
-            qDebug() << "  SUBELEMENTS" << r.target();
+            qDebug() << "   SUBELEMENTS" << r.target();
     }
 
     if (_processedClasses.contains (className)) {
         if (_verbose)
-            qDebug() << "  ALREADY DONE";
+            qDebug() << "   ALREADY DONE";
         return;
     }
 
-    _processedClasses.append( className );
+    _processedClasses.append (className);
 
-    ClassDescription description = createClassDescription( element );
-
-    KODE::Class c( className );
+    ClassDescription description = createClassDescription (element);
+    KODE::Class c (className);
 
     if (!_exportDeclaration.isEmpty ())
         c.setExportDeclaration (_exportDeclaration);
@@ -325,22 +343,20 @@ void Creator::createClass (const Schema::Element &element)
     bool hasCreatedAt = description.hasProperty ("CreatedAt");
     bool hasUpdatedAt = description.hasProperty ("UpdatedAt");
 
-    if ( _createCrudFunctions ) {
-        if ( hasCreatedAt || hasUpdatedAt ) {
-            KODE::Function constructor( className, "" );
+    if (_createCrudFunctions) {
+        if (hasCreatedAt || hasUpdatedAt) {
+            KODE::Function constructor (className, "");
             KODE::Code code;
-            code += "QDateTime now = QDateTime::currentDateTime();";
-            if ( hasCreatedAt ) {
-                code += "setCreatedAt( now );";
-            }
-            if ( hasUpdatedAt ) {
-                code += "setUpdatedAt( now );";
-            }
-            constructor.setBody( code );
-            c.addFunction( constructor );
+            code += "QDateTime now = QDateTime::currentDateTime ();";
+            if (hasCreatedAt)
+                code += "setCreatedAt (now);";
+            if (hasUpdatedAt)
+                code += "setUpdatedAt (now);";
+            constructor.setBody (code);
+            c.addFunction (constructor);
         }
 
-        if ( description.hasProperty( "Id" ) ) {
+        if (description.hasProperty ("Id")) {
             KODE::Function isValid( "isValid", "bool" );
             isValid.setConst( true );
             KODE::Code code;
@@ -361,7 +377,7 @@ void Creator::createClass (const Schema::Element &element)
             adder.addArgument( "const " + p.type() + " &v" );
 
             KODE::Code code;
-            code += 'm' + KODE::Style::upperFirst( listName ) + ".append( v );";
+            code += 'm' + KODE::Style::upperFirst (listName) + ".append (v);";
 
             adder.setBody( code );
 
@@ -377,23 +393,22 @@ void Creator::createClass (const Schema::Element &element)
         }
     }
 
-    foreach(KODE::Enum e, description.enums() ) {
-        c.addEnum(e);
-    }
+    foreach (KODE::Enum e, description.enums ())
+        c.addEnum (e);
 
-    createElementParser( c, element );
+    createElementParser (c, element);
 
-    WriterCreator writerCreator( mFile, mDocument, mDtd );
-    writerCreator.createElementWriter( c, element );
+    WriterCreator writerCreator (_file, _document, _dtd);
+    writerCreator.createElementWriter (c, element);
 
-    mFile.insertClass( c );
+    _file.insertClass (c);
 }
 
-void Creator::createElementParser( KODE::Class &c, const Schema::Element &e )
+void Creator::createElementParser (KODE::Class &c, const Schema::Element &e)
 {
     ParserCreator *parserCreator = 0;
 
-    switch ( mXmlParserType ) {
+    switch ( _xmlParserType ) {
     case XmlParserDom:
     case XmlParserDomExternal:
         parserCreator = new ParserCreatorDom( this );
@@ -411,27 +426,27 @@ void Creator::createElementParser( KODE::Class &c, const Schema::Element &e )
 
 void Creator::registerListTypedef( const QString &type )
 {
-    if ( !mListTypedefs.contains( type ) ) mListTypedefs.append( type );
+    if ( !_listTypedefs.contains( type ) ) _listTypedefs.append( type );
 }
 
 void Creator::createListTypedefs()
 {
     QStringList::ConstIterator it;
-    for( it = mListTypedefs.constBegin(); it != mListTypedefs.constEnd(); ++it ) {
-        KODE::Class c = mFile.findClass( *it );
+    for( it = _listTypedefs.constBegin(); it != _listTypedefs.constEnd(); ++it ) {
+        KODE::Class c = _file.findClass( *it );
         if ( !c.isValid() ) continue;
         c.addTypedef( KODE::Typedef( "QList<" + *it + '>', "List" ) );
-        mFile.insertClass( c );
+        _file.insertClass( c );
     }
 }
 
 void Creator::setDtd (const QString &dtd) {
-    mDtd = dtd;
+    _dtd = dtd;
 }
 
 void Creator::createFileWriter (const Schema::Element &element)
 {
-    WriterCreator writerCreator( mFile, mDocument, mDtd );
+    WriterCreator writerCreator( _file, _document, _dtd );
     writerCreator.createFileWriter( Namer::getClassName( element ),
                                     errorStream() );
 }
@@ -440,7 +455,7 @@ void Creator::createFileParser( const Schema::Element &element )
 {
     ParserCreator *parserCreator = 0;
 
-    switch ( mXmlParserType ) {
+    switch ( _xmlParserType ) {
     case XmlParserDom:
     case XmlParserDomExternal:
         parserCreator = new ParserCreatorDom( this );
@@ -457,12 +472,12 @@ void Creator::printFiles (KODE::Printer &printer)
 {
     if (externalParser ()) {
         KODE::File parserFile( file() );
-        parserFile.setFilename( mBaseName + "_parser" );
+        parserFile.setFilename( _baseName + "_parser" );
 
         parserFile.clearCode();
 
-        mParserClass.addHeaderInclude( file().filenameHeader() );
-        parserFile.insertClass( mParserClass );
+        _parserClass.addHeaderInclude( file().filenameHeader() );
+        parserFile.insertClass( _parserClass );
 
         if ( _verbose ) {
             qDebug() <<"Print external parser header" << parserFile.filenameHeader();
@@ -488,7 +503,7 @@ void Creator::printFiles (KODE::Printer &printer)
 }
 
 bool Creator::externalParser () const {
-    return mXmlParserType == XmlParserDomExternal;
+    return _xmlParserType == XmlParserDomExternal;
 }
 
 bool Creator::externalWriter () const {
@@ -496,40 +511,40 @@ bool Creator::externalWriter () const {
 }
 
 const Schema::Document &Creator::document () const {
-    return mDocument;
+    return _document;
 }
 
 void Creator::setParserClass (const KODE::Class &c) {
-    mParserClass = c;
+    _parserClass = c;
 }
 
 KODE::Class &Creator::parserClass () {
-    return mParserClass;
+    return _parserClass;
 }
 
 QString Creator::errorStream() const
 {
     return "qCritical()";
-//    if ( useKde() ) {
-//        return "kError()";
-//    } else {
-//        return "qCritical()";
-//    }
+    //    if ( useKde() ) {
+    //        return "kError()";
+    //    } else {
+    //        return "qCritical()";
+    //    }
 }
 
 QString Creator::debugStream () const
 {
     return "qDebug()";
-//    if ( useKde() ) {
-//        return "kDebug()";
-//    } else {
-//        return "qDebug()";
-//    }
+    //    if ( useKde() ) {
+    //        return "kDebug()";
+    //    } else {
+    //        return "qDebug()";
+    //    }
 }
 
 void Creator::create ()
 {
-    Schema::Element startElement = mDocument.startElement();
+    Schema::Element startElement = _document.startElement();
     setExternalClassPrefix (KODE::Style::upperFirst (startElement.name()));
     createFileParser (startElement);
     //  setDtd( schemaFilename.replace( "rng", "dtd" ) );
@@ -540,8 +555,8 @@ void Creator::create ()
 
 void Creator::setFilename( const QString& baseName )
 {
-    mFile.setFilename( baseName );
-    mBaseName = baseName;
+    _file.setFilename( baseName );
+    _baseName = baseName;
 }
 
 QString Creator::typeName( Schema::Node::Type type )
@@ -561,7 +576,7 @@ QString Creator::typeName( Schema::Node::Type type )
 
 
 ParserCreator::ParserCreator( Creator *c )
-    : mCreator( c )
+    : _creator( c )
 {
 }
 
@@ -571,5 +586,5 @@ ParserCreator::~ParserCreator()
 
 Creator *ParserCreator::creator() const
 {
-    return mCreator;
+    return _creator;
 }

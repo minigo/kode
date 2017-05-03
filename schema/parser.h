@@ -97,7 +97,7 @@ private:
     Annotation::List parseAnnotation( ParserContext *context, const QDomElement& );
     ComplexType parseComplexType (ParserContext *context, const QDomElement&);
 
-    void all( ParserContext *context, const QDomElement&, ComplexType& );
+    void all (ParserContext *context, const QDomElement&, ComplexType&);
     void parseCompositor (ParserContext *context,
                           const QDomElement&, ComplexType&);
 

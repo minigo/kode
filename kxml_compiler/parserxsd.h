@@ -48,6 +48,8 @@ protected:
     void setAnnotations (Schema::Annotatable &annotatable,
                          XSD::Annotation::List annotations);
 
+    void parseElement (const XSD::Element &element, const XSD::Types &types);
+
 private:
     Schema::Document _document;
     bool _verbose;

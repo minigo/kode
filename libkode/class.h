@@ -34,13 +34,14 @@
 namespace KODE {
 
 class ClassList;
+
 /**
  * This class abstracts a class object with functions,
  * member variables etc.
  */
 class KODE_EXPORT Class
 {
-  public:
+public:
     typedef ClassList List;
 
     /**
@@ -322,7 +323,7 @@ class KODE_EXPORT Class
      */
     QStringList declarationMacros() const;
 
-  private:
+private:
     class Private;
     Private* d;
 };

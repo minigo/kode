@@ -36,23 +36,22 @@ public:
     QStringList _namespaces;
 };
 
-Types::Types()
-    : d(new Private)
+Types::Types ()
+    : d (new Private)
 {
 }
 
-Types::Types( const Types &other )
-    : d(new Private)
+Types::Types (const Types &other)
+    : d (new Private)
 {
     *d = *other.d;
 }
 
-Types::~Types()
-{
+Types::~Types () {
     delete d;
 }
 
-Types &Types::operator=( const Types &other )
+Types &Types::operator = (const Types &other)
 {
     if ( this == &other )
         return *this;
@@ -62,58 +61,47 @@ Types &Types::operator=( const Types &other )
     return *this;
 }
 
-void Types::setSimpleTypes( const SimpleType::List &simpleTypes )
-{
+void Types::setSimpleTypes (const SimpleType::List &simpleTypes) {
     d->_simpleTypes = simpleTypes;
 }
 
-SimpleType::List Types::simpleTypes() const
-{
+SimpleType::List Types::simpleTypes () const {
     return d->_simpleTypes;
 }
 
-void Types::setComplexTypes( const ComplexType::List &complexTypes )
-{
+void Types::setComplexTypes (const ComplexType::List &complexTypes) {
     d->_complexTypes = complexTypes;
 }
 
-ComplexType::List Types::complexTypes() const
-{
+ComplexType::List Types::complexTypes () const {
     return d->_complexTypes;
 }
 
-void Types::setElements( const Element::List &elements )
-{
+void Types::setElements (const Element::List &elements) {
     d->_elements = elements;
 }
 
-Element::List Types::elements() const
-{
+Element::List Types::elements () const {
     return d->_elements;
 }
 
-void Types::setAttributes( const Attribute::List &attributes )
-{
+void Types::setAttributes (const Attribute::List &attributes) {
     d->_attributes = attributes;
 }
 
-Attribute::List Types::attributes() const
-{
+Attribute::List Types::attributes () const {
     return d->_attributes;
 }
 
-void Types::setAttributeGroups( const AttributeGroup::List &attributeGroups )
-{
+void Types::setAttributeGroups (const AttributeGroup::List &attributeGroups) {
     d->_attributeGroups = attributeGroups;
 }
 
-AttributeGroup::List Types::attributeGroups() const
-{
+AttributeGroup::List Types::attributeGroups () const {
     return d->_attributeGroups;
 }
 
-void Types::setNamespaces( const QStringList &namespaces )
-{
+void Types::setNamespaces (const QStringList &namespaces) {
     d->_namespaces = namespaces;
 }
 
@@ -134,15 +122,16 @@ ComplexType Types::complexType (const Element &element) const
     return ComplexType ();
 }
 
-SimpleType Types::simpleType( const QName &typeName ) const
+SimpleType Types::simpleType (const QName &typeName) const
 {
-    qDebug() << "Types::simpleType()" << typeName.qname();
-    foreach( SimpleType type, d->_simpleTypes ) {
-        qDebug() << "  BASETYPENAME:" << type.baseTypeName().qname();
-        if ( type.qualifiedName() == typeName ) return type;
+    qDebug () << "[Types][simpleType]" << typeName.qname ();
+    foreach (SimpleType type, d->_simpleTypes) {
+        qDebug () << "  BASETYPENAME:" << type.baseTypeName ().qname ();
+        if (type.qualifiedName() == typeName)
+            return type;
     }
-    qDebug() << "not found";
-    return SimpleType();
+    qDebug () << "[Types][simpleType] Not found";
+    return SimpleType ();
 }
 
 }

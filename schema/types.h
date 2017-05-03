@@ -32,33 +32,33 @@ namespace XSD {
 class SCHEMA_EXPORT Types
 {
 public:
-    Types();
-    Types( const Types &other );
-    ~Types();
+    Types ();
+    Types (const Types &other);
+    virtual ~Types ();
 
-    Types &operator=( const Types &other );
+    Types &operator = (const Types &other);
 
-    void setSimpleTypes( const SimpleType::List &simpleTypes );
-    SimpleType::List simpleTypes() const;
+    void setSimpleTypes (const SimpleType::List &simpleTypes);
+    SimpleType::List simpleTypes () const;
 
-    void setComplexTypes( const ComplexType::List &complexTypes );
-    ComplexType::List complexTypes() const;
+    void setComplexTypes (const ComplexType::List &complexTypes);
+    ComplexType::List complexTypes () const;
 
     void setElements (const Element::List &elements);
     Element::List elements () const;
 
-    void setAttributes( const Attribute::List &attributes );
-    Attribute::List attributes() const;
+    void setAttributes (const Attribute::List &attributes);
+    Attribute::List attributes () const;
 
-    void setAttributeGroups( const AttributeGroup::List &attributeGroups );
-    AttributeGroup::List attributeGroups() const;
+    void setAttributeGroups (const AttributeGroup::List &attributeGroups);
+    AttributeGroup::List attributeGroups () const;
 
-    void setNamespaces( const QStringList &namespaces );
-    QStringList namespaces() const;
+    void setNamespaces (const QStringList &namespaces);
+    QStringList namespaces () const;
 
-    ComplexType complexType( const Element & ) const;
+    ComplexType complexType (const Element &) const;
 
-    SimpleType simpleType( const QName & ) const;
+    SimpleType simpleType (const QName &) const;
 
 private:
     class Private;

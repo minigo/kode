@@ -52,34 +52,34 @@ public:
 
     ComplexType &operator=( const ComplexType &other );
 
-    void setDocumentation( const QString &documentation );
-    QString documentation() const;
+    void setDocumentation (const QString &documentation);
+    QString documentation () const;
 
-    bool isSimple() const;
+    bool isSimple () const;
 
-    void setAnonymous( bool anonymous );
-    bool isAnonymous() const;
+    void setAnonymous (bool anonymous);
+    bool isAnonymous () const;
 
-    void setBaseDerivation( Derivation derivation );
-    Derivation baseDerivation() const;
+    void setBaseDerivation (Derivation derivation);
+    Derivation baseDerivation () const;
 
-    void setBaseTypeName( const QName &baseTypeName );
-    QName baseTypeName() const;
+    void setBaseTypeName (const QName &baseTypeName);
+    QName baseTypeName () const;
 
     void setElements (const Element::List &elements);
     Element::List elements () const;
 
-    void setAttributes( const Attribute::List &attributes );
-    Attribute::List attributes() const;
+    void setAttributes (const Attribute::List &attributes);
+    Attribute::List attributes () const;
 
-    void setAttributeGroups( const AttributeGroup::List &attributeGroups );
-    AttributeGroup::List attributeGroups() const;
+    void setAttributeGroups (const AttributeGroup::List &attributeGroups);
+    AttributeGroup::List attributeGroups () const;
 
-    void setIsArray( bool isArray );
-    bool isArray() const;
+    void setIsArray (bool isArray);
+    bool isArray () const;
 
-    void addAttribute( const Attribute &attribute );
-    void addElement( const Element &element );
+    void addAttribute (const Attribute &attribute);
+    void addElement (const Element &element);
 
 private:
     class Private;

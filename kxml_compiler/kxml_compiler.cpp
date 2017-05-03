@@ -19,6 +19,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+//! Как задумывал автор, я не ебу!!! Но при разборе комплексных типов, элементы не добавляются!
+//! т.е. например ...
+//! поэтому мы немного переделываем код, в частности метод usedElements перебирает только глобальные
+//! элементы, мы же переделываем таким образом, что для каждого элемента ищется его тип (если он комплексный)
+//! и у этого типа извлекаются его элементы, и так до бесконечности в глубь!!!
+
 #include "parserrelaxng.h"
 #include "parserxsd.h"
 #include "parserxml.h"
@@ -137,21 +143,21 @@ int main( int argc, char **argv )
 
         RNG::ParserRelaxng p;
         p.setVerbose( verbose );
-        RNG::Element *start = p.parse( doc.documentElement() );
-        if ( !start ) {
-            qCritical () <<"Could not find start element";
+        RNG::Element *start = p.parse (doc.documentElement ());
+        if (!start) {
+            qCritical () << "Could not find start element";
             return 1;
         }
 
         if (verbose)
-            p.dumpDefinitionMap();
+            p.dumpDefinitionMap ();
 
         //  return 0;
 
-        p.substituteReferences( start );
+        p.substituteReferences (start);
 
 #if 1
-        if ( verbose ) {
+        if (verbose) {
             std::cout << "--- TREE:" << std::endl;
             p.dumpTree( start );
         }
@@ -175,7 +181,7 @@ int main( int argc, char **argv )
     }
 
     Creator::XmlParserType pt;
-    if ( args->isSet( "external-parser" ) )
+    if (args->isSet ("external-parser"))
         pt = Creator::XmlParserDomExternal;
     else
         pt = Creator::XmlParserDom;
@@ -186,17 +192,17 @@ int main( int argc, char **argv )
     c.setCreateCrudFunctions (args->isSet ("create-crud-functions"));
     if (args->isSet ("namespace"))
         c.file ().setNameSpace (args->getOption ("namespace"));
-    if ( args->isSet( "export" ))
+    if (args->isSet ("export"))
         c.setExportDeclaration (args->getOption ("export"));
 
-    if ( args->isSet( "license" ) ) {
-        QString l = args->getOption( "license" );
-        if ( l == "gpl" ) {
-            c.setLicense( KODE::License( KODE::License::GPL ) );
-        } else if ( l == "bsd" ) {
-            c.setLicense( KODE::License( KODE::License::BSD ) );
-        } else if ( l == "lgpl" ) {
-            c.setLicense( KODE::License( KODE::License::LGPL ) );
+    if (args->isSet ("license")) {
+        QString l = args->getOption ("license");
+        if (l == "gpl") {
+            c.setLicense (KODE::License (KODE::License::GPL));
+        } else if (l == "bsd") {
+            c.setLicense (KODE::License (KODE::License::BSD));
+        } else if (l == "lgpl") {
+            c.setLicense (KODE::License (KODE::License::LGPL));
         }
     }
 

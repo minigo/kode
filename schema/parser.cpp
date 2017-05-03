@@ -57,23 +57,30 @@ public:
     QString _path;
 };
 
-Parser::Parser(const QString &nameSpace) : d(new Private) {
+Parser::Parser (const QString &nameSpace)
+    : d (new Private)
+{
     d->_nameSpace = nameSpace;
 }
 
-Parser::Parser(const Parser &other) : d(new Private) { *d = *other.d; }
+Parser::Parser (const Parser &other)
+    : d (new Private)
+{
+    *d = *other.d;
+}
 
-Parser::~Parser() {
-    clear();
+Parser::~Parser ()
+{
+    clear ();
     delete d;
 }
 
-Parser &Parser::operator=(const Parser &other) {
+Parser &Parser::operator = (const Parser &other)
+{
     if (this == &other)
         return *this;
 
     *d = *other.d;
-
     return *this;
 }
 
@@ -164,7 +171,7 @@ bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
         QName name = QName (element.tagName ());
         if (name.localName () == QLatin1String ("import")) {
             parseImport (context, element);
-        } else if (name.localName () == QLatin1String ("element")) {
+        } else if (name.localName() == QLatin1String ("element")) {
             addGlobalElement (parseElement (context, element, d->_nameSpace, element));
         } else if (name.localName() == QLatin1String ("complexType")) {
             ComplexType ct = parseComplexType (context, element);
@@ -185,13 +192,11 @@ bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
         element = element.nextSiblingElement();
     }
 
-    context->setNamespaceManager(parentManager);
+    context->setNamespaceManager (parentManager);
     d->_namespaces = joinNamespaces(d->_namespaces, namespaceManager.uris());
     d->_namespaces = joinNamespaces(d->_namespaces, QStringList(d->_nameSpace));
 
     resolveForwardDeclarations ();
-
-    printComplexTypeInfo ("modelIdentificationType");
     return true;
 }
 
@@ -274,7 +279,7 @@ ComplexType Parser::parseComplexType (ParserContext *context, const QDomElement 
             newType.addAttribute (parseAttribute (context, childElement));
         } else if (name.localName() == "attributeGroup") {
             AttributeGroup g = parseAttributeGroup (context, childElement);
-            attributeGroups.append(g);
+            attributeGroups.append (g);
         } else if (name.localName () == "anyAttribute") {
             addAnyAttribute(context, childElement, newType);
         } else if (name.localName () == "complexContent") {
@@ -303,7 +308,8 @@ void Parser::all (ParserContext *context, const QDomElement &element,
     while (!childElement.isNull()) {
         QName name = QName (childElement.tagName ());
         if (name.localName () == "element") {
-            ct.addElement (parseElement(context, childElement, ct.nameSpace(), childElement));
+            Element e = parseElement (context, childElement, ct.nameSpace(), childElement);
+            ct.addElement (e);
         } else if (name.localName() == "annotation") {
             Annotation::List annotations = parseAnnotation (context, childElement);
             ct.setDocumentation (annotations.documentation ());
@@ -432,28 +438,31 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
     return newElement;
 }
 
-void Parser::addAny(ParserContext *, const QDomElement &element,
-                    ComplexType &complexType) {
-    Element newElement(complexType.nameSpace());
-    newElement.setName("any");
-    setOccurrenceAttributes(newElement, element);
+void Parser::addAny (ParserContext *, const QDomElement &element,
+                     ComplexType &complexType)
+{
+    Element newElement (complexType.nameSpace ());
+    newElement.setName ("any");
+    setOccurrenceAttributes (newElement, element);
 
-    complexType.addElement(newElement);
+    complexType.addElement (newElement);
 }
 
-void Parser::setOccurrenceAttributes(Element &newElement,
-                                     const QDomElement &element) {
-    newElement.setMinOccurs(element.attribute("minOccurs", "1").toInt());
+void Parser::setOccurrenceAttributes (Element &newElement,
+                                      const QDomElement &element)
+{
+    newElement.setMinOccurs (element.attribute ("minOccurs", "1").toInt ());
 
-    QString value = element.attribute("maxOccurs", "1");
+    QString value = element.attribute ("maxOccurs", "1");
     if (value == "unbounded")
-        newElement.setMaxOccurs(UNBOUNDED);
+        newElement.setMaxOccurs (UNBOUNDED);
     else
-        newElement.setMaxOccurs(value.toInt());
+        newElement.setMaxOccurs (value.toInt());
 }
 
-void Parser::addAnyAttribute(ParserContext *, const QDomElement &element,
-                             ComplexType &complexType) {
+void Parser::addAnyAttribute (ParserContext *, const QDomElement &element,
+                              ComplexType &complexType)
+{
     Attribute newAttribute;
     newAttribute.setName("anyAttribute");
 
@@ -462,15 +471,16 @@ void Parser::addAnyAttribute(ParserContext *, const QDomElement &element,
     complexType.addAttribute(newAttribute);
 }
 
-Attribute Parser::parseAttribute(ParserContext *context,
-                                 const QDomElement &element) {
+Attribute Parser::parseAttribute (ParserContext *context,
+                                  const QDomElement &element)
+{
     Attribute newAttribute;
 
-    newAttribute.setName(element.attribute("name"));
+    newAttribute.setName (element.attribute ("name"));
 
-    if (element.hasAttribute("type")) {
-        QName typeName = QName (element.attribute("type"));
-        typeName.setNameSpace(context->namespaceManager()->uri(typeName.prefix()));
+    if (element.hasAttribute ("type")) {
+        QName typeName = QName (element.attribute ("type"));
+        typeName.setNameSpace (context->namespaceManager()->uri(typeName.prefix()));
         newAttribute.setType(typeName);
     }
 
@@ -526,8 +536,9 @@ Attribute Parser::parseAttribute(ParserContext *context,
     return newAttribute;
 }
 
-SimpleType Parser::parseSimpleType(ParserContext *context,
-                                   const QDomElement &element) {
+SimpleType Parser::parseSimpleType (ParserContext *context,
+                                    const QDomElement &element)
+{
     SimpleType st(d->_nameSpace);
 
     st.setName(element.attribute("name"));
@@ -573,8 +584,9 @@ SimpleType Parser::parseSimpleType(ParserContext *context,
     return st;
 }
 
-void Parser::parseRestriction(ParserContext *, const QDomElement &element,
-                              SimpleType &st) {
+void Parser::parseRestriction (ParserContext *, const QDomElement &element,
+                               SimpleType &st)
+{
     if (st.baseTypeName().isEmpty())
         qDebug("<restriction>:unknown BaseType");
 
@@ -663,23 +675,25 @@ void Parser::parseComplexContent (ParserContext *context,
                         addAnyAttribute(context, ctElement, complexType);
                     }
 
-                    ctElement = ctElement.nextSiblingElement();
+                    ctElement = ctElement.nextSiblingElement ();
                 }
             }
         }
 
-        childElement = childElement.nextSiblingElement();
+        childElement = childElement.nextSiblingElement ();
     }
 }
 
-void Parser::parseSimpleContent(ParserContext *context,
-                                const QDomElement &element,
-                                ComplexType &complexType) {
-    complexType.setContentModel(XSDType::SIMPLE);
+void Parser::parseSimpleContent (ParserContext *context,
+                                 const QDomElement &element,
+                                 ComplexType &complexType)
+{
+    complexType.setContentModel (XSDType::SIMPLE);
 
-    QDomElement childElement = element.firstChildElement();
+    QDomElement childElement = element.firstChildElement ();
 
-    while (!childElement.isNull()) {
+    while (!childElement.isNull ())
+    {
         QName name = QName (childElement.tagName ());
         if (name.localName() == "restriction") {
             SimpleType st(d->_nameSpace);
@@ -697,19 +711,19 @@ void Parser::parseSimpleContent(ParserContext *context,
             // ComplexContent.
             // It uses the simple model. No particle allowed, only attributes
 
-            if (childElement.hasAttribute("base")) {
-                QName typeName(childElement.attribute("base"));
-                typeName.setNameSpace(
+            if (childElement.hasAttribute ("base")) {
+                QName typeName (childElement.attribute ("base"));
+                typeName.setNameSpace (
                             context->namespaceManager()->uri(typeName.prefix()));
-                complexType.setBaseTypeName(typeName);
+                complexType.setBaseTypeName (typeName);
 
-                QDomElement ctElement = childElement.firstChildElement();
+                QDomElement ctElement = childElement.firstChildElement ();
                 while (!ctElement.isNull()) {
                     QName name = QName (ctElement.tagName ());
-                    if (name.localName() == "attribute")
-                        complexType.addAttribute(parseAttribute(context, ctElement));
+                    if (name.localName () == "attribute")
+                        complexType.addAttribute (parseAttribute(context, ctElement));
 
-                    ctElement = ctElement.nextSiblingElement();
+                    ctElement = ctElement.nextSiblingElement ();
                 }
             }
         }
@@ -749,7 +763,8 @@ void Parser::addGlobalAttribute (const Attribute &newAttribute)
 }
 
 AttributeGroup Parser::parseAttributeGroup (ParserContext *context,
-                                            const QDomElement &element) {
+                                            const QDomElement &element)
+{
     Attribute::List attributes;
 
     AttributeGroup group;

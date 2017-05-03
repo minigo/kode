@@ -69,17 +69,17 @@ private:
 class KSCHEMA_EXPORT Annotatable
 {
 public:
+    void setDocumentation (const QString &);
+    QString documentation () const;
 
-    void setDocumentation( const QString & );
-    QString documentation() const;
+    void setAnnotations (const QList<QDomElement> &);
 
-    void setAnnotations( const QList<QDomElement> & );
     /**
       XML annotations. The actual annotations are child elements of the elements
       contained in this list. There should not be made any assumptions about the
       names of the elements in this list.
     */
-    QList<QDomElement> annotations() const;
+    QList<QDomElement> annotations () const;
     
 private:
     QString _documentation;
@@ -91,8 +91,8 @@ class KSCHEMA_EXPORT Node : public Annotatable
 public:
     enum Type { None, String, NormalizedString, Token, Integer, Date,
                 Enumeration, ComplexType, DateTime, Decimal };
-    Node();
-    virtual ~Node();
+    Node ();
+    virtual ~Node ();
 
     void setType (Type);
     Type type () const;
@@ -127,15 +127,15 @@ class KSCHEMA_EXPORT Attribute : public Node
 public:
     typedef QList<Attribute> List;
 
-    Attribute();
+    Attribute ();
 
-    bool required() const;
-    void setRequired(bool required);
+    bool required () const;
+    void setRequired (bool required);
 
-    QString defaultValue() const;
-    void setDefaultValue(const QString defVal);
+    QString defaultValue () const;
+    void setDefaultValue (const QString defVal);
 
-    QString ref() const;
+    QString ref () const;
 private:
     bool _required;
     QString _defVal;
@@ -186,8 +186,8 @@ class KSCHEMA_EXPORT Document : public Annotatable
 public:
     Document();
 
-    void setStartElement( const Element & );
-    Element startElement() const;
+    void setStartElement (const Element &);
+    Element startElement () const;
 
     void addElement (const Element &);
     Element::List elements() const;

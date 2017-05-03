@@ -27,7 +27,6 @@ using namespace Schema;
 
 Document::Document () {}
 
-
 void Document::setStartElement (const Element &e) {
     _startElement = e;
 }
@@ -93,19 +92,35 @@ void Document::findUsedElements (const Element &e) const
         if ((!e2.mixed () || r.isList ()) && addUsedElement (e2))
             findUsedElements (e2);
     }
+
+//------------------------------------- вариант автора
+//    addUsedElement (e);
+//    foreach (Relation r, e.elementRelations ()) {
+//        Element e2 = element (r);
+//        if (e2.isEmpty ()) {
+//            qWarning () << "[Document][findUsedElements] Empty element for relation" << r.target ();
+//            continue;
+//        }
+//        if (!e2.isValid ()) {
+//            qWarning () << "[Document][findUsedElements] Element is not valid for relation" << r.target ();
+//            continue;
+//        }
+//        if ((!e2.mixed () || r.isList ()) && addUsedElement (e2))
+//            findUsedElements (e2);
+//    }
 }
 
 bool Document::addUsedElement (const Element &element) const
 {
     bool found = false;
-    foreach( Element usedElement, _usedElements ) {
-        if ( usedElement.identifier() == element.identifier() ) {
+    foreach (Element usedElement, _usedElements) {
+        if (usedElement.identifier() == element.identifier ()) {
             found = true;
             break;
         }
     }
-    if ( !found ) {
-        _usedElements.prepend( element );
+    if (!found) {
+        _usedElements.prepend (element);
         return true;
     } else {
         return false;
@@ -113,7 +128,7 @@ bool Document::addUsedElement (const Element &element) const
 }
 
 void Document::addAttribute (const Attribute &a) {
-    _attributes.append( a );
+    _attributes.append (a);
 }
 
 Attribute::List Document::attributes () const {
@@ -122,8 +137,8 @@ Attribute::List Document::attributes () const {
 
 bool Document::hasAttribute (const Attribute &attribute)
 {
-    foreach( Attribute a, _attributes ) {
-        if ( a.identifier() == attribute.identifier() )
+    foreach (Attribute a, _attributes) {
+        if (a.identifier() == attribute.identifier())
             return true;
     }
     return false;
@@ -131,20 +146,19 @@ bool Document::hasAttribute (const Attribute &attribute)
 
 Attribute Document::attribute( const QString &identifier ) const
 {
-    foreach( Attribute a, _attributes ) {
-        if ( a.identifier() == identifier ) return a;
+    foreach (Attribute a, _attributes) {
+        if (a.identifier() == identifier)
+            return a;
     }
-    return Attribute();
+    return Attribute ();
 }
 
-Attribute Document::attribute( const Relation &relation ) const
-{
-    return attribute( relation.target() );
+Attribute Document::attribute (const Relation &relation) const {
+    return attribute (relation.target());
 }
 
-bool Document::isEmpty() const
-{
-    return _elements.isEmpty();
+bool Document::isEmpty () const {
+    return _elements.isEmpty ();
 }
 
 void Document::dump () const
@@ -226,9 +240,9 @@ QString Relation::choice () const {
 
 QString Relation::asString (const QString &type) const
 {
-    QString out = "  Relation" + type + ":" + target () + "(" +
+    QString out = "     Relation" + type + ":" + target () + "(" +
             QString::number (minOccurs ()) + ',';
-    if ( maxOccurs() == Relation::Unbounded )
+    if (maxOccurs() == Relation::Unbounded)
         out += "UNBOUNDED";
     else
         out += QString::number (maxOccurs ());
@@ -244,7 +258,7 @@ Node::Node ()
 {
 }
 
-Node::~Node()
+Node::~Node ()
 {
 }
 
