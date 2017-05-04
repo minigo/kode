@@ -29,53 +29,53 @@ using namespace KODE;
 class Class::Private
 {
 public:
-    Private()
-        : mDPointer(),
-          mUseSharedData( false ),
-          mCanBeCopied( false )
+    Private ()
+        : _dPointer ()
+        , _useSharedData (false)
+        , _canBeCopied (false)
     {
     }
 
-    QString mName;
-    QString mNameSpace;
-    QString mExportDeclaration;
-    QString mDPointer;
-    bool mUseSharedData;
-    bool mCanBeCopied;
-    Function::List mFunctions;
-    MemberVariable::List mMemberVariables;
-    QStringList mIncludes;
-    QStringList mForwardDeclarations;
-    QStringList mHeaderIncludes;
-    Class::List mBaseClasses;
-    Typedef::List mTypedefs;
-    Enum::List mEnums;
-    QString mDocs;
-    Class::List mNestedClasses;
-    QString mParentClassName;
-    QStringList mDeclMacros;
+    QString _name;
+    QString _nameSpace;
+    QString _exportDeclaration;
+    QString _dPointer;
+    bool _useSharedData;
+    bool _canBeCopied;
+    Function::List _functions;
+    MemberVariable::List _memberVariables;
+    QStringList _includes;
+    QStringList _forwardDeclarations;
+    QStringList _headerIncludes;
+    Class::List _baseClasses;
+    Typedef::List _typedefs;
+    Enum::List _enums;
+    QString _docs;
+    Class::List _nestedClasses;
+    QString _parentClassName;
+    QStringList _declMacros;
 };
 
-Class::Class()
-    : d( new Private )
+Class::Class ()
+    : d (new Private)
 {
 }
 
-Class::Class( const Class &other )
-    : d( new Private )
+Class::Class (const Class &other)
+    : d (new Private)
 {
     *d = *other.d;
 }
 
-Class::Class( const QString &name, const QString &nameSpace )
-    : d( new Private )
+Class::Class (const QString &name, const QString &nameSpace)
+    : d (new Private)
 {
     Q_ASSERT(!name.isEmpty());
-    d->mName = name;
-    d->mNameSpace = nameSpace;
+    d->_name = name;
+    d->_nameSpace = nameSpace;
 }
 
-Class::~Class()
+Class::~Class ()
 {
     delete d;
 }
@@ -86,121 +86,111 @@ Class& Class::operator=( const Class &other )
         return *this;
 
     *d = *other.d;
-
     return *this;
 }
 
-void Class::setName( const QString &name )
+void Class::setName (const QString &name)
 {
     Q_ASSERT(!name.isEmpty());
-    d->mName = name;
+    d->_name = name;
 }
 
-QString Class::name() const
-{
-    return d->mName;
+QString Class::name () const {
+    return d->_name;
 }
 
-void Class::setNameSpace( const QString &nameSpace )
-{
-    d->mNameSpace = nameSpace;
+void Class::setNameSpace (const QString &nameSpace) {
+    d->_nameSpace = nameSpace;
 }
 
-QString Class::nameSpace() const
+QString Class::nameSpace () const
 {
-    return d->mNameSpace;
+    return d->_nameSpace;
 }
 
-QString Class::qualifiedName() const
+QString Class::qualifiedName () const
 {
-    if (d->mNameSpace.isEmpty())
-        return d->mName;
-    return d->mNameSpace + QLatin1String("::") + d->mName;
+    if (d->_nameSpace.isEmpty())
+        return d->_name;
+    return d->_nameSpace + QLatin1String("::") + d->_name;
 }
 
-void Class::setExportDeclaration( const QString &name )
+void Class::setExportDeclaration (const QString &name)
 {
-    addHeaderInclude( name.toLower() + "_export.h" );
-    if ( name.contains( "/" ) ) {
-        d->mExportDeclaration = name.split( "/" ).value( 1 );
-    } else {
-        d->mExportDeclaration = name;
+    addHeaderInclude (name.toLower () + "_export.h");
+    if (name.contains ("/"))
+        d->_exportDeclaration = name.split ("/").value (1);
+    else
+        d->_exportDeclaration = name;
+}
+
+QString Class::exportDeclaration () const {
+    return d->_exportDeclaration;
+}
+
+void Class::setUseDPointer (bool useDPointer, const QString& dPointer) {
+    d->_dPointer = useDPointer ? dPointer : QString ();
+}
+
+bool Class::useDPointer () const {
+    return !d->_dPointer.isEmpty();
+}
+
+void Class::setUseSharedData (bool b, const QString& dPointer)
+{
+    d->_useSharedData = b;
+    if (b) {
+        setUseDPointer (true, dPointer);
+        d->_canBeCopied = true;
     }
 }
 
-QString Class::exportDeclaration() const
-{
-    return d->mExportDeclaration;
+bool Class::useSharedData () const {
+    return d->_useSharedData;
 }
 
-void Class::setUseDPointer( bool useDPointer, const QString& dPointer )
-{
-    d->mDPointer = useDPointer ? dPointer : QString();
+void Class::setCanBeCopied (bool b) {
+    d->_canBeCopied = b;
 }
 
-bool Class::useDPointer() const
-{
-    return !d->mDPointer.isEmpty();
+bool Class::canBeCopied () const {
+    return d->_canBeCopied;
 }
 
-void Class::setUseSharedData( bool b, const QString& dPointer )
+void Class::addInclude (const QString &include,
+                        const QString &forwardDeclaration)
 {
-    d->mUseSharedData = b;
-    if ( b ) {
-        setUseDPointer( true, dPointer );
-        d->mCanBeCopied = true;
-    }
-}
-
-bool Class::useSharedData() const
-{
-    return d->mUseSharedData;
-}
-
-void Class::setCanBeCopied( bool b )
-{
-    d->mCanBeCopied = b;
-}
-
-bool Class::canBeCopied() const
-{
-    return d->mCanBeCopied;
-}
-
-void Class::addInclude( const QString &include,
-                        const QString &forwardDeclaration )
-{
-    if ( !include.isEmpty() && !d->mIncludes.contains( include ) )
-        d->mIncludes.append( include );
+    if ( !include.isEmpty() && !d->_includes.contains( include ) )
+        d->_includes.append( include );
 
     if ( !forwardDeclaration.isEmpty() &&
-         !d->mForwardDeclarations.contains( forwardDeclaration ) )
-        d->mForwardDeclarations.append( forwardDeclaration );
+         !d->_forwardDeclarations.contains( forwardDeclaration ) )
+        d->_forwardDeclarations.append( forwardDeclaration );
 }
 
 void Class::addIncludes( const QStringList &files,
                          const QStringList &forwardDeclarations )
 {
     for ( int i = 0; i < files.count(); ++i ) {
-        if ( !d->mIncludes.contains( files[ i ] ) )
+        if ( !d->_includes.contains( files[ i ] ) )
             if ( !files[ i ].isEmpty() )
-                d->mIncludes.append( files[ i ] );
+                d->_includes.append( files[ i ] );
     }
 
     for ( int i = 0; i < forwardDeclarations.count(); ++i ) {
-        if ( !d->mForwardDeclarations.contains( forwardDeclarations[ i ] ) )
-            d->mForwardDeclarations.append( forwardDeclarations[ i ] );
+        if ( !d->_forwardDeclarations.contains( forwardDeclarations[ i ] ) )
+            d->_forwardDeclarations.append( forwardDeclarations[ i ] );
     }
 }
 
 QStringList Class::includes() const
 {
-    return d->mIncludes;
+    return d->_includes;
 }
 
 QStringList Class::forwardDeclarations() const
 {
-    return d->mForwardDeclarations;
+    return d->_forwardDeclarations;
 }
 
 void Class::addHeaderInclude( const QString &include )
@@ -208,8 +198,8 @@ void Class::addHeaderInclude( const QString &include )
     if ( include.isEmpty() )
         return;
 
-    if ( !d->mHeaderIncludes.contains( include ) )
-        d->mHeaderIncludes.append( include );
+    if ( !d->_headerIncludes.contains( include ) )
+        d->_headerIncludes.append( include );
 }
 
 void Class::addHeaderIncludes( const QStringList &includes )
@@ -221,71 +211,70 @@ void Class::addHeaderIncludes( const QStringList &includes )
 
 QStringList Class::headerIncludes() const
 {
-    return d->mHeaderIncludes;
+    return d->_headerIncludes;
 }
 
 void Class::addBaseClass( const Class &c )
 {
-    d->mBaseClasses.append( c );
+    d->_baseClasses.append( c );
 }
 
 Class::List Class::baseClasses() const
 {
-    return d->mBaseClasses;
+    return d->_baseClasses;
 }
 
 void Class::addFunction( const Function &function )
 {
-    d->mFunctions.append( function );
+    d->_functions.append( function );
 }
 
 Function::List Class::functions() const
 {
-    return d->mFunctions;
+    return d->_functions;
 }
 
 void Class::addMemberVariable( const MemberVariable &v )
 {
-    d->mMemberVariables.append( v );
+    d->_memberVariables.append( v );
 }
 
 MemberVariable::List Class::memberVariables() const
 {
-    return d->mMemberVariables;
+    return d->_memberVariables;
 }
 
 void Class::addTypedef( const Typedef &typeDefinition )
 {
-    d->mTypedefs.append( typeDefinition );
+    d->_typedefs.append( typeDefinition );
 }
 
-Typedef::List Class::typedefs() const
-{
-    return d->mTypedefs;
+Typedef::List Class::typedefs () const {
+    return d->_typedefs;
 }
 
 void Class::addEnum (const Enum &enumValue)
 {
-    d->mEnums.append( enumValue );
+    d->_enums.append( enumValue );
     KODE::Function enumParseFunction = enumValue.parserMethod();
-    enumParseFunction.setReturnType( d->mName + "::" + enumParseFunction.returnType() );
+    enumParseFunction.setReturnType( d->_name + "::" + enumParseFunction.returnType() );
     enumParseFunction.setAccess( KODE::Function::Private );
     addFunction( enumParseFunction );
 
     KODE::Function enumWriteFunction = enumValue.writerMethod();
-    enumParseFunction.setReturnType( d->mName + "::" + enumWriteFunction.returnType() );
+    enumParseFunction.setReturnType( d->_name + "::" + enumWriteFunction.returnType() );
     enumParseFunction.setAccess( KODE::Function::Private );
     addFunction( enumWriteFunction );
 }
 
 Enum::List Class::enums() const
 {
-    return d->mEnums;
+    return d->_enums;
 }
 
 bool Class::hasEnum( const QString &name ) const
 {
-    foreach( Enum e, d->mEnums ) {
+    foreach( Enum e, d->_enums ) {
         if ( e.name() == name ) return true;
     }
     return false;
@@ -293,13 +282,13 @@ bool Class::hasEnum( const QString &name ) const
 
 bool Class::isValid() const
 {
-    return !d->mName.isEmpty();
+    return !d->_name.isEmpty();
 }
 
 bool Class::hasFunction( const QString &functionName ) const
 {
     Function::List::ConstIterator it;
-    for ( it = d->mFunctions.constBegin(); it != d->mFunctions.constEnd(); ++it ) {
+    for ( it = d->_functions.constBegin(); it != d->_functions.constEnd(); ++it ) {
         if ( (*it).name() == functionName )
             return true;
     }
@@ -310,7 +299,7 @@ bool Class::hasFunction( const QString &functionName ) const
 bool Class::isQObject() const
 {
     Function::List::ConstIterator it;
-    for ( it = d->mFunctions.constBegin(); it != d->mFunctions.constEnd(); ++it ) {
+    for ( it = d->_functions.constBegin(); it != d->_functions.constEnd(); ++it ) {
         if ( (*it).access() & Function::Signal || (*it).access() & Function::Slot )
             return true;
     }
@@ -320,12 +309,12 @@ bool Class::isQObject() const
 
 void Class::setDocs( const QString &str )
 {
-    d->mDocs = str;
+    d->_docs = str;
 }
 
 QString Class::docs() const
 {
-    return d->mDocs;
+    return d->_docs;
 }
 
 void Class::addNestedClass( const Class &nestedClass )
@@ -333,27 +322,27 @@ void Class::addNestedClass( const Class &nestedClass )
     Class addedClass = nestedClass;
     addedClass.setParentClassName( name() );
 
-    d->mNestedClasses.append( addedClass );
+    d->_nestedClasses.append( addedClass );
 }
 
 Class::List Class::nestedClasses() const
 {
-    return d->mNestedClasses;
+    return d->_nestedClasses;
 }
 
 QString Class::parentClassName() const
 {
-    return d->mParentClassName;
+    return d->_parentClassName;
 }
 
 void Class::setParentClassName( const QString &parentClassName )
 {
-    d->mParentClassName = parentClassName;
+    d->_parentClassName = parentClassName;
 }
 
 QString Class::dPointerName() const
 {
-    return d->mDPointer;
+    return d->_dPointer;
 }
 
 ////
@@ -362,17 +351,17 @@ QString Class::dPointerName() const
 static QStringList dependenciesForClass( const Class& aClass, const QStringList& allClasses, const QStringList& excludedClasses )
 {
     QStringList lst;
-    Q_FOREACH( const Class& baseClass, aClass.baseClasses() ) {
+    Q_FOREACH (const Class& baseClass, aClass.baseClasses ()) {
         const QString baseName = baseClass.name();
-        if ( !baseName.startsWith('Q') && !excludedClasses.contains( baseName ) )
-            lst.append( baseClass.name() );
+        if (!baseName.startsWith('Q') && !excludedClasses.contains (baseName))
+            lst.append (baseClass.name ());
     }
     if (!aClass.useDPointer())
     {
-        Q_FOREACH( const MemberVariable& member, aClass.memberVariables() ) {
-            const QString type = member.type();
-            if ( allClasses.contains( type ) ) {
-                lst.append(type);
+        Q_FOREACH (const MemberVariable& member, aClass.memberVariables ()) {
+            const QString type = member.type ();
+            if (allClasses.contains (type)) {
+                lst.append (type);
             }
         }
     }
@@ -380,12 +369,11 @@ static QStringList dependenciesForClass( const Class& aClass, const QStringList&
     return lst;
 }
 
-static bool allKnown( const QStringList& deps, const QStringList& classNames )
+static bool allKnown (const QStringList& deps, const QStringList& classNames)
 {
-    Q_FOREACH(const QString& dep, deps) {
-        if (!classNames.contains(dep)) {
+    Q_FOREACH (const QString& dep, deps) {
+        if (!classNames.contains (dep))
             return false;
-        }
     }
     return true;
 }
@@ -396,7 +384,7 @@ static bool allKnown( const QStringList& deps, const QStringList& classNames )
  * of a class, as well as the classes it use by value in member vars,
  * always appear before the class itself.
  */
-static Class::List sortByDependenciesHelper( const Class::List &classes, const QStringList& excludedClasses )
+static Class::List sortByDependenciesHelper (const Class::List &classes, const QStringList& excludedClasses)
 {
     Class::List allClasses( classes );
     QStringList allClassNames;
@@ -473,23 +461,23 @@ QStringList KODE::ClassList::classNames() const
 
 void KODE::Class::addDeclarationMacro(const QString &macro)
 {
-    d->mDeclMacros.append(macro);
+    d->_declMacros.append(macro);
 }
 
 QStringList KODE::Class::declarationMacros() const
 {
-    return d->mDeclMacros;
+    return d->_declMacros;
 }
 
 void KODE::Class::setNamespaceAndName( const QString& name )
 {
-    d->mName = name;
-    d->mNameSpace.clear();
-    while (d->mName.contains("::")) {
-        const int pos = d->mName.indexOf("::");
-        if (!d->mNameSpace.isEmpty())
-            d->mNameSpace += QLatin1String("::");
-        d->mNameSpace += d->mName.left(pos);
-        d->mName = d->mName.mid(pos+2);
+    d->_name = name;
+    d->_nameSpace.clear();
+    while (d->_name.contains("::")) {
+        const int pos = d->_name.indexOf("::");
+        if (!d->_nameSpace.isEmpty())
+            d->_nameSpace += QLatin1String("::");
+        d->_nameSpace += d->_name.left(pos);
+        d->_name = d->_name.mid(pos+2);
     }
 }

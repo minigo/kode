@@ -33,81 +33,81 @@ namespace XSD {
 
 class SCHEMA_EXPORT SimpleType : public XSDType
 {
-  public:
+public:
     typedef QList<SimpleType> List;
 
     enum FacetType
     {
-      NONE = 0,
-      LENGTH = 1,
-      MINLEN = 2,
-      MAXLEN = 4,
-      ENUM = 8,
-      WSP = 16,
-      MAXINC = 32,
-      MININC = 64,
-      MAXEX = 128,
-      MINEX = 256,
-      TOT = 512,
-      FRAC = 1024,
-      PATTERN = 2048
+        NONE = 0,
+        LENGTH = 1,
+        MINLEN = 2,
+        MAXLEN = 4,
+        ENUM = 8,
+        WSP = 16,
+        MAXINC = 32,
+        MININC = 64,
+        MAXEX = 128,
+        MINEX = 256,
+        TOT = 512,
+        FRAC = 1024,
+        PATTERN = 2048
     };
 
     enum WhiteSpaceType
     {
-      PRESERVE,
-      REPLACE,
-      COLLAPSE
+        PRESERVE,
+        REPLACE,
+        COLLAPSE
     };
 
     enum SubType
     {
-      TypeRestriction,
-      TypeList,
-      TypeUnion
+        TypeRestriction,
+        TypeList,
+        TypeUnion
     };
 
-    SimpleType();
-    SimpleType( const QString &nameSpace );
-    SimpleType( const SimpleType &other );
-    ~SimpleType();
+    SimpleType ();
+    SimpleType (const QString &nameSpace);
+    SimpleType (const SimpleType &other);
+    ~SimpleType ();
 
-    SimpleType &operator=( const SimpleType &other );
+    SimpleType &operator = (const SimpleType &other);
 
-    void setDocumentation( const QString &documentation );
-    QString documentation() const;
+    void setDocumentation (const QString &documentation);
+    QString documentation () const;
 
-    void setBaseTypeName( const QName &baseTypeName );
-    QName baseTypeName() const;
+    void setBaseTypeName (const QName &baseTypeName);
+    QName baseTypeName () const;
 
-    void setSubType( SubType subType );
-    SubType subType() const;
+    void setSubType (SubType subType);
+    SubType subType () const;
 
-    void setListTypeName( const QName &name );
-    QName listTypeName() const;
+    void setListTypeName (const QName &name);
+    QName listTypeName () const;
 
-    void setAnonymous( bool anonymous );
-    bool isAnonymous() const;
+    void setAnonymous (bool anonymous);
+    bool isAnonymous () const;
 
-    bool isValidFacet( const QString &facet );
-    void setFacetValue( const QString &value );
+    bool isValidFacet (const QString &facet);
+    void setFacetValue (const QString &value);
 
-    int facetType() const;
+    int facetType () const;
 
-    int facetLength() const;
-    int facetMinimumLength() const;
-    int facetMaximumLength() const;
-    QStringList facetEnums() const;
-    WhiteSpaceType facetWhiteSpace() const;
-    int facetMinimumInclusive() const;
-    int facetMaximumInclusive() const;
-    int facetMinimumExclusive() const;
-    int facetMaximumExclusive() const;
-    int facetTotalDigits() const;
-    int facetFractionDigits() const;
-    QString facetPattern() const;
+    int facetLength () const;
+    int facetMinimumLength () const;
+    int facetMaximumLength () const;
+    QStringList facetEnums () const;
+    WhiteSpaceType facetWhiteSpace () const;
+    int facetMinimumInclusive () const;
+    int facetMaximumInclusive () const;
+    int facetMinimumExclusive () const;
+    int facetMaximumExclusive () const;
+    int facetTotalDigits () const;
+    int facetFractionDigits () const;
+    QString facetPattern () const;
 
-  private:
+private:
     class Private;
     Private *d;
 };

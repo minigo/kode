@@ -114,7 +114,7 @@ bool Parser::parseString (ParserContext *context, const QString &data)
 bool Parser::parse (ParserContext *context, QXmlInputSource *source)
 {
     QXmlSimpleReader reader;
-    reader.setFeature(
+    reader.setFeature (
                 QLatin1String("http://xml.org/sax/features/namespace-prefixes"), true);
 
     //QDomDocument document (QLatin1String("KWSDL"));
@@ -539,11 +539,11 @@ Attribute Parser::parseAttribute (ParserContext *context,
 SimpleType Parser::parseSimpleType (ParserContext *context,
                                     const QDomElement &element)
 {
-    SimpleType st(d->_nameSpace);
+    SimpleType st (d->_nameSpace);
 
-    st.setName(element.attribute("name"));
+    st.setName (element.attribute ("name"));
 
-    QDomElement childElement = element.firstChildElement();
+    QDomElement childElement = element.firstChildElement ();
 
     while (!childElement.isNull()) {
         QName name = QName (childElement.tagName ());
@@ -573,9 +573,9 @@ SimpleType Parser::parseSimpleType (ParserContext *context,
                 // TODO: add support for anonymous types
             }
         } else if (name.localName() == "annotation") {
-            Annotation::List annotations = parseAnnotation(context, childElement);
-            st.setDocumentation(annotations.documentation());
-            st.setAnnotations(annotations);
+            Annotation::List annotations = parseAnnotation (context, childElement);
+            st.setDocumentation (annotations.documentation ());
+            st.setAnnotations (annotations);
         }
 
         childElement = childElement.nextSiblingElement();
@@ -984,13 +984,13 @@ void Parser::printComplexTypeInfo (const QString &name) const
     }
 
     qDebug () << "[Parser][printComplexTypeInfo] Complex type info";
-    qDebug () << "Name:" << d->_complexTypes[i].name();
-    qDebug () << "NameSpace:" << d->_complexTypes[i].nameSpace();
-    qDebug () << "BaseTypeName:" << d->_complexTypes[i].baseTypeName().qname();
-    qDebug () << "Elements:";
+    qDebug () << "  Name:" << d->_complexTypes[i].name();
+    qDebug () << "  NameSpace:" << d->_complexTypes[i].nameSpace();
+    qDebug () << "  BaseTypeName:" << d->_complexTypes[i].baseTypeName().qname();
+    qDebug () << "  Elements:";
 
     for (int j = 0; j < d->_complexTypes[i].elements().size(); ++j)
-        qDebug () << "    name:" << d->_complexTypes[i].elements()[j].name()
+        qDebug () << "  name:" << d->_complexTypes[i].elements()[j].name()
                   << "type" << d->_complexTypes[i].elements()[j].type ().qname ();
 }
 

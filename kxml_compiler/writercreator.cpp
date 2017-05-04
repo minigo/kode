@@ -18,21 +18,21 @@
 */
 
 #include "writercreator.h"
-
 #include "namer.h"
-
 #include <QDebug>
 
 WriterCreator::WriterCreator (KODE::File &file, Schema::Document &document, const QString &dtd)
-    : mFile (file), mDocument (document), mDtd (dtd)
+    : _file (file)
+    , _document (document)
+    , _dtd (dtd)
 {
 }
 
-void WriterCreator::createFileWriter( const QString &className, const QString &errorStream )
+void WriterCreator::createFileWriter (const QString &className, const QString &errorStream)
 {
-    KODE::Class c = mFile.findClass( className );
+    KODE::Class c = _file.findClass (className);
 
-    c.addHeaderInclude( "QtXml/QXmlStreamWriter" );
+    c.addHeaderInclude ("QtXml/QXmlStreamWriter");
     c.addInclude( "QtCore/QtDebug" );
     c.addInclude( "QtCore/QFile" );
 
@@ -43,25 +43,24 @@ void WriterCreator::createFileWriter( const QString &className, const QString &e
 
     KODE::Code code;
 
-    code += "QFile file( filename );";
-    code += "if ( !file.open( QIODevice::WriteOnly ) ) {";
-    code += "  " + errorStream + " << \"Unable to open file '\" << filename << \"'\";";
-    code += "  return false;";
+    code += "QFile file (filename);";
+    code += "if (!file.open (QIODevice::WriteOnly)) {";
+    code += "   " + errorStream + " << \"Unable to open file '\" << filename << \"'\";";
+    code += "   return false;";
     code += '}';
     code += "";
 
-    code += "QXmlStreamWriter xml( &file );";
-    code += "xml.setAutoFormatting( true );";
-    code += "xml.setAutoFormattingIndent( 2 );";
+    code += "QXmlStreamWriter xml (&file);";
+    code += "xml.setAutoFormatting (true);";
+    code += "xml.setAutoFormattingIndent (2);";
 
-    code += "xml.writeStartDocument( \"1.0\" );";
-    if ( !mDtd.isEmpty() ) {
-        code += "xml.writeDTD( \\\"" + mDtd + "\\\" );";
-    }
+    code += "xml.writeStartDocument (\"1.0\");";
+    if (!_dtd.isEmpty ())
+        code += "xml.writeDTD( \\\"" + _dtd + "\\\" );";
 
-    code += "writeElement( xml );";
-    code += "xml.writeEndDocument();";
-    code += "file.close();";
+    code += "writeElement (xml);";
+    code += "xml.writeEndDocument ();";
+    code += "file.close ();";
     code += "";
     code += "return true;";
 
@@ -69,7 +68,7 @@ void WriterCreator::createFileWriter( const QString &className, const QString &e
 
     c.addFunction( writer );
 
-    mFile.insertClass( c );
+    _file.insertClass( c );
 }
 
 void WriterCreator::createElementWriter( KODE::Class &c,
@@ -143,7 +142,7 @@ void WriterCreator::createElementWriter( KODE::Class &c,
                 code.unindent();
                 code += '}';
             } else {
-                Schema::Element e = mDocument.element( r );
+                Schema::Element e = _document.element( r );
                 QString accessor = Namer::getAccessor( e ) + "()";
                 QString data = dataToStringConverter( accessor, e.type() );
                 if ( e.text() && !e.hasAttributeRelations() ) {
@@ -195,20 +194,21 @@ QString WriterCreator::dataToStringConverter( const QString &data,
     return converter;
 }
 
-KODE::Code WriterCreator::createAttributeWriter( const Schema::Element &element )
+KODE::Code WriterCreator::createAttributeWriter (const Schema::Element &element )
 {
     KODE::Code code;
 
-    foreach( Schema::Relation r, element.attributeRelations() ) {
-        Schema::Attribute a = mDocument.attribute( r );
+    foreach (Schema::Relation r, element.attributeRelations ())
+    {
+        Schema::Attribute a = _document.attribute (r);
 
-        QString data = Namer::getAccessor( a ) + "()";
-        if ( a.type() != Schema::Node::Enumeration ) {
-            code += "    xml.writeAttribute( \"" + a.name() + "\", " +
-                    dataToStringConverter( data, a.type() ) + " );";
-        } else if ( a.type() == Schema::Node::Enumeration ) {
-            code += "    xml.writeAttribute(\"" + a.name() + "\", " +
-                    a.name() + "EnumToString( " + a.name() + "() ));";
+        QString data = Namer::getAccessor (a) + "()";
+        if (a.type() != Schema::Node::Enumeration) {
+            code += "   xml.writeAttribute (\"" + a.name() + "\", " +
+                    dataToStringConverter (data, a.type() ) + ");";
+        } else if (a.type() == Schema::Node::Enumeration) {
+            code += "    xml.writeAttribute (\"" + a.name() + "\", " +
+                    a.name () + "EnumToString (" + a.name() + "()));";
         }
     }
 

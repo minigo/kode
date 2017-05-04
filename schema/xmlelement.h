@@ -34,24 +34,24 @@ namespace XSD {
 class SCHEMA_EXPORT XmlElement
 {
 public:
-    XmlElement();
-    XmlElement( const QString &nameSpace );
-    XmlElement( const XmlElement &other );
-    virtual ~XmlElement();
+    XmlElement ();
+    XmlElement (const QString &nameSpace);
+    XmlElement (const XmlElement &other);
+    virtual ~XmlElement ();
 
-    XmlElement &operator=( const XmlElement &other );
+    XmlElement &operator = (const XmlElement &other);
 
-    void setName( const QString &name );
-    QString name() const;
+    void setName (const QString &name);
+    QString name () const;
 
-    void setNameSpace( const QString &nameSpace );
-    QString nameSpace() const;
+    void setNameSpace (const QString &nameSpace);
+    QString nameSpace () const;
 
-    QName qualifiedName() const;
+    QName qualifiedName () const;
 
-    void addAnnotation( const Annotation & );
-    void setAnnotations( const Annotation::List & );
-    Annotation::List annotations() const;
+    void addAnnotation (const Annotation &);
+    void setAnnotations (const Annotation::List &);
+    Annotation::List annotations () const;
 
 private:
     class Private;

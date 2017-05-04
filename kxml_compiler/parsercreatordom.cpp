@@ -97,7 +97,7 @@ void ParserCreatorDom::createElementParser( KODE::Class &c,
             if ( it != elementRelations.constBegin() ) condition = "else ";
             condition += "if";
 
-            code += condition + " ( e.tagName() == \"" + (*it).target() + "\" ) {";
+            code += condition + " (e.tagName() == \"" + (*it).target() + "\") {";
             code.indent();
 
             QString className = Namer::getClassName( (*it).target() );

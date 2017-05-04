@@ -27,52 +27,52 @@ namespace XSD {
 class XSDType::Private
 {
 public:
-    Private()
-      : mContentModel( SIMPLE )
+    Private ()
+        : _contentModel (SIMPLE)
     {}
 
-    ContentModel mContentModel;
+    ContentModel _contentModel;
 };
 
-XSDType::XSDType()
-  : XmlElement(), d(new Private)
+XSDType::XSDType ()
+    : XmlElement ()
+    , d (new Private)
 {
 }
 
-XSDType::XSDType( const QString &nameSpace )
-  : XmlElement( nameSpace ), d(new Private)
+XSDType::XSDType (const QString &nameSpace)
+    : XmlElement (nameSpace)
+    , d (new Private)
 {
 }
 
-XSDType::XSDType( const XSDType &other )
-  : XmlElement( other ), d(new Private)
+XSDType::XSDType (const XSDType &other)
+    : XmlElement (other)
+    , d (new Private)
 {
-  *d = *other.d;
+    *d = *other.d;
 }
 
 XSDType::~XSDType()
 {
-  delete d;
+    delete d;
 }
 
-XSDType &XSDType::operator=( const XSDType &other )
+XSDType &XSDType::operator = (const XSDType &other)
 {
-  if ( this == &other )
+    if ( this == &other )
+        return *this;
+
+    *d = *other.d;
     return *this;
-
-  *d = *other.d;
-
-  return *this;
 }
 
-void XSDType::setContentModel( ContentModel contentModel )
-{
-  d->mContentModel = contentModel;
+void XSDType::setContentModel (ContentModel contentModel) {
+    d->_contentModel = contentModel;
 }
 
-XSDType::ContentModel XSDType::contentModel() const
-{
-  return d->mContentModel;
+XSDType::ContentModel XSDType::contentModel () const {
+    return d->_contentModel;
 }
 
 }

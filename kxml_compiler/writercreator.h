@@ -38,12 +38,12 @@ protected:
 
     QString dataToStringConverter( const QString &data, Schema::Node::Type );
 
-    KODE::Code createAttributeWriter( const Schema::Element &element );
+    KODE::Code createAttributeWriter (const Schema::Element &element);
 
 private:
-    KODE::File &mFile;
-    Schema::Document &mDocument;
-    QString mDtd;
+    KODE::File &_file;
+    Schema::Document &_document;
+    QString _dtd;
 };
 
 #endif

@@ -27,7 +27,7 @@
 
 class Namer
 {
-  public:
+public:
     static QString getClassName( const Schema::Element & );
     static QString getClassName( const Schema::Attribute & );
     static QString getClassName( const QString & );
@@ -40,7 +40,7 @@ class Namer
     static QString getMutator( const Schema::Attribute & );
     static QString getMutator( const QString & );
 
-  protected:
+protected:
     static QString upperFirst( const QString &str );
     static QString lowerFirst( const QString &str );
 };

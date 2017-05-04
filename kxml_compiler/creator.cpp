@@ -128,21 +128,21 @@ void Creator::createProperty( KODE::Class &c,
     KODE::MemberVariable v( Namer::getClassName( name ), type );
     c.addMemberVariable( v );
 
-    KODE::Function mutator( Namer::getMutator( name ), "void" );
-    if ( type == "int" || type == "double" ) {
-        mutator.addArgument( type + " v" );
+    KODE::Function mutator (Namer::getMutator (name), "void");
+    if (type == "int" || type == "double") {
+        mutator.addArgument (type + " v");
     } else {
-        mutator.addArgument( "const " + type + " &v" );
+        mutator.addArgument ("const " + type + " &v");
     }
-    mutator.addBodyLine( v.name() + " = v;" );
-    if ( _createCrudFunctions ) {
-        if ( name != "UpdatedAt" && name != "CreatedAt" ) {
-            if ( description.hasProperty( "UpdatedAt" ) ) {
-                mutator.addBodyLine( "setUpdatedAt( QDateTime::currentDateTime() );" );
+    mutator.addBodyLine (v.name() + " = v;");
+    if (_createCrudFunctions) {
+        if (name != "UpdatedAt" && name != "CreatedAt") {
+            if ( description.hasProperty("UpdatedAt")) {
+                mutator.addBodyLine ("setUpdatedAt (QDateTime::currentDateTime ());");
             }
         }
     }
-    c.addFunction( mutator );
+    c.addFunction (mutator);
 
     KODE::Function accessor( Namer::getAccessor( name ), type );
     accessor.setConst( true );
@@ -154,29 +154,35 @@ void Creator::createProperty( KODE::Class &c,
     c.addFunction( accessor );
 }
 
-void Creator::createCrudFunctions( KODE::Class &c, const QString &type )
+void Creator::createCrudFunctions (KODE::Class &c, const QString &type)
 {
-    if ( !c.hasEnum( "Flags" ) ) {
+    if (!c.hasEnum ("Flags")) {
         QStringList enumValues;
         enumValues << "None" << "AutoCreate";
-        KODE::Enum flags( "Flags", enumValues );
-        c.addEnum( flags );
+        KODE::Enum flags ("Flags", enumValues);
+        c.addEnum (flags);
     }
 
-    KODE::Function finder( "find" + type, type );
+    KODE::Function finder ("find" + type, type);
 
-    finder.addArgument( "const QString &id" );
-    finder.addArgument( KODE::Function::Argument( "Flags flags", "Flags_None" ) );
+    finder.addArgument ("const QString &id");
+    finder.addArgument (KODE::Function::Argument ("Flags flags", "Flags_None"));
 
-    QString listMember = "m" + type + "List";
+    //-- now
+    QString ntype = type;
+    ntype[0].toLower ();
+    QString listMember = "_" + ntype + "List";
+    //-- was
+    //QString listMember = "m" + type + "List";
+    //-----------------
 
     KODE::Code code;
-    code += "foreach( " + type + " v, " + listMember + " ) {";
-    code += "  if ( v.id() == id ) return v;";
+    code += "foreach (" + type + " v, " + listMember + ") {";
+    code += "   if (v.id () == id) return v;";
     code += "}";
     code += type + " v;";
-    code += "if ( flags == Flags_AutoCreate ) {";
-    code += "  v.setId( id );";
+    code += "if (flags == Flags_AutoCreate) {";
+    code += "   v.setId (id);";
     code += "}";
     code += "return v;";
 
@@ -184,21 +190,21 @@ void Creator::createCrudFunctions( KODE::Class &c, const QString &type )
 
     c.addFunction( finder );
 
-    KODE::Function inserter( "insert", "bool" );
+    KODE::Function inserter ("insert", "bool");
 
     code.clear();
 
-    inserter.addArgument( "const " + type + " &v" );
+    inserter.addArgument ("const " + type + " &v");
 
     code += "int i = 0;";
-    code += "for( ; i < " + listMember + ".size(); ++i ) {";
-    code += "  if ( " + listMember + "[i].id() == v.id() ) {";
-    code += "    " + listMember + "[i] = v;";
-    code += "    return true;";
-    code += "  }";
+    code += "for ( ; i < " + listMember + ".size(); ++i) {";
+    code += "   if (" + listMember + "[i].id () == v.id ()) {";
+    code += "       " + listMember + "[i] = v;";
+    code += "       return true;";
+    code += "   }";
     code += "}";
-    code += "if ( i == " + listMember + ".size() ) {";
-    code += "  add" + type + "( v );";
+    code += "if (i == " + listMember + ".size ()) {";
+    code += "   add" + type + "(v);";
     code += "}";
     code += "return true;";
 
@@ -213,22 +219,22 @@ void Creator::createCrudFunctions( KODE::Class &c, const QString &type )
     code.clear();
 
     code += type + "::List::Iterator it;";
-    code += "for( it = " + listMember + ".begin(); it != " + listMember +
-            ".end(); ++it ) {";
-    code += "  if ( (*it).id() == v.id() ) break;";
+    code += "for (it = " + listMember + ".begin (); it != " + listMember +
+            ".end (); ++it) {";
+    code += "   if ((*it).id () == v.id ()) break;";
     code += "}";
-    code += "if ( it != " + listMember + ".end() ) {";
-    code += "  " + listMember + ".erase( it );";
+    code += "if (it != " + listMember + ".end ()) {";
+    code += "   " + listMember + ".erase (it);";
     code += "}";
     code += "return true;";
 
-    remover.setBody( code );
+    remover.setBody (code);
 
-    c.addFunction( remover );
+    c.addFunction (remover);
 }
 
 
-ClassDescription Creator::createClassDescription(
+ClassDescription Creator::createClassDescription (
         const Schema::Element &element )
 {
     ClassDescription description( Namer::getClassName( element ) );
@@ -247,9 +253,8 @@ ClassDescription Creator::createClassDescription(
         }
     }
 
-    if ( element.text() ) {
+    if ( element.text() )
         description.addProperty( typeName( element.type() ), "Value" );
-    }
 
     foreach( Schema::Relation r, element.elementRelations() ) {
         Schema::Element targetElement = _document.element( r );
@@ -298,13 +303,6 @@ ClassDescription Creator::createClassDescription(
 
 void Creator::createClass (const Schema::Element &element)
 {
-    if (element.isEmpty ()) {
-        qCritical () << "[Creator][createClass] Could not create class for the empty element"
-                     << element.name ()
-                     << element.identifier ();
-        return;
-    }
-
     if (!element.isValid ()) {
         qCritical () << "[Creator][createClass] Could not create class for the invalid element"
                      << element.name ()
@@ -366,15 +364,16 @@ void Creator::createClass (const Schema::Element &element)
         }
     }
 
-    foreach( ClassProperty p, description.properties() ) {
-        if ( p.isList() ) {
-            registerListTypedef( p.type() );
+    foreach (ClassProperty p, description.properties ())
+    {
+        if (p.isList ()) {
+            registerListTypedef (p.type ());
 
-            c.addHeaderInclude( "QList" );
-            QString listName = p.name() + "List";
+            c.addHeaderInclude ("QList");
+            QString listName = p.name () + "List";
 
-            KODE::Function adder( "add" + p.type(), "void" );
-            adder.addArgument( "const " + p.type() + " &v" );
+            KODE::Function adder ("add" + p.type (), "void");
+            adder.addArgument ("const " + p.type () + " &v");
 
             KODE::Code code;
             code += 'm' + KODE::Style::upperFirst (listName) + ".append (v);";
@@ -385,11 +384,10 @@ void Creator::createClass (const Schema::Element &element)
 
             createProperty( c, description, p.type() + "::List", listName );
 
-            if ( _createCrudFunctions && p.targetHasId() ) {
-                createCrudFunctions( c, p.type() );
-            }
+            if (_createCrudFunctions && p.targetHasId ())
+                createCrudFunctions (c, p.type ());
         } else {
-            createProperty( c, description, p.type(), p.name() );
+            createProperty (c, description, p.type (), p.name ());
         }
     }
 
@@ -424,12 +422,13 @@ void Creator::createElementParser (KODE::Class &c, const Schema::Element &e)
     delete parserCreator;
 }
 
-void Creator::registerListTypedef( const QString &type )
+void Creator::registerListTypedef (const QString &type)
 {
-    if ( !_listTypedefs.contains( type ) ) _listTypedefs.append( type );
+    if (!_listTypedefs.contains (type))
+        _listTypedefs.append (type);
 }
 
-void Creator::createListTypedefs()
+void Creator::createListTypedefs ()
 {
     QStringList::ConstIterator it;
     for( it = _listTypedefs.constBegin(); it != _listTypedefs.constEnd(); ++it ) {
@@ -559,7 +558,7 @@ void Creator::setFilename( const QString& baseName )
     _baseName = baseName;
 }
 
-QString Creator::typeName( Schema::Node::Type type )
+QString Creator::typeName (Schema::Node::Type type)
 {
     if ( type == Schema::Element::DateTime ) {
         return "QDateTime";
@@ -575,16 +574,13 @@ QString Creator::typeName( Schema::Node::Type type )
 }
 
 
-ParserCreator::ParserCreator( Creator *c )
-    : _creator( c )
+ParserCreator::ParserCreator (Creator *c)
+    : _creator (c)
 {
 }
 
-ParserCreator::~ParserCreator()
-{
-}
+ParserCreator::~ParserCreator () {}
 
-Creator *ParserCreator::creator() const
-{
+Creator *ParserCreator::creator () const {
     return _creator;
 }

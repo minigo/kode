@@ -153,4 +153,10 @@ void ComplexType::addElement (const Element &element) {
     d->_elements.append (element);
 }
 
+bool ComplexType::isValid () {
+    if (d->_baseTypeName.qname ().isEmpty ())
+        return false;
+    return true;
+}
+
 }

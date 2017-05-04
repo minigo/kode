@@ -74,15 +74,21 @@ Element::List Document::usedElements () const
 
 void Document::findUsedElements (const Element &e) const
 {
+//    if (e.name () == "MOOTWSymbolModifiers") {
+//        //а внутри Echelon
+//        qDebug () << e.name () << e.baseType ();
+//    }
+
     addUsedElement (e);
 
     foreach (Relation r, e.elementRelations ()) {
         Element e2 = element (r);
 
-        if (e2.isEmpty ()) {
-            qWarning () << "[Document][findUsedElements] Empty element for relation" << r.target ();
-            continue;
-        }
+        //-- оказывается это перебор
+        //if (e2.isEmpty ()) {
+        //    qWarning () << "[Document][findUsedElements] Empty element for relation" << r.target ();
+        //    continue;
+        //}
 
         if (!e2.isValid ()) {
             qWarning () << "[Document][findUsedElements] Element is not valid for relation" << r.target ();
@@ -295,7 +301,7 @@ Node::Type Node::baseType () const {
 }
 
 bool Node::isValid () const {
-    return !_identifier.isEmpty() && !_name.isEmpty();
+    return !_identifier.isEmpty () && !_name.isEmpty ();
 }
 
 void Node::setEnumerationValues (const QStringList &v) {
@@ -400,28 +406,28 @@ bool Element::hasAttributeRelation( const QString &identifier ) const
     return false;
 }
 
-Relation::List Element::attributeRelations() const {
+Relation::List Element::attributeRelations () const {
     return _attributeRelations;
 }
 
-bool Element::hasAttributeRelations() const {
+bool Element::hasAttributeRelations () const {
     return !_attributeRelations.isEmpty();
 }
 
-bool Element::mixed() const {
+bool Element::mixed () const {
     return _text && !_elementRelations.isEmpty();
 }
 
-void Element::setText( bool text ) {
+void Element::setText (bool text) {
     _text = text;
 }
 
-bool Element::text() const {
+bool Element::text () const {
     return _text;
 }
 
-bool Element::isEmpty() const {
-    return !_text && _elementRelations.isEmpty();
+bool Element::isEmpty () const {
+    return !_text && _elementRelations.isEmpty ();
 }
 
 Attribute::Attribute () {}

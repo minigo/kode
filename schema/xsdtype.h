@@ -79,18 +79,17 @@ public:
         ANYURI
     };
 
-    XSDType();
-    XSDType( const QString& );
-    XSDType( const XSDType &other );
-    virtual ~XSDType();
+    XSDType ();
+    XSDType (const QString&);
+    XSDType (const XSDType &other);
+    virtual ~XSDType ();
 
-    XSDType &operator=( const XSDType &other );
+    XSDType &operator = (const XSDType &other);
 
-    void setContentModel( ContentModel contentModel);
-    ContentModel contentModel() const;
+    void setContentModel (ContentModel contentModel);
+    ContentModel contentModel () const;
 
-    virtual bool isSimple() const
-    {
+    virtual bool isSimple () const {
         return true;
     }
 

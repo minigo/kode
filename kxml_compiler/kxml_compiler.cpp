@@ -57,7 +57,7 @@
 
 using namespace KXML;
 
-int main( int argc, char **argv )
+int main (int argc, char **argv)
 {
     QCoreApplication app( argc, argv );
     KAboutData aboutData( "kxml_compiler", 0, ki18n("KDE xml compiler"), "0.1",
@@ -166,19 +166,21 @@ int main( int argc, char **argv )
         schemaDocument = p.convertToSchema (start);
     } else if ( args->isSet( "xml" ) || fi.suffix() == "xml" ) {
         ParserXml schemaParser;
-        schemaParser.setVerbose( verbose );
-        schemaDocument = schemaParser.parse( schemaFile );
+        schemaParser.setVerbose (verbose);
+        schemaDocument = schemaParser.parse (schemaFile);
     } else {
-        kError() <<"Unable to determine schema type.";
+        qCritical () << "Unable to determine schema type.";
         return 1;
     }
 
     if (verbose) {
         qDebug () << "--- SCHEMA:";
         schemaDocument.dump ();
-
         qDebug () << "Begin creating code";
     }
+
+//    Schema::Element el = schemaDocument.element ("Echelon");
+//    qDebug () << el.name () << el.type ();
 
     Creator::XmlParserType pt;
     if (args->isSet ("external-parser"))

@@ -59,17 +59,17 @@ public:
       Parse schema from file. The file has to be open. Returns true on success,
       otherwise false.
     */
-    bool parseFile( ParserContext *context, QFile &file );
-    bool parseString( ParserContext *context, const QString &data );
+    bool parseFile (ParserContext *context, QFile &file);
+    bool parseString (ParserContext *context, const QString &data);
 
-    bool parseSchemaTag( ParserContext *context, const QDomElement &element );
+    bool parseSchemaTag (ParserContext *context, const QDomElement &element);
 
-    QString targetNamespace() const;
+    QString targetNamespace () const;
 
     /**
       Returns the default schema URI.
      */
-    static QString schemaUri();
+    static QString schemaUri ();
 
     //------------------------- Debug methods
 
@@ -89,12 +89,12 @@ private:
      * @param context Current parser context.
      * @param element DOM element to parse.
      */
-    void parseInclude( ParserContext *context, const QDomElement& element);
+    void parseInclude (ParserContext *context, const QDomElement& element);
     void addGlobalElement (const Element &);
-    void addGlobalAttribute( const Attribute & );
-    AttributeGroup parseAttributeGroup( ParserContext *context, const QDomElement& );
+    void addGlobalAttribute (const Attribute &);
+    AttributeGroup parseAttributeGroup (ParserContext *context, const QDomElement&);
 
-    Annotation::List parseAnnotation( ParserContext *context, const QDomElement& );
+    Annotation::List parseAnnotation (ParserContext *context, const QDomElement&);
     ComplexType parseComplexType (ParserContext *context, const QDomElement&);
 
     void all (ParserContext *context, const QDomElement&, ComplexType&);
@@ -111,7 +111,7 @@ private:
     void addAny( ParserContext *context, const QDomElement&, ComplexType& );
     void addAnyAttribute( ParserContext *context, const QDomElement&, ComplexType& );
 
-    SimpleType parseSimpleType( ParserContext *context, const QDomElement& );
+    SimpleType parseSimpleType (ParserContext *context, const QDomElement&);
     void parseRestriction( ParserContext *context, const QDomElement&, SimpleType& );
     void parseComplexContent( ParserContext *context, const QDomElement&, ComplexType& );
     void parseSimpleContent( ParserContext *context, const QDomElement&, ComplexType& );

@@ -38,7 +38,7 @@ namespace KODE {
  */
 class KODE_EXPORT MemberVariable : public Variable
 {
-  public:
+public:
     typedef QList<MemberVariable> List;
 
     /**
@@ -70,7 +70,7 @@ class KODE_EXPORT MemberVariable : public Variable
      */
     MemberVariable& operator=( const MemberVariable &other );
 
-  private:
+private:
     class Private;
     Private *d;
 };

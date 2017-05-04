@@ -27,135 +27,122 @@ namespace XSD {
 class Attribute::Private
 {
 public:
-    Private()
-     : mQualified(false), mUse(false)
+    Private ()
+        : _qualified (false)
+        , _use (false)
     {}
 
-    QName mType;
-    QString mDocumentation;
-    QString mDefaultValue;
-    QString mFixedValue;
-    bool mQualified;
-    bool mUse;
-    QName mReference;
-    QName mArrayType;
+    QName _type;
+    QString _documentation;
+    QString _defaultValue;
+    QString _fixedValue;
+    bool _qualified;
+    bool _use;
+    QName _reference;
+    QName _arrayType;
 };
 
-Attribute::Attribute()
-  : XmlElement(), d(new Private)
+Attribute::Attribute ()
+    : XmlElement ()
+    , d (new Private)
 {
 }
 
-Attribute::Attribute( const QString &nameSpace )
-  : XmlElement( nameSpace ), d(new Private)
+Attribute::Attribute (const QString &nameSpace)
+    : XmlElement (nameSpace)
+    , d (new Private)
 {
 }
 
-Attribute::Attribute( const Attribute &other )
- : XmlElement( other ), d(new Private)
+Attribute::Attribute (const Attribute &other)
+    : XmlElement (other)
+    , d (new Private)
 {
-  *d = *other.d;
+    *d = *other.d;
 }
 
-Attribute::~Attribute()
+Attribute::~Attribute ()
 {
-  delete d;
+    delete d;
 }
 
-Attribute &Attribute::operator=( const Attribute &other )
+Attribute &Attribute::operator = (const Attribute &other)
 {
-  if( this == &other )
+    if (this == &other)
+        return *this;
+
+    *d = *other.d;
+    XmlElement::operator=( other );
+
     return *this;
-
-  *d = *other.d;
-  XmlElement::operator=( other );
-
-  return *this;
 }
 
-void Attribute::setType( const QName &type )
-{
-  d->mType = type;
+void Attribute::setType (const QName &type) {
+    d->_type = type;
 }
 
-QName Attribute::type() const
-{
-  return d->mType;
+QName Attribute::type () const {
+    return d->_type;
 }
 
-void Attribute::setDocumentation( const QString &documentation )
-{
-  d->mDocumentation = documentation;
+void Attribute::setDocumentation (const QString &documentation) {
+    d->_documentation = documentation;
 }
 
-QString Attribute::documentation() const
-{
-  return d->mDocumentation;
+QString Attribute::documentation () const {
+    return d->_documentation;
 }
 
-void Attribute::setDefaultValue( const QString &defaultValue )
-{
-  d->mDefaultValue = defaultValue;
+void Attribute::setDefaultValue (const QString &defaultValue) {
+    d->_defaultValue = defaultValue;
 }
 
-QString Attribute::defaultValue() const
-{
-  return d->mDefaultValue;
+QString Attribute::defaultValue () const {
+    return d->_defaultValue;
 }
 
-void Attribute::setFixedValue( const QString &fixedValue )
-{
-  d->mFixedValue = fixedValue;
+void Attribute::setFixedValue (const QString &fixedValue) {
+    d->_fixedValue = fixedValue;
 }
 
-QString Attribute::fixedValue() const
-{
-  return d->mFixedValue;
+QString Attribute::fixedValue () const {
+    return d->_fixedValue;
 }
 
-void Attribute::setIsQualified( bool isQualified )
-{
-  d->mQualified = isQualified;
+void Attribute::setIsQualified (bool isQualified) {
+    d->_qualified = isQualified;
 }
 
-bool Attribute::isQualified() const
-{
-  return d->mQualified;
+bool Attribute::isQualified () const {
+    return d->_qualified;
 }
 
-void Attribute::setIsUsed( bool isUsed )
-{
-  d->mUse = isUsed;
+void Attribute::setIsUsed (bool isUsed) {
+    d->_use = isUsed;
 }
 
-bool Attribute::isUsed() const
-{
-  return d->mUse;
+bool Attribute::isUsed () const {
+    return d->_use;
 }
 
-void Attribute::setReference( const QName &reference )
-{
-  d->mReference = reference;
+void Attribute::setReference (const QName &reference) {
+    d->_reference = reference;
 }
 
-QName Attribute::reference() const
-{
-  return d->mReference;
+QName Attribute::reference () const {
+    return d->_reference;
 }
 
-bool Attribute::isResolved() const
-{
-  return !d->mType.isEmpty();
+bool Attribute::isResolved () const {
+    return !d->_type.isEmpty ();
 }
 
-void Attribute::setArrayType( const QName &arrayType )
-{
-  d->mArrayType = arrayType;
+void Attribute::setArrayType (const QName &arrayType) {
+    d->_arrayType = arrayType;
 }
 
-QName Attribute::arrayType() const
-{
-  return d->mArrayType;
+QName Attribute::arrayType () const {
+    return d->_arrayType;
 }
 
 }

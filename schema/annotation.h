@@ -30,29 +30,29 @@ namespace XSD {
 
 class SCHEMA_EXPORT Annotation
 {
-  public:
+public:
     class List : public QList<Annotation>
     {
-      public:
+    public:
         QString documentation() const;
     };
 
-    Annotation();
-    Annotation( const QDomElement &element );
-    Annotation( const Annotation &other );
-    ~Annotation();
+    Annotation ();
+    Annotation (const QDomElement &element);
+    Annotation (const Annotation &other);
+    ~Annotation ();
 
     Annotation &operator=( const Annotation &other );
 
-    void setDomElement( const QDomElement &element );
-    QDomElement domElement() const;
+    void setDomElement (const QDomElement &element);
+    QDomElement domElement () const;
 
-    bool isDocumentation() const;
-    bool isAppinfo() const;
+    bool isDocumentation () const;
+    bool isAppinfo () const;
 
-    QString documentation() const;
+    QString documentation () const;
 
-  private:
+private:
     class Private;
     Private *d;
 };

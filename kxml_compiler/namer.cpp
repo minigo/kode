@@ -72,12 +72,10 @@ QString Namer::getMutator( const Schema::Element &element )
     return getMutator( element.name() );
 }
 
-QString Namer::getMutator( const Schema::Attribute &attribute )
-{
-    return getMutator( attribute.name() );
+QString Namer::getMutator (const Schema::Attribute &attribute) {
+    return getMutator (attribute.name ());
 }
 
-QString Namer::getMutator( const QString &elementName )
-{
-    return "set" + getClassName( elementName );
+QString Namer::getMutator (const QString &elementName) {
+    return "set" + getClassName (elementName);
 }

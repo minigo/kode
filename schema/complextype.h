@@ -81,6 +81,8 @@ public:
     void addAttribute (const Attribute &attribute);
     void addElement (const Element &element);
 
+    bool isValid ();
+
 private:
     class Private;
     Private *d;

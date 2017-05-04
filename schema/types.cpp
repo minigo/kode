@@ -112,25 +112,30 @@ QStringList Types::namespaces () const {
 ComplexType Types::complexType (const Element &element) const
 {
     foreach (ComplexType type, d->_complexTypes) {
-        //-- now
+        //---- now
         if (element.type ().localName () == type.name ())
             return type;
-        //-- was
+        //---- was/author code
         //if (element.type () == type.name ())
         //    return type;
+        //-------------------------------------
+
     }
+
+    //qCritical () << "[Types][complexType] Type not found";
+    //qCritical () << "   element" << element.name ();
+    //qCritical () << "   type" << element.type ().qname ();
     return ComplexType ();
 }
 
 SimpleType Types::simpleType (const QName &typeName) const
 {
-    qDebug () << "[Types][simpleType]" << typeName.qname ();
     foreach (SimpleType type, d->_simpleTypes) {
-        qDebug () << "  BASETYPENAME:" << type.baseTypeName ().qname ();
-        if (type.qualifiedName() == typeName)
+        if (type.qualifiedName () == typeName)
             return type;
     }
-    qDebug () << "[Types][simpleType] Not found";
+
+    qCritical () << "[Types][simpleType] Type not found" << typeName.qname ();
     return SimpleType ();
 }
 
