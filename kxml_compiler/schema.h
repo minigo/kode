@@ -99,7 +99,8 @@ public:
         Enumeration,
         ComplexType,
         DateTime,
-        Decimal
+        Decimal,
+        Boolean
     };
 
     Node ();

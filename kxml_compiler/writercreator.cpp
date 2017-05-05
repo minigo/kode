@@ -71,7 +71,7 @@ void WriterCreator::createFileWriter (const QString &className, const QString &e
     _file.insertClass( c );
 }
 
-void WriterCreator::createElementWriter( KODE::Class &c,
+void WriterCreator::createElementWriter (KODE::Class &c,
                                          const Schema::Element &element )
 {
     KODE::Function writer( "writeElement", "void" );
@@ -84,20 +84,20 @@ void WriterCreator::createElementWriter( KODE::Class &c,
     QString tag = element.name();
 
     if ( element.isEmpty() ) {
-        code += "xml.writeEmptyElement( \"" + tag + "\" );";
+        code += "xml.writeEmptyElement (\"" + tag + "\");";
     } else if ( element.text() ) {
         if ( element.type() == Schema::Element::Date ) {
-            code += "if ( value().isValid() ) {";
+            code += "if (value ().isValid ()) {";
         } else {
-            code += "if ( !value().isEmpty() ) {";
+            code += "if (!value ().isEmpty ()) {";
         }
-        code += "  xml.writeStartElement( \"" + tag + "\" );";
+        code += "  xml.writeStartElement (\"" + tag + "\");";
 
         code += createAttributeWriter( element );
 
         QString data = dataToStringConverter( "value()", element.type() );
-        code += "  xml.writeCharacters( " + data + " );";
-        code += "  xml.writeEndElement();";
+        code += "  xml.writeCharacters (" + data + ");";
+        code += "  xml.writeEndElement ();";
         code += "}";
     } else {
         bool pureList = true;
@@ -121,47 +121,47 @@ void WriterCreator::createElementWriter( KODE::Class &c,
             foreach( Schema::Relation r, element.elementRelations() ) {
                 if ( r.isList() ) {
                     conditions.append( "!" +
-                                       Namer::getAccessor( r.target() ) + "List().isEmpty()" );
+                                       Namer::getAccessor( r.target() ) + "List ().isEmpty ()" );
                 }
             }
-            code += "if ( " + conditions.join( " || " ) + " ) {";
+            code += "if (" + conditions.join( " || " ) + ") {";
             code.indent();
         }
 
-        code += "xml.writeStartElement( \"" + tag + "\" );";
+        code += "xml.writeStartElement (\"" + tag + "\");";
 
         code += createAttributeWriter( element );
 
         foreach( Schema::Relation r, element.elementRelations() ) {
             QString type = Namer::getClassName( r.target() );
             if ( r.isList() ) {
-                code += "foreach( " + type + " e, " +
-                        Namer::getAccessor( r.target() ) + "List() ) {";
-                code.indent();
-                code += "e.writeElement( xml );";
-                code.unindent();
+                code += "foreach (" + type + " e, " +
+                        Namer::getAccessor( r.target() ) + "List ()) {";
+                code.indent ();
+                code += "e.writeElement (xml);";
+                code.unindent ();
                 code += '}';
             } else {
                 Schema::Element e = _document.element( r );
-                QString accessor = Namer::getAccessor( e ) + "()";
+                QString accessor = Namer::getAccessor( e ) + " ()";
                 QString data = dataToStringConverter( accessor, e.type() );
                 if ( e.text() && !e.hasAttributeRelations() ) {
                     if ( e.type() == Schema::Element::String ) {
-                        code += "if ( !" + data + ".isEmpty() ) {";
-                        code.indent();
+                        code += "if (!" + data + ".isEmpty ()) {";
+                        code.indent ();
                     }
-                    code += "xml.writeTextElement(  \"" + e.name() + "\", " + data +
-                            " );";
+                    code += "xml.writeTextElement (\"" + e.name() + "\", " + data +
+                            ");";
                     if ( e.type() == Schema::Element::String ) {
                         code.unindent();
                         code += "}";
                     }
                 } else {
-                    code += Namer::getAccessor( r.target() ) + "().writeElement( xml );";
+                    code += Namer::getAccessor( r.target() ) + " ().writeElement (xml);";
                 }
             }
         }
-        code += "xml.writeEndElement();";
+        code += "xml.writeEndElement ();";
 
         if ( pureList ) {
             code.unindent();
@@ -176,17 +176,17 @@ void WriterCreator::createElementWriter( KODE::Class &c,
 
 // FIXME: Collect in class with other type specific functions from parsercreator
 // and creator
-QString WriterCreator::dataToStringConverter( const QString &data,
-                                              Schema::Node::Type type )
+QString WriterCreator::dataToStringConverter (const QString &data,
+                                              Schema::Node::Type type)
 {
     QString converter;
 
-    if ( type == Schema::Element::Integer || type == Schema::Element::Decimal ) {
-        converter = "QString::number( " + data + " )";
-    } else if ( type == Schema::Element::Date ) {
-        converter = data + ".toString( \"yyyyMMdd\" )";
-    } else if ( type == Schema::Element::DateTime ) {
-        converter = data + ".toString( \"yyyyMMddThhmmssZ\" )";
+    if (type == Schema::Element::Integer || type == Schema::Element::Decimal) {
+        converter = "QString::number (" + data + ")";
+    } else if (type == Schema::Element::Date) {
+        converter = data + ".toString (\"yyyyMMdd\")";
+    } else if (type == Schema::Element::DateTime) {
+        converter = data + ".toString (\"yyyyMMddThhmmssZ\")";
     } else {
         converter = data;
     }

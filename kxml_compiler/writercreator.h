@@ -31,7 +31,7 @@ public:
     void createFileWriter( const QString &className,
                            const QString &errorStream );
 
-    void createElementWriter( KODE::Class &c, const Schema::Element &e );
+    void createElementWriter (KODE::Class &c, const Schema::Element &e);
 
 protected:
     void createIndenter( KODE::File & );

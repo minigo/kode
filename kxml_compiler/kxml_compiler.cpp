@@ -179,8 +179,8 @@ int main (int argc, char **argv)
         qDebug () << "Begin creating code";
     }
 
-//    Schema::Element el = schemaDocument.element ("Echelon");
-//    qDebug () << el.name () << el.type ();
+    //Schema::Element el = schemaDocument.element ("Latitude");
+    //qDebug () << el.name () << el.type () << el.baseType ();
 
     Creator::XmlParserType pt;
     if (args->isSet ("external-parser"))

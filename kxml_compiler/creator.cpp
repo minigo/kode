@@ -50,37 +50,35 @@
 
 Creator::ClassFlags::ClassFlags (const Schema::Element &element)
 {
-    m_hasId = element.hasRelation( "id" );
-    m_hasUpdatedTimestamp = element.hasRelation( "updated_at" );
+    _hasId = element.hasRelation( "id" );
+    _hasUpdatedTimestamp = element.hasRelation( "updated_at" );
 }
 
-bool Creator::ClassFlags::hasUpdatedTimestamp() const
-{
-    return m_hasUpdatedTimestamp;
+bool Creator::ClassFlags::hasUpdatedTimestamp () const {
+    return _hasUpdatedTimestamp;
 }
 
-bool Creator::ClassFlags::hasId() const
-{
-    return m_hasId;
+bool Creator::ClassFlags::hasId () const {
+    return _hasId;
 }
 
 
-Creator::Creator( const Schema::Document &document, XmlParserType p )
-    : _document( document ), _xmlParserType( p ),
-      _verbose( false ), _useKde( false )
+Creator::Creator (const Schema::Document &document, XmlParserType p)
+    : _document (document)
+    , _xmlParserType (p)
+    , _verbose (false)
+    , _useKde (false)
 {
-    setExternalClassNames();
+    setExternalClassNames ();
 }
 
 // FIXME: Handle creation options via flags enum.
 
-void Creator::setVerbose( bool verbose )
-{
+void Creator::setVerbose (bool verbose) {
     _verbose = verbose;
 }
 
-void Creator::setUseKde( bool useKde )
-{
+void Creator::setUseKde (bool useKde) {
     _useKde = useKde;
 }
 
@@ -112,24 +110,22 @@ void Creator::setExternalClassNames()
     _writerClass.setName( _externalClassPrefix + "Writer" );
 }
 
-KODE::File &Creator::file()
-{
+KODE::File &Creator::file () {
     return _file;
 }
 
-void Creator::createProperty( KODE::Class &c,
+void Creator::createProperty (KODE::Class &c,
                               const ClassDescription &description, const QString &type,
                               const QString &name )
 {
-    if ( type.startsWith( "Q" ) ) {
-        c.addHeaderInclude( type );
-    }
+    if (type.startsWith ("Q"))
+        c.addHeaderInclude (type);
 
-    KODE::MemberVariable v( Namer::getClassName( name ), type );
-    c.addMemberVariable( v );
+    KODE::MemberVariable v (Namer::getClassName (name), type);
+    c.addMemberVariable (v);
 
     KODE::Function mutator (Namer::getMutator (name), "void");
-    if (type == "int" || type == "double") {
+    if (type == "int" || type == "double" || type == "float" || type == "bool") {
         mutator.addArgument (type + " v");
     } else {
         mutator.addArgument ("const " + type + " &v");
@@ -144,14 +140,14 @@ void Creator::createProperty( KODE::Class &c,
     }
     c.addFunction (mutator);
 
-    KODE::Function accessor( Namer::getAccessor( name ), type );
-    accessor.setConst( true );
-    if ( type.right(4) == "Enum" ) {
-        accessor.setReturnType( c.name() + "::" + type );
+    KODE::Function accessor (Namer::getAccessor (name), type);
+    accessor.setConst (true);
+    if (type.right (4) == "Enum") {
+        accessor.setReturnType (c.name () + "::" + type);
     }
 
-    accessor.addBodyLine( "return " + v.name() + ';' );
-    c.addFunction( accessor );
+    accessor.addBodyLine ("return " + v.name() + ';');
+    c.addFunction (accessor);
 }
 
 void Creator::createCrudFunctions (KODE::Class &c, const QString &type)
@@ -234,51 +230,52 @@ void Creator::createCrudFunctions (KODE::Class &c, const QString &type)
 }
 
 
-ClassDescription Creator::createClassDescription (
-        const Schema::Element &element )
+ClassDescription Creator::createClassDescription (const Schema::Element &element)
 {
-    ClassDescription description( Namer::getClassName( element ) );
+    ClassDescription description (Namer::getClassName (element));
 
     foreach( Schema::Relation r, element.attributeRelations() ) {
         Schema::Attribute a = _document.attribute( r );
         if ( a.enumerationValues().count() ) {
             if (!description.hasEnum(a.name())) {
-                description.addEnum(KODE::Enum(Namer::getClassName( a.name() ) + "Enum", a.enumerationValues()));
+                description.addEnum(KODE::Enum(Namer::getClassName (a.name ()) + "Enum", a.enumerationValues()));
             }
-            description.addProperty( Namer::getClassName( a.name() ) + "Enum",
-                                     Namer::getClassName( a.name() ) );
+            description.addProperty (Namer::getClassName (a.name ()) + "Enum",
+                                     Namer::getClassName (a.name ()));
         } else {
-            description.addProperty( typeName( a.type() ),
-                                     Namer::getClassName( a.name() ) );
+            description.addProperty (typeName (a.type ()),
+                                     Namer::getClassName (a.name ()));
         }
     }
 
-    if ( element.text() )
-        description.addProperty( typeName( element.type() ), "Value" );
+    if (element.text ())
+        description.addProperty (typeName (element.type ()), "Value");
 
-    foreach( Schema::Relation r, element.elementRelations() ) {
-        Schema::Element targetElement = _document.element( r );
+    foreach (Schema::Relation r, element.elementRelations ())
+    {
+        Schema::Element targetElement = _document.element (r);
 
-        QString targetClassName = Namer::getClassName( targetElement );
+        QString targetClassName = Namer::getClassName (targetElement);
 
-        if ( targetElement.text() && !targetElement.hasAttributeRelations() &&
-             !r.isList() ) {
-            if ( _verbose ) {
+        if (targetElement.text() && !targetElement.hasAttributeRelations () && !r.isList ())
+        {
+            if (_verbose)
                 qDebug() << "  FLATTEN";
-            }
-            if ( targetElement.type() == Schema::Element::Integer ) {
-                description.addProperty( "int", targetClassName );
-            } else if ( targetElement.type() == Schema::Element::Decimal ) {
-                description.addProperty( "double", targetClassName );
-            } else if ( targetElement.type() == Schema::Element::Date ) {
-                description.addProperty( "QDate", targetClassName );
+
+            if (targetElement.type () == Schema::Element::Integer) {
+                description.addProperty ("int", targetClassName);
+            } else if (targetElement.type () == Schema::Element::Decimal) {
+                description.addProperty ("double", targetClassName);
+            } else if (targetElement.type () == Schema::Element::Boolean) {
+                description.addProperty ("bool", targetClassName);
+            } else if (targetElement.type () == Schema::Element::Date) {
+                description.addProperty ("QDate", targetClassName);
             } else {
-                description.addProperty( "QString", targetClassName );
+                description.addProperty ("QString", targetClassName );
             }
         } else {
-            if ( !_file.hasClass( targetClassName ) ) {
+            if (!_file.hasClass (targetClassName))
                 createClass( targetElement );
-            }
 
             QString name = KODE::Style::lowerFirst( targetClassName );
 
@@ -326,7 +323,7 @@ void Creator::createClass (const Schema::Element &element)
 
     if (_processedClasses.contains (className)) {
         if (_verbose)
-            qDebug() << "   ALREADY DONE";
+            qDebug() << "   ALREADY DONE" << className;
         return;
     }
 
@@ -376,7 +373,7 @@ void Creator::createClass (const Schema::Element &element)
             adder.addArgument ("const " + p.type () + " &v");
 
             KODE::Code code;
-            code += 'm' + KODE::Style::upperFirst (listName) + ".append (v);";
+            code += '_' + KODE::Style::lowerFirst (listName) + ".append (v);";
 
             adder.setBody( code );
 
@@ -523,7 +520,7 @@ KODE::Class &Creator::parserClass () {
 
 QString Creator::errorStream() const
 {
-    return "qCritical()";
+    return "qCritical ()";
     //    if ( useKde() ) {
     //        return "kError()";
     //    } else {
@@ -533,7 +530,7 @@ QString Creator::errorStream() const
 
 QString Creator::debugStream () const
 {
-    return "qDebug()";
+    return "qDebug ()";
     //    if ( useKde() ) {
     //        return "kDebug()";
     //    } else {
@@ -546,28 +543,29 @@ void Creator::create ()
     Schema::Element startElement = _document.startElement();
     setExternalClassPrefix (KODE::Style::upperFirst (startElement.name()));
     createFileParser (startElement);
-    //  setDtd( schemaFilename.replace( "rng", "dtd" ) );
     createFileWriter (startElement);
 
     createListTypedefs ();
 }
 
-void Creator::setFilename( const QString& baseName )
+void Creator::setFilename (const QString& baseName)
 {
-    _file.setFilename( baseName );
+    _file.setFilename (baseName);
     _baseName = baseName;
 }
 
 QString Creator::typeName (Schema::Node::Type type)
 {
-    if ( type == Schema::Element::DateTime ) {
+    if (type == Schema::Element::DateTime) {
         return "QDateTime";
-    } else if ( type == Schema::Element::Date ) {
+    } else if (type == Schema::Element::Date) {
         return "QDate";
-    } else if ( type == Schema::Element::Integer ) {
+    } else if (type == Schema::Element::Integer) {
         return "int";
-    } else if ( type == Schema::Element::Decimal ) {
+    } else if (type == Schema::Element::Decimal) {
         return "double";
+    } else if (type == Schema::Element::Boolean) {
+        return "bool";
     } else {
         return "QString";
     }

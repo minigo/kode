@@ -265,12 +265,16 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
         qDebug() << "[ParserXsd][parse] Element:" << element.name ();
 
     Schema::Element e;
-    e.setIdentifier (element.name ());
-    e.setName (element.name ());
+//    if (element.name () == "modificationDate") {
+//        e.setIdentifier ("modificationDate");
+//        e.setName ("modificationDate");
+//        qDebug () << element.type ().qname ();
+//    } else {
+        e.setIdentifier (element.name ());
+        e.setName (element.name ());
+//    }
 
     XSD::ComplexType complexType = types.complexType (element);
-    //TODO: gim check complex type
-
     if (complexType.contentModel () == XSD::XSDType::MIXED)
     {
         if (_verbose)
@@ -282,18 +286,84 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
     {
         if (complexType.baseTypeName().qname() == "xs:string")
             e.setBaseType (Schema::Node::String);
+        else if (complexType.baseTypeName().qname().toLower () == "string")
+            e.setBaseType (Schema::Node::String);
         else if (complexType.baseTypeName().qname() == "xs:normalizedString")
             e.setBaseType (Schema::Node::NormalizedString);
+        else if (complexType.baseTypeName().qname() == "xs:int")
+            e.setBaseType (Schema::Node::Integer);
+        else if (complexType.baseTypeName().qname() == "xs:integer")
+            e.setBaseType (Schema::Node::Integer);
+        else if (complexType.baseTypeName().qname() == "xs:long")
+            e.setBaseType (Schema::Node::Integer);
+        else if (complexType.baseTypeName().qname() == "xs:float")
+            e.setBaseType (Schema::Node::Decimal);
+        else if (complexType.baseTypeName().qname() == "xs:double")
+            e.setBaseType (Schema::Node::Decimal);
+        else if (complexType.baseTypeName().qname() == "xs:decimal")
+            e.setBaseType (Schema::Node::Decimal);
+        else if (complexType.baseTypeName().qname() == "decimal")
+            e.setBaseType (Schema::Node::Decimal);
+        else if (complexType.baseTypeName().qname() == "xs:boolean")
+            e.setBaseType (Schema::Node::Boolean);
         else if (complexType.baseTypeName().qname() == "xs:token")
+            e.setBaseType (Schema::Node::Token);
+        else if (complexType.baseTypeName().qname() == "token")
             e.setBaseType (Schema::Node::Token);
     }
 
-    if (element.type ().qname () == "xs:string")
+    if (element.type ().qname () == "xs:string") {
         e.setType (Schema::Node::String);
-    else if (element.type ().qname () == "xs:normalizedString")
+        e.setText (true);//??
+    }
+    else if (element.type ().qname ().toLower () == "string") {
+        e.setType (Schema::Node::String);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:normalizedString") {
         e.setType (Schema::Node::NormalizedString);
-    else if (element.type ().qname () == "xs:token")
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:int") {
+        e.setType (Schema::Node::Integer);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:integer") {
+        e.setType (Schema::Node::Integer);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:long") {
+        e.setType (Schema::Node::Integer);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:float") {
+        e.setType (Schema::Node::Decimal);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:double") {
+        e.setType (Schema::Node::Decimal);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:decimal") {
+        e.setType (Schema::Node::Decimal);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "decimal") {
+        e.setType (Schema::Node::Decimal);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:boolean") {
+        e.setType (Schema::Node::Boolean);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "xs:token") {
         e.setType (Schema::Node::Token);
+        e.setText (true);//??
+    }
+    else if (element.type ().qname () == "token") {
+        e.setType (Schema::Node::Token);
+        e.setText (true);//??
+    }
     else {
         bool found = false;
 
@@ -303,48 +373,65 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
             if (lst[i].name () == element.type ().localName ()) {
                 e.setType (Schema::Node::ComplexType);
                 found = true;
+                break;
             }
 
         if (!found) {
+            //TODO: gim переделать!!!
             //-- не нашли, ищем в простых типах
             QList<XSD::SimpleType> lst = types.simpleTypes ();
             for (int i = 0; i < lst.size (); ++i)
                 if (lst[i].name () == element.type ().localName ())
                 {
+                    qDebug () << lst[i].baseTypeName ().qname ();
+
                     if (lst[i].baseTypeName ().qname () == "xs:string")
-                        e.setText (Schema::Node::String);
-                    else if (lst[i].baseTypeName ().qname () == "xs:int"
-                             || lst[i].baseTypeName ().qname () == "xs:integer")
-                        e.setText (Schema::Node::Integer);
+                        e.setType (Schema::Node::String);
+                    else if (lst[i].baseTypeName ().qname ().toLower () == "string")
+                        e.setType (Schema::Node::String);
+                    else if (lst[i].baseTypeName ().qname () == "xs:normalizedString")
+                        e.setType (Schema::Node::NormalizedString);
+                    else if (lst[i].baseTypeName ().qname () == "xs:int")
+                        e.setType (Schema::Node::Integer);
+                    else if (lst[i].baseTypeName ().qname () == "xs:integer")
+                        e.setType (Schema::Node::Integer);
+                    else if (lst[i].baseTypeName ().qname () == "xs:long")
+                        e.setType (Schema::Node::Integer);
+                    else if (lst[i].baseTypeName ().qname () == "xs:float")
+                        e.setType (Schema::Node::Decimal);
+                    else if (lst[i].baseTypeName ().qname () == "xs:double")
+                        e.setType (Schema::Node::Decimal);
+                    else if (lst[i].baseTypeName ().qname () == "xs:decimal")
+                        e.setType (Schema::Node::Decimal);
+                    else if (lst[i].baseTypeName ().qname () == "decimal")
+                        e.setType (Schema::Node::Decimal);
+                    else if (lst[i].baseTypeName ().qname () == "xs:token")
+                        e.setType (Schema::Node::Token);
+                    else if (lst[i].baseTypeName ().qname () == "token")
+                        e.setType (Schema::Node::Token);
+                    else if (lst[i].baseTypeName ().qname () == "xs:boolean")
+                        e.setType (Schema::Node::Boolean);
+                    else {
+                        e.setType (Schema::Node::String);
+                        qCritical () << "[ParserXsd][parseElement] Could not detect type" << lst[i].baseTypeName ().qname ();
+                    }
+
+                    e.setBaseType (e.type ());//??
+                    e.setText (true);//??
 
                     found = true;
-
-//                    qDebug () << element.name ();
-//                    qDebug () << element.type ().qname ();
-//                    qDebug () << lst[i].name ();
-//                    qDebug () << lst[i].subType ();
-//                    qDebug () << lst[i].baseTypeName ().qname ();
-//                    qDebug () << lst[i].listTypeName ().qname ();
-
-                    //if (lst[i].facetType () == XSD::SimpleType::ENUM) {
-                    //    e.setText (Schema::Node::Enumeration);
-                    //    found = true;
-                    //}
-                    //else {
-                    //    qCritical () << "[ParserXsd][parseElement] Could not detect SimpleType type";
-                    //    qCritical () << "   facetType" << lst[i].facetType ();
-                    //    qCritical () << "   element" << element.name ();
-                    //}
+                    break;
                 }
         }
 
-        if (!found)
+        if (!found) {
             qCritical () << "[ParserXsd][parseElement] Could not detect element type";
             qCritical () << "   element" << element.name ();
             qCritical () << "   type" << element.type ().qname ();
+        }
 
         //-- authors code
-        e.setType (Schema::Node::ComplexType);
+        //e.setType (Schema::Node::ComplexType);
         //--------------------------------------
     }
 
@@ -358,8 +445,7 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
         }
 
         if (_verbose) {
-            qDebug () << "  Element:" << subElement.name ();
-            qDebug () << "  " << subElement.minOccurs () << ","
+            qDebug () << "  Element:" << subElement.name () << subElement.minOccurs () << ","
                       << subElement.maxOccurs ();
         }
 
@@ -372,7 +458,7 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
 
         XSD::Compositor compositor = subElement.compositor ();
         if (_verbose)
-            qDebug () << "  Compositor" << compositor.type ();
+            qDebug () << "  Compositor:" << compositor.type ();
 
         if (compositor.type () == XSD::Compositor::Choice) {
             QString choice;
@@ -400,14 +486,32 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
         a.setName (attribute.name ());
 
         if (!attribute.type ().isEmpty ()) {
-            if (attribute.type().qname() == "xs:string")
+            if (attribute.type ().qname () == "xs:string")
                 a.setType (Schema::Node::String);
-            else if (attribute.type().qname() == "xs:integer")
+            if (attribute.type ().qname ().toLower () == "string")
+                a.setType (Schema::Node::String);
+            if (attribute.type ().qname () == "xs:ID")
+                a.setType (Schema::Node::String);
+            if (attribute.type().qname() == "xs:normalizedString")
+                a.setType (Schema::Node::String);
+            else if (attribute.type ().qname () == "xs:int")
                 a.setType (Schema::Node::Integer);
+            else if (attribute.type ().qname () == "xs:integer")
+                a.setType (Schema::Node::Integer);
+            else if (attribute.type().qname() == "xs:long")
+                a.setType (Schema::Node::Integer);
+            else if (attribute.type().qname() == "xs:float")
+                a.setType (Schema::Node::Decimal);
+            else if (attribute.type().qname() == "xs:double")
+                a.setType (Schema::Node::Decimal);
             else if (attribute.type().qname() == "xs:decimal")
+                a.setType (Schema::Node::Decimal);
+            else if (attribute.type().qname() == "decimal")
                 a.setType (Schema::Node::Decimal);
             else if (attribute.type().qname() == "xs:date")
                 a.setType (Schema::Node::Date);
+            else if (attribute.type().qname() == "xs:boolean")
+                a.setType (Schema::Node::Boolean);
             else {
                 XSD::SimpleType simpleType = types.simpleType (attribute.type ());
                 setType (a, simpleType);

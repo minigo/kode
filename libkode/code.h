@@ -72,10 +72,10 @@ class KODE_EXPORT Code
      */
     void setIndent( int indent );
 
-    /**
-     * Indents the code block by one level.
-     */
-    void indent();
+    //!
+    //! Indents the code block by one level.
+    //!
+    void indent ();
 
     /**
      * Unindents the code block by one level.
@@ -163,16 +163,16 @@ class KODE_EXPORT Code
      */
     Code &operator+=( const Code &block );
 
-    /**
-     * Returns a string filled up with spaces, depending on
-     * the level @param count and the indent value.
-     */
-    static QString spaces( int count );
+    //!
+    //! Returns a string filled up with spaces, depending on
+    //! the level @param count and the indent value.
+    //!
+    static QString spaces (int count);
 
-    /**
-     * Sets the default indentation used by indent().
-     */
-    static void setDefaultIndentation( int indent );
+    //!
+    //! Sets the default indentation used by indent().
+    //!
+    static void setDefaultIndentation (int indent);
 
     /**
      * Returns the default indentation used by indent().

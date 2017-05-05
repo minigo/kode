@@ -58,8 +58,8 @@ class ClassDescription
 
     QString name() const;
 
-    void addProperty( const ClassProperty & );
-    void addProperty( const QString &type, const QString &name );
+    void addProperty (const ClassProperty &);
+    void addProperty (const QString &type, const QString &name);
 
     ClassProperty::List properties() const;
 
@@ -73,9 +73,9 @@ class ClassDescription
     bool hasEnum( const QString &name ) const;
 
 private:
-    QString m_name;
+    QString _name;
     
-    ClassProperty::List m_properties;
+    ClassProperty::List _properties;
     KODE::Enum::List m_enums;
 };
 

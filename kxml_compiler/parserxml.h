@@ -34,18 +34,18 @@ namespace KXML {
 
 class KSCHEMA_EXPORT ParserXml
 {
-  public:
+public:
     ParserXml();
 
     Schema::Document parse( QFile & );
     void setVerbose( bool verbose );
 
-  protected:
+protected:
     Schema::Element parseElement( QXmlStreamReader &, bool isArray = false );
 
     Schema::Node::Type detectType( const QString &text );
 
-  private:
+private:
     Schema::Document mDocument;
     bool mVerbose;
 };

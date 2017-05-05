@@ -57,8 +57,8 @@ public:
         bool hasId() const;
 
     private:
-        bool m_hasUpdatedTimestamp;
-        bool m_hasId;
+        bool _hasUpdatedTimestamp;
+        bool _hasId;
     };
 
     enum XmlParserType { XmlParserDom, XmlParserDomExternal };

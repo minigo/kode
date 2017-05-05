@@ -33,44 +33,44 @@ using namespace KODE;
 class Printer::Private
 {
 public:
-    Private( Printer *parent )
-        : mParent( parent ),
-          mCreationWarning( false ),
-          mLabelsDefineIndent( true ),
-          mIndentLabels( true ),
-          mGenerator( "libkode" )
+    Private (Printer *parent)
+        : _parent (parent),
+          _creationWarning (false),
+          _labelsDefineIndent (false),
+          _indentLabels (false),
+          _generator ("libkode")
     {
     }
 
-    void addLabel( Code& code, const QString& label );
-    QString classHeader( const Class &classObject, bool publicMembers, bool nestedClass = false );
-    QString classImplementation( const Class &classObject, bool nestedClass = false );
-    void addFunctionHeaders( Code& code,
+    void addLabel (Code& code, const QString& label);
+    QString classHeader (const Class &classObject, bool publicMembers, bool nestedClass = false);
+    QString classImplementation (const Class &classObject, bool nestedClass = false);
+    void addFunctionHeaders (Code& code,
                              const Function::List &functions,
                              const QString &className,
-                             int access );
-    QString formatType( const QString& type ) const;
+                             int access);
+    QString formatType (const QString& type) const;
 
-    Printer *mParent;
-    Style mStyle;
-    bool mCreationWarning;
-    bool mLabelsDefineIndent;
-    bool mIndentLabels;
-    QString mGenerator;
-    QString mOutputDirectory;
-    QString mSourceFile;
+    Printer *_parent;
+    Style _style;
+    bool _creationWarning;
+    bool _labelsDefineIndent;
+    bool _indentLabels;
+    QString _generator;
+    QString _outputDirectory;
+    QString _sourceFile;
 };
 
 void Printer::Private::addLabel (Code& code, const QString& label)
 {
-    if (!mIndentLabels)
+    if (!_indentLabels)
         code.unindent ();
     code += label;
-    if (!mIndentLabels)
+    if (!_indentLabels)
         code.indent ();
 }
 
-QString Printer::Private::formatType( const QString& type ) const
+QString Printer::Private::formatType (const QString& type) const
 {
     QString s = type;
     if ( s.endsWith( '*' ) || s.endsWith( '&' ) ) {
@@ -84,7 +84,7 @@ QString Printer::Private::formatType( const QString& type ) const
     return s;
 }
 
-QString Printer::Private::classHeader( const Class &classObject, bool publicMembers, bool nestedClass )
+QString Printer::Private::classHeader (const Class &classObject, bool publicMembers, bool nestedClass)
 {
     Code code;
 
@@ -93,30 +93,30 @@ QString Printer::Private::classHeader( const Class &classObject, bool publicMemb
         const QStringList nsList = classObject.nameSpace().split("::");
         Q_FOREACH(const QString& ns, nsList) {
             code += "namespace " + ns + " {";
-            code.indent();
+            code.indent ();
             ++numNamespaces;
         }
     }
 
-    if ( nestedClass )
-        code.indent();
+    if (nestedClass)
+        code.indent ();
 
-    if ( !classObject.docs().isEmpty() ) {
+    if (!classObject.docs ().isEmpty ()) {
         code += "/**";
-        code.indent();
-        code.addFormattedText( classObject.docs() );
+        code.indent ();
+        code.addFormattedText (classObject.docs ());
         code.unindent();
         code += " */";
     }
 
     QString txt = "class ";
-    if ( !classObject.exportDeclaration().isEmpty() ) {
+    if (!classObject.exportDeclaration ().isEmpty ())
         txt += classObject.exportDeclaration().toUpper() + "_EXPORT ";
-    }
-    txt += mStyle.className( classObject.name() );
+
+    txt += _style.className (classObject.name ());
 
     Class::List baseClasses = classObject.baseClasses();
-    if ( !baseClasses.isEmpty() ) {
+    if (!baseClasses.isEmpty ()) {
         txt += " : ";
         Class::List::ConstIterator it;
         for ( it = baseClasses.constBegin(); it != baseClasses.constEnd(); ++it ) {
@@ -158,7 +158,7 @@ QString Printer::Private::classHeader( const Class &classObject, bool publicMemb
 
     Class::List nestedClasses = classObject.nestedClasses();
     // Generate nestedclasses
-    if ( !classObject.nestedClasses().isEmpty() ) {
+    if ( !classObject.nestedClasses ().isEmpty ()) {
         addLabel (code, "public:");
 
         Class::List::ConstIterator it, itEnd = nestedClasses.constEnd();
@@ -172,14 +172,14 @@ QString Printer::Private::classHeader( const Class &classObject, bool publicMemb
     Typedef::List typedefs = classObject.typedefs();
     if ( typedefs.count() > 0 ) {
         addLabel (code, "public:");
-        if ( mLabelsDefineIndent )
+        if ( _labelsDefineIndent )
             code.indent();
 
         Typedef::List::ConstIterator it;
         for ( it = typedefs.constBegin(); it != typedefs.constEnd(); ++it )
             code += (*it).declaration();
 
-        if ( mLabelsDefineIndent )
+        if ( _labelsDefineIndent )
             code.unindent();
         code.newLine();
     }
@@ -187,21 +187,21 @@ QString Printer::Private::classHeader( const Class &classObject, bool publicMemb
     Enum::List enums = classObject.enums();
     if ( enums.count() > 0 ) {
         addLabel( code, "public:" );
-        if ( mLabelsDefineIndent )
+        if ( _labelsDefineIndent )
             code.indent();
 
         Enum::List::ConstIterator it;
         for ( it = enums.constBegin(); it != enums.constEnd(); ++it )
             code += (*it).declaration();
 
-        if ( mLabelsDefineIndent )
+        if ( _labelsDefineIndent )
             code.unindent();
         code.newLine();
     }
 
-    Function::List functions = classObject.functions();
+    Function::List functions = classObject.functions ();
 
-    addFunctionHeaders( code, functions, classObject.name(), Function::Public );
+    addFunctionHeaders (code, functions, classObject.name(), Function::Public);
 
     if ( classObject.canBeCopied() && classObject.useDPointer() && !classObject.memberVariables().isEmpty() ) {
         Function cc( classObject.name() );
@@ -238,7 +238,7 @@ QString Printer::Private::classHeader( const Class &classObject, bool publicMemb
         else if ( !hasPrivateFunc || hasPrivateSlot )
             addLabel( code, "private:" );
 
-        if (mLabelsDefineIndent)
+        if (_labelsDefineIndent)
             code.indent();
 
         if ( classObject.useDPointer() && !classObject.memberVariables().isEmpty() ) {
@@ -264,7 +264,7 @@ QString Printer::Private::classHeader( const Class &classObject, bool publicMemb
                 code += decl;
             }
         }
-        if (mLabelsDefineIndent)
+        if (_labelsDefineIndent)
             code.unindent();
     }
 
@@ -348,7 +348,7 @@ QString Printer::Private::classImplementation( const Class &classObject, bool ne
         if ( f.virtualMode() == Function::PureVirtual && f.body().isEmpty() )
             continue;
 
-        code += mParent->functionSignature( f, functionClassName, true );
+        code += _parent->functionSignature( f, functionClassName, true );
 
         QStringList inits = f.initializers();
         if ( classObject.useDPointer() && !classObject.memberVariables().isEmpty() &&
@@ -402,7 +402,7 @@ QString Printer::Private::classImplementation( const Class &classObject, bool ne
         }
         cc.setBody( body );
 
-        code += mParent->functionSignature( cc, functionClassName, true );
+        code += _parent->functionSignature( cc, functionClassName, true );
 
         // call copy constructor of base classes
         QStringList list;
@@ -446,7 +446,7 @@ QString Printer::Private::classImplementation( const Class &classObject, bool ne
         body += "return *this;";
         op.setBody( body );
 
-        code += mParent->functionSignature( op, functionClassName, true );
+        code += _parent->functionSignature( op, functionClassName, true );
         code += '{';
         code.addBlock( op.body(), Code::defaultIndentation() );
         code += '}';
@@ -475,21 +475,21 @@ void Printer::Private::addFunctionHeaders( Code& code,
     for ( it = functions.constBegin(); it != functions.constEnd(); ++it ) {
         Function f = *it;
         if ( f.access() == access ) {
-            if ( !hasAccess ) {
-                addLabel( code, f.accessAsString() + ':' );
+            if (!hasAccess) {
+                addLabel (code, f.accessAsString() + ':');
                 hasAccess = true;
             }
-            if ( mLabelsDefineIndent )
+            if ( _labelsDefineIndent )
                 code.indent();
-            if ( !(*it).docs().isEmpty() ) {
+            if (!(*it).docs ().isEmpty ()) {
                 code += "/**";
-                code.indent();
-                code.addFormattedText( (*it).docs() );
-                code.unindent();
+                code.indent ();
+                code.addFormattedText ((*it).docs ());
+                code.unindent ();
                 code += " */";
             }
-            code += mParent->functionSignature( *it, className, false ) + ';';
-            if ( mLabelsDefineIndent )
+            code += _parent->functionSignature ( *it, className, false ) + ';';
+            if ( _labelsDefineIndent )
                 code.unindent();
             needNewLine = true;
         }
@@ -510,13 +510,13 @@ Printer::Printer( const Printer &other )
     : d( new Private( this ) )
 {
     *d = *other.d;
-    d->mParent = this;
+    d->_parent = this;
 }
 
 Printer::Printer( const Style &style )
     : d( new Private( this ) )
 {
-    d->mStyle = style;
+    d->_style = style;
 }
 
 Printer::~Printer()
@@ -530,42 +530,42 @@ Printer& Printer::operator=( const Printer &other )
         return *this;
 
     *d = *other.d;
-    d->mParent = this;
+    d->_parent = this;
 
     return *this;
 }
 
 void Printer::setCreationWarning( bool v )
 {
-    d->mCreationWarning = v;
+    d->_creationWarning = v;
 }
 
 void Printer::setGenerator( const QString &generator )
 {
-    d->mGenerator = generator;
+    d->_generator = generator;
 }
 
 void Printer::setOutputDirectory( const QString &outputDirectory )
 {
-    d->mOutputDirectory = outputDirectory;
+    d->_outputDirectory = outputDirectory;
 }
 
 void Printer::setSourceFile( const QString &sourceFile )
 {
-    d->mSourceFile = sourceFile;
+    d->_sourceFile = sourceFile;
 }
 
 void Printer::setLabelsDefineIndent( bool b )
 {
-    d->mLabelsDefineIndent = b;
+    d->_labelsDefineIndent = b;
 }
 
 void Printer::setIndentLabels( bool b )
 {
-    d->mIndentLabels = b;
+    d->_indentLabels = b;
 }
 
-QString Printer::functionSignature( const Function &function,
+QString Printer::functionSignature (const Function &function,
                                     const QString &className,
                                     bool forImplementation )
 {
@@ -585,26 +585,26 @@ QString Printer::functionSignature( const Function &function,
     }
 
     if ( forImplementation )
-        s += d->mStyle.className( className ) + "::";
+        s += d->_style.className( className ) + "::";
 
     if ( className == function.name() ) {
         // Constructor
-        s += d->mStyle.className( function.name() );
+        s += d->_style.className (function.name ());
     } else {
-        s += function.name();
+        s += function.name ();
     }
 
-    s += '(';
-    if ( function.hasArguments() ) {
+    s += " (";
+    if (function.hasArguments ()) {
         QStringList arguments;
-        foreach( Function::Argument argument, function.arguments() ) {
-            if ( !forImplementation ) {
-                arguments.append( argument.headerDeclaration() );
-            } else {
-                arguments.append( argument.bodyDeclaration() );
-            }
+        foreach (Function::Argument argument, function.arguments ()) {
+            if (!forImplementation)
+                arguments.append (argument.headerDeclaration ());
+            else
+                arguments.append (argument.bodyDeclaration ());
         }
-        s += ' ' + arguments.join( ", " ) + ' ';
+        //s += ' ' + arguments.join( ", " ) + ' ';
+        s += arguments.join (", ");
     }
     s += ')';
 
@@ -620,9 +620,9 @@ QString Printer::functionSignature( const Function &function,
 QString Printer::creationWarning() const
 {
     // Create warning about generated file
-    QString str = "// This file is generated by " + d->mGenerator;
-    if ( !d->mSourceFile.isEmpty() )
-        str += " from " + d->mSourceFile;
+    QString str = "// This file is generated by " + d->_generator;
+    if ( !d->_sourceFile.isEmpty() )
+        str += " from " + d->_sourceFile;
 
     str += ".\n";
 
@@ -674,7 +674,7 @@ void Printer::printHeader( const File &file )
 {
     Code out;
 
-    if ( d->mCreationWarning )
+    if ( d->_creationWarning )
         out += creationWarning();
 
     out.addBlock( licenseHeader( file ) );
@@ -795,8 +795,8 @@ void Printer::printHeader( const File &file )
     // Print to file
     QString filename = file.filenameHeader();
 
-    if ( !d->mOutputDirectory.isEmpty() )
-        filename.prepend( d->mOutputDirectory + '/' );
+    if ( !d->_outputDirectory.isEmpty() )
+        filename.prepend( d->_outputDirectory + '/' );
 
     //  KSaveFile::simpleBackupFile( filename, QString(), ".backup" );
 
@@ -817,7 +817,7 @@ void Printer::printImplementation( const File &file, bool createHeaderInclude )
 {
     Code out;
 
-    if ( d->mCreationWarning )
+    if ( d->_creationWarning )
         out += creationWarning();
 
     out.addBlock( licenseHeader( file ) );
@@ -938,8 +938,8 @@ void Printer::printImplementation( const File &file, bool createHeaderInclude )
     // Print to file
     QString filename = file.filenameImplementation();
 
-    if ( !d->mOutputDirectory.isEmpty() )
-        filename.prepend( d->mOutputDirectory + '/' );
+    if ( !d->_outputDirectory.isEmpty() )
+        filename.prepend( d->_outputDirectory + '/' );
 
     QFile implementation( filename );
     if ( !implementation.open( QIODevice::WriteOnly ) ) {

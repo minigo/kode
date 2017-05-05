@@ -37,7 +37,7 @@ namespace KWSDL {
 
 class TypeMap
 {
-  public:
+public:
 
     TypeMap();
     ~TypeMap();
@@ -68,12 +68,12 @@ class TypeMap
 
     void dump() const;
 
-  private:
+private:
     void addBuiltinType( const char* typeName, const char* localType );
 
     class Entry
     {
-      public:
+    public:
         Entry() : basicType(false), builtinType(false) {}
         bool basicType;
         bool builtinType;

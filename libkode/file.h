@@ -35,7 +35,7 @@ namespace KODE {
  */
 class KODE_EXPORT File
 {
-  public:
+public:
     /**
      * Creates a new file.
      */
@@ -227,7 +227,7 @@ class KODE_EXPORT File
      */
     Code fileCode() const;
 
-  private:
+private:
     class Private;
     Private *d;
 };

@@ -220,12 +220,12 @@ class KODE_EXPORT Function
     /**
      * Sets the @param documentation of the function.
      */
-    void setDocs( const QString &documentation );
+    void setDocs (const QString &documentation);
 
     /**
      * Returns the documentation of the function.
      */
-    QString docs() const;
+    QString docs () const;
 
   private:
     class FunctionPrivate;

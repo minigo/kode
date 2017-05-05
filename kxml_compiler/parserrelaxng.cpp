@@ -38,14 +38,18 @@ bool Pattern::isEmpty()
     return !optional && !zeroOrMore && !oneOrMore && !choice;
 }
 
-QString Pattern::asString()
+QString Pattern::asString ()
 {
-    if ( isEmpty() ) return "";
-    QString str = "( ";
-    if ( optional ) str += "optional ";
-    if ( zeroOrMore ) str += "zeroOrMore ";
-    if ( oneOrMore ) str += "oneOrMore ";
-    if ( choice ) str += "choice ";
+    if (isEmpty ()) return "";
+    QString str = " (";
+    if (optional)
+        str += "optional ";
+    if (zeroOrMore)
+        str += "zeroOrMore ";
+    if (oneOrMore)
+        str += "oneOrMore ";
+    if (choice)
+        str += "choice ";
     str += ')';
     return str;
 }
@@ -72,7 +76,7 @@ void ParserRelaxng::setVerbose( bool verbose )
     mVerbose = verbose;
 }
 
-Element *ParserRelaxng::parse( const QDomElement &docElement )
+Element *ParserRelaxng::parse (const QDomElement &docElement)
 {
     Element *start = 0;
 

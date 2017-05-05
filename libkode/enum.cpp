@@ -137,20 +137,20 @@ KODE::Function Enum::parserMethod () const
     bool first = true;
     foreach (QString enumItem, d->_enums) {
         if (first) {
-            code += "if ( v == \"" + enumItem + "\" ) {";
+            code += "if (v == \"" + enumItem + "\") {";
             first = false;
         } else {
-            code += "} else if ( v == \"" + enumItem + "\" ) {";
+            code += "} else if (v == \"" + enumItem + "\") {";
         }
         code.indent ();
         code += "return " + baseName + '_' + Style::sanitize(enumItem) + ";";
         code.unindent ();
     }
     code += "} else {";
-    code.indent();
+    code.indent ();
     code += "if (ok) *ok = false;";
     code += "return " + baseName + "_Invalid;";
-    code.unindent();
+    code.unindent ();
     code += "}";
     code.newLine();
     code += "return " + baseName + "_Invalid;";
