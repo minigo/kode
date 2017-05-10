@@ -50,6 +50,9 @@ protected:
 
     void parseElement (const XSD::Element &element, const XSD::Types &types);
 
+    void parseElementV1 (const XSD::Element &element, const XSD::Types &types);
+    Schema::Node::Type defineXsType (const QString &value);
+
 private:
     Schema::Document _document;
     bool _verbose;

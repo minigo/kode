@@ -91,25 +91,25 @@ QString Enum::name () const {
  */
 QString Enum::declaration () const
 {
-    QString retval( "enum " + d->_name + " {" );
+    QString retval ("enum " + d->_name + " {");
     uint value = 0;
     QStringList::ConstIterator it;
     QString baseName = name();
-    if ( d->_name.right(4) == "Enum" && d->_name.length() > 4 ) {
-        baseName = d->_name.left(d->_name.length() - 4);
-    }
+    if (d->_name.right (4) == "Enum" && d->_name.length () > 4 )
+        baseName = d->_name.left (d->_name.length () - 4);
 
-    for ( it = d->_enums.constBegin(); it != d->_enums.constEnd(); ++it, ++value ) {
-        if ( d->_combinable ) {
-            if ( it == d->_enums.constBegin() )
-                retval += QString( " %1_%2 = %3" ).arg( baseName ).arg( Style::sanitize( *it ) ).arg( 1 << value );
+
+    for (it = d->_enums.constBegin (); it != d->_enums.constEnd (); ++it, ++value) {
+        if (d->_combinable) {
+            if (it == d->_enums.constBegin ())
+                retval += QString (" %1_%2 = %3").arg (baseName).arg (Style::sanitize (*it)).arg (1 << value);
             else
-                retval += QString( ", %1_%2 = %3" ).arg( baseName ).arg( Style::sanitize( *it ) ).arg( 1 << value );
+                retval += QString (", %1_%2 = %3").arg (baseName).arg (Style::sanitize (*it)).arg (1 << value);
         } else {
-            if ( it == d->_enums.constBegin() )
-                retval += ' ' + baseName + '_' + Style::sanitize( *it );
+            if (it == d->_enums.constBegin ())
+                retval += ' ' + baseName + '_' + Style::sanitize (*it);
             else
-                retval += ", " + baseName + '_' + Style::sanitize( *it );
+                retval += ", " + baseName + '_' + Style::sanitize (*it);
         }
     }
 

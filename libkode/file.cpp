@@ -192,20 +192,19 @@ void File::insertClass (const Class &newClass)
     d->_classes.append( newClass );
 }
 
-Class::List File::classes() const
-{
+Class::List File::classes () const {
     return d->_classes;
 }
 
-bool File::hasClass( const QString &name )
+bool File::hasClass (const QString &name)
 {
     Class::List::ConstIterator it;
-    for ( it = d->_classes.constBegin(); it != d->_classes.constEnd(); ++it ) {
-        if ( (*it).name() == name )
+    for (it = d->_classes.constBegin (); it != d->_classes.constEnd (); ++it) {
+        if ((*it).name () == name)
             break;
     }
 
-    return it != d->_classes.constEnd();
+    return it != d->_classes.constEnd ();
 }
 
 Class File::findClass( const QString &name )
@@ -239,13 +238,11 @@ Function::List File::fileFunctions() const
     return d->_fileFunctions;
 }
 
-void File::addFileEnum( const Enum &enumValue )
-{
-    d->_fileEnums.append( enumValue );
+void File::addFileEnum (const Enum &enumValue) {
+    d->_fileEnums.append (enumValue);
 }
 
-Enum::List File::fileEnums() const
-{
+Enum::List File::fileEnums () const {
     return d->_fileEnums;
 }
 

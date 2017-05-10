@@ -202,7 +202,7 @@ public:
     Element startElement () const;
 
     void addElement (const Element &);
-    Element::List elements() const;
+    Element::List elements () const;
     bool hasElement (const Element &);
     Element element (const QString &identifier) const;
     Element element (const Relation &) const;

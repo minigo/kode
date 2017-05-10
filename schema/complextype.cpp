@@ -68,7 +68,7 @@ ComplexType::~ComplexType () {
     delete d;
 }
 
-ComplexType &ComplexType::operator=( const ComplexType &other )
+ComplexType &ComplexType::operator = (const ComplexType &other)
 {
     if (this == &other)
         return *this;
@@ -154,7 +154,7 @@ void ComplexType::addElement (const Element &element) {
 }
 
 bool ComplexType::isValid () {
-    if (d->_baseTypeName.qname ().isEmpty ())
+    if (d->_baseTypeName.qname ().isEmpty () && name ().isEmpty ())
         return false;
     return true;
 }

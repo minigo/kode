@@ -122,10 +122,17 @@ ComplexType Types::complexType (const Element &element) const
 
     }
 
-    //qCritical () << "[Types][complexType] Type not found";
-    //qCritical () << "   element" << element.name ();
-    //qCritical () << "   type" << element.type ().qname ();
     return ComplexType ();
+}
+
+SimpleType Types::simpleType (const Element &element) const
+{
+    foreach (SimpleType type, d->_simpleTypes) {
+        if (element.type ().localName () == type.name ())
+            return type;
+    }
+
+    return SimpleType ();
 }
 
 SimpleType Types::simpleType (const QName &typeName) const

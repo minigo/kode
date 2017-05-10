@@ -548,18 +548,18 @@ SimpleType Parser::parseSimpleType (ParserContext *context,
     while (!childElement.isNull()) {
         QName name = QName (childElement.tagName ());
         if (name.localName() == "restriction") {
-            st.setSubType(SimpleType::TypeRestriction);
+            st.setSubType (SimpleType::TypeRestriction);
 
-            QName typeName(childElement.attribute("base"));
+            QName typeName (childElement.attribute ("base"));
             typeName.setNameSpace(
                         context->namespaceManager()->uri(typeName.prefix()));
-            st.setBaseTypeName(typeName);
+            st.setBaseTypeName (typeName);
 
-            parseRestriction(context, childElement, st);
+            parseRestriction (context, childElement, st);
         } else if (name.localName() == "union") {
-            st.setSubType(SimpleType::TypeUnion);
+            st.setSubType (SimpleType::TypeUnion);
             qDebug() << "[Parser][parseSimpleType] SimpleType::union not supported";
-        } else if (name.localName() == "list") {
+        } else if (name.localName () == "list") {
             st.setSubType(SimpleType::TypeList);
             if (childElement.hasAttribute("itemType")) {
                 QName typeName(childElement.attribute("itemType"));
@@ -587,23 +587,23 @@ SimpleType Parser::parseSimpleType (ParserContext *context,
 void Parser::parseRestriction (ParserContext *, const QDomElement &element,
                                SimpleType &st)
 {
-    if (st.baseTypeName().isEmpty())
-        qDebug("<restriction>:unknown BaseType");
+    if (st.baseTypeName ().isEmpty ())
+        qDebug () << "[Parser][parseRestriction] Parser::parseRestriction";
 
-    QDomElement childElement = element.firstChildElement();
+    QDomElement childElement = element.firstChildElement ();
 
-    while (!childElement.isNull()) {
+    while (!childElement.isNull ()) {
         QName tagName = QName (childElement.tagName ());
-        if (!st.isValidFacet(tagName.localName())) {
+        if (!st.isValidFacet (tagName.localName ())) {
             qDebug ("<restriction>: %s is not a valid facet for the simple type",
                     qPrintable (childElement.tagName()));
             childElement = childElement.nextSiblingElement ();
             continue;
         }
 
-        st.setFacetValue(childElement.attribute("value"));
+        st.setFacetValue (childElement.attribute ("value"));
 
-        childElement = childElement.nextSiblingElement();
+        childElement = childElement.nextSiblingElement ();
     }
 }
 

@@ -46,11 +46,11 @@ public:
     } Derivation;
 
     ComplexType ();
-    ComplexType (const QString &nameSpace);
+    explicit ComplexType (const QString &nameSpace);
     ComplexType (const ComplexType &other);
     virtual ~ComplexType ();
 
-    ComplexType &operator=( const ComplexType &other );
+    ComplexType &operator = (const ComplexType &other);
 
     void setDocumentation (const QString &documentation);
     QString documentation () const;

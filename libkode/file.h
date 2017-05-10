@@ -39,12 +39,12 @@ public:
     /**
      * Creates a new file.
      */
-    File();
+    File ();
 
     /**
      * Creates a new file from @param other.
      */
-    File( const File &other );
+    File (const File &other);
 
     /**
      * Destroys the file.
@@ -134,17 +134,17 @@ public:
     /**
      * Returns the list of all includes.
      */
-    QStringList includes() const;
+    QStringList includes () const;
 
     /**
      * Inserts a class to the file.
      */
-    void insertClass( const Class &newClass );
+    void insertClass (const Class &newClass);
 
     /**
      * Returns a list of all classes.
      */
-    Class::List classes() const;
+    Class::List classes () const;
 
     /**
      * Returns whether the file contains a class
@@ -200,17 +200,17 @@ public:
     /**
      * Adds a file enum to the file.
      */
-    void addFileEnum( const Enum &enumValue );
+    void addFileEnum (const Enum &enumValue);
 
     /**
      * Returns the list of all file enums.
      */
-    Enum::List fileEnums() const;
+    Enum::List fileEnums () const;
 
     /**
      * Adds an external C declaration to the file.
      */
-    void addExternCDeclaration( const QString &externalCDeclaration );
+    void addExternCDeclaration (const QString &externalCDeclaration);
 
     /**
      * Returns the list of all external C declarations.

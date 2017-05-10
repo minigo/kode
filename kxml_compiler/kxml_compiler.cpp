@@ -19,12 +19,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-//! Как задумывал автор, я не ебу!!! Но при разборе комплексных типов, элементы не добавляются!
-//! т.е. например ...
-//! поэтому мы немного переделываем код, в частности метод usedElements перебирает только глобальные
-//! элементы, мы же переделываем таким образом, что для каждого элемента ищется его тип (если он комплексный)
-//! и у этого типа извлекаются его элементы, и так до бесконечности в глубь!!!
-
 #include "parserrelaxng.h"
 #include "parserxsd.h"
 #include "parserxml.h"
@@ -132,7 +126,7 @@ int main (int argc, char **argv)
             qCritical () <<"Error parsing schema" << schemaFilename;;
             return 1;
         }
-    } else if (args->isSet( "rng" ) || fi.suffix() == "rng") {
+    } else if (args->isSet ("rng") || fi.suffix() == "rng") {
         QString errorMsg;
         int errorLine, errorCol;
         QDomDocument doc;
@@ -199,21 +193,25 @@ int main (int argc, char **argv)
 
     if (args->isSet ("license")) {
         QString l = args->getOption ("license");
-        if (l == "gpl") {
+        if (l == "gpl")
             c.setLicense (KODE::License (KODE::License::GPL));
-        } else if (l == "bsd") {
+        else if (l == "bsd")
             c.setLicense (KODE::License (KODE::License::BSD));
-        } else if (l == "lgpl") {
+        else if (l == "lgpl")
             c.setLicense (KODE::License (KODE::License::LGPL));
-        }
     }
 
     if (verbose)
         qDebug () << "Create classes";
 
     foreach (Schema::Element e, schemaDocument.usedElements ()) {
-        if (!e.text ())
-            c.createClass (e);
+        if (!e.text ()) {
+            if (e.type () == Schema::Node::Enumeration) {
+                //qDebug () << e.name () << e.text ();
+                c.createEnumeration (e);
+            } else
+                c.createClass (e);
+        }
     }
     if (verbose)
         qDebug () << "Create parser";

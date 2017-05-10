@@ -107,6 +107,8 @@ public:
     int facetFractionDigits () const;
     QString facetPattern () const;
 
+    bool isValid ();
+
 private:
     class Private;
     Private *d;

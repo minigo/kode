@@ -67,7 +67,7 @@ QString ClassDescription::name () const {
 }
 
 void ClassDescription::addProperty (const QString &type, const QString &name) {
-    _properties.append( ClassProperty( type, name ) );
+    _properties.append (ClassProperty (type, name));
 }
 
 void ClassDescription::addProperty (const ClassProperty &p) {

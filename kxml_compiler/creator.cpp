@@ -208,9 +208,9 @@ void Creator::createCrudFunctions (KODE::Class &c, const QString &type)
 
     c.addFunction( inserter );
 
-    KODE::Function remover( "remove", "bool" );
+    KODE::Function remover ("remove", "bool");
 
-    remover.addArgument( "const " + type + " &v" );
+    remover.addArgument ("const " + type + " &v");
 
     code.clear();
 
@@ -229,17 +229,24 @@ void Creator::createCrudFunctions (KODE::Class &c, const QString &type)
     c.addFunction (remover);
 }
 
-
+//TODO: gim переработать вариант с определением типа
 ClassDescription Creator::createClassDescription (const Schema::Element &element)
 {
     ClassDescription description (Namer::getClassName (element));
 
-    foreach( Schema::Relation r, element.attributeRelations() ) {
-        Schema::Attribute a = _document.attribute( r );
-        if ( a.enumerationValues().count() ) {
-            if (!description.hasEnum(a.name())) {
-                description.addEnum(KODE::Enum(Namer::getClassName (a.name ()) + "Enum", a.enumerationValues()));
-            }
+    //-- отладка
+    //if (element.name () == "ScenarioID") {
+    //    Schema::Relation::List lst = element.attributeRelations ();
+    //    for (int i = 0; i < lst.size (); ++i)
+    //        qDebug () << lst[i].asString ();
+    //}
+
+    foreach (Schema::Relation r, element.attributeRelations ()) {
+        Schema::Attribute a = _document.attribute (r);
+        if (a.enumerationValues ().count ()) {
+            if (!description.hasEnum (a.name ()))
+                description.addEnum (KODE::Enum (Namer::getClassName (a.name ()) + "Enum", a.enumerationValues ()));
+
             description.addProperty (Namer::getClassName (a.name ()) + "Enum",
                                      Namer::getClassName (a.name ()));
         } else {
@@ -254,10 +261,13 @@ ClassDescription Creator::createClassDescription (const Schema::Element &element
     foreach (Schema::Relation r, element.elementRelations ())
     {
         Schema::Element targetElement = _document.element (r);
-
         QString targetClassName = Namer::getClassName (targetElement);
 
-        if (targetElement.text() && !targetElement.hasAttributeRelations () && !r.isList ())
+        if (targetElement.type () == Schema::Element::Enumeration)
+        {
+            description.addProperty (targetClassName, targetClassName);
+        }
+        else if (targetElement.text () && !targetElement.hasAttributeRelations () && !r.isList ())
         {
             if (_verbose)
                 qDebug() << "  FLATTEN";
@@ -271,11 +281,11 @@ ClassDescription Creator::createClassDescription (const Schema::Element &element
             } else if (targetElement.type () == Schema::Element::Date) {
                 description.addProperty ("QDate", targetClassName);
             } else {
-                description.addProperty ("QString", targetClassName );
+                description.addProperty ("QString", targetClassName);
             }
         } else {
             if (!_file.hasClass (targetClassName))
-                createClass( targetElement );
+                createClass (targetElement);
 
             QString name = KODE::Style::lowerFirst( targetClassName );
 
@@ -314,6 +324,12 @@ void Creator::createClass (const Schema::Element &element)
                      << element.identifier ();
         return;
     }
+
+//    if (className == "Echelon") {
+//        qDebug () << element.name ();
+//        qDebug () << element.type ();
+//        qDebug () << element.text ();
+//    }
 
     if (_verbose) {
         qDebug () << "[Creator][createClass]" << element.identifier() << className;
@@ -361,6 +377,14 @@ void Creator::createClass (const Schema::Element &element)
         }
     }
 
+    // для отладки
+    //if (c.name () == "ScenarioID") {
+    //    ClassProperty::List lst = description.properties ();
+    //    for (int i =0; i < lst.size (); ++i) {
+    //        qDebug () << lst[i].name ();
+    //    }
+    //}
+
     foreach (ClassProperty p, description.properties ())
     {
         if (p.isList ()) {
@@ -375,11 +399,11 @@ void Creator::createClass (const Schema::Element &element)
             KODE::Code code;
             code += '_' + KODE::Style::lowerFirst (listName) + ".append (v);";
 
-            adder.setBody( code );
+            adder.setBody (code);
 
-            c.addFunction( adder );
+            c.addFunction (adder);
 
-            createProperty( c, description, p.type() + "::List", listName );
+            createProperty (c, description, p.type () + "::List", listName);
 
             if (_createCrudFunctions && p.targetHasId ())
                 createCrudFunctions (c, p.type ());
@@ -397,6 +421,27 @@ void Creator::createClass (const Schema::Element &element)
     writerCreator.createElementWriter (c, element);
 
     _file.insertClass (c);
+}
+
+void Creator::createEnumeration (const Schema::Element &element)
+{
+    if (!element.isValid ()) {
+        qCritical () << "[Creator][createEnumeration] Could not create class for the invalid element"
+                     << element.name ()
+                     << element.identifier ();
+        return;
+    }
+
+    QString className = Namer::getClassName (element);
+    if (className.isEmpty ()) {
+        qCritical () << "[Creator][createEnumeration] Could not create class"
+                     << element.name ()
+                     << element.identifier ();
+        return;
+    }
+
+    KODE::Enum e (element.name (), element.enumerationValues ());
+    _file.addFileEnum (e);
 }
 
 void Creator::createElementParser (KODE::Class &c, const Schema::Element &e)

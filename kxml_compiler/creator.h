@@ -98,6 +98,8 @@ public:
     ClassDescription createClassDescription (const Schema::Element &element);
     void createClass (const Schema::Element &element);
 
+    void createEnumeration (const Schema::Element &element);
+
     void registerListTypedef( const QString &type );
 
     void createListTypedefs();

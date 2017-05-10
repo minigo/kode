@@ -89,9 +89,9 @@ QString Printer::Private::classHeader (const Class &classObject, bool publicMemb
     Code code;
 
     int numNamespaces = 0;
-    if ( !classObject.nameSpace().isEmpty() ) {
-        const QStringList nsList = classObject.nameSpace().split("::");
-        Q_FOREACH(const QString& ns, nsList) {
+    if (!classObject.nameSpace ().isEmpty ()) {
+        const QStringList nsList = classObject.nameSpace ().split ("::");
+        Q_FOREACH (const QString& ns, nsList) {
             code += "namespace " + ns + " {";
             code.indent ();
             ++numNamespaces;
@@ -115,91 +115,96 @@ QString Printer::Private::classHeader (const Class &classObject, bool publicMemb
 
     txt += _style.className (classObject.name ());
 
-    Class::List baseClasses = classObject.baseClasses();
+    Class::List baseClasses = classObject.baseClasses ();
     if (!baseClasses.isEmpty ()) {
         txt += " : ";
         Class::List::ConstIterator it;
-        for ( it = baseClasses.constBegin(); it != baseClasses.constEnd(); ++it ) {
+        for (it = baseClasses.constBegin (); it != baseClasses.constEnd (); ++it) {
             Class bc = *it;
 
-            if ( it != baseClasses.constBegin() )
+            if (it != baseClasses.constBegin ())
                 txt +=", ";
 
             txt += "public ";
-            if ( !bc.nameSpace().isEmpty() )
-                txt += bc.nameSpace() + "::";
+            if (!bc.nameSpace ().isEmpty ())
+                txt += bc.nameSpace () + "::";
 
-            txt += bc.name();
+            txt += bc.name ();
         }
     }
     code += txt;
 
 
 
-    if( nestedClass ) {
-        code.indent();
+    if (nestedClass) {
+        code.indent ();
         code += '{';
     }
     else {
         code += '{';
         // We always want to indent here; so that Q_OBJECT and enums etc. are indented.
         // However with mIndentLabels=false, we'll unindent before printing out "public:".
-        code.indent();
+        code.indent ();
     }
 
-    if ( classObject.isQObject() ) {
+    if (classObject.isQObject ()) {
         code += "Q_OBJECT";
-        code.newLine();
+        code.newLine ();
     }
-    Q_FOREACH( const QString& declMacro, classObject.declarationMacros() ) {
+    Q_FOREACH (const QString& declMacro, classObject.declarationMacros ()) {
         code += declMacro;
-        code.newLine();
+        code.newLine ();
     }
 
-    Class::List nestedClasses = classObject.nestedClasses();
+    Class::List nestedClasses = classObject.nestedClasses ();
     // Generate nestedclasses
-    if ( !classObject.nestedClasses ().isEmpty ()) {
+    if (!classObject.nestedClasses ().isEmpty ()) {
         addLabel (code, "public:");
 
-        Class::List::ConstIterator it, itEnd = nestedClasses.constEnd();
-        for ( it = nestedClasses.constBegin(); it != itEnd; ++it ) {
-            code += classHeader( (*it), false, true );
-        }
+        Class::List::ConstIterator it, itEnd = nestedClasses.constEnd ();
+        for (it = nestedClasses.constBegin (); it != itEnd; ++it)
+            code += classHeader ((*it), false, true);
 
-        code.newLine();
+        code.newLine ();
     }
 
-    Typedef::List typedefs = classObject.typedefs();
-    if ( typedefs.count() > 0 ) {
+    Typedef::List typedefs = classObject.typedefs ();
+    if (typedefs.count () > 0) {
         addLabel (code, "public:");
-        if ( _labelsDefineIndent )
+        if (_labelsDefineIndent)
             code.indent();
 
         Typedef::List::ConstIterator it;
-        for ( it = typedefs.constBegin(); it != typedefs.constEnd(); ++it )
-            code += (*it).declaration();
+        for (it = typedefs.constBegin (); it != typedefs.constEnd (); ++it)
+            code += (*it).declaration ();
 
-        if ( _labelsDefineIndent )
-            code.unindent();
-        code.newLine();
+        if (_labelsDefineIndent)
+            code.unindent ();
+        code.newLine ();
     }
 
-    Enum::List enums = classObject.enums();
-    if ( enums.count() > 0 ) {
-        addLabel( code, "public:" );
-        if ( _labelsDefineIndent )
-            code.indent();
+    Enum::List enums = classObject.enums ();
+    if (enums.count() > 0) {
+        addLabel (code, "public:");
+        if (_labelsDefineIndent)
+            code.indent ();
 
         Enum::List::ConstIterator it;
-        for ( it = enums.constBegin(); it != enums.constEnd(); ++it )
-            code += (*it).declaration();
+        for (it = enums.constBegin (); it != enums.constEnd (); ++it)
+            code += (*it).declaration ();
 
-        if ( _labelsDefineIndent )
-            code.unindent();
-        code.newLine();
+        if (_labelsDefineIndent)
+            code.unindent ();
+        code.newLine ();
     }
 
     Function::List functions = classObject.functions ();
+
+    //if (classObject.name () == "ScenarioID") {
+    //    qDebug () << functions.size ();
+    //    for (int i = 0; i < functions.size (); ++i)
+    //        qDebug () << functions[i].name ();
+    //}
 
     addFunctionHeaders (code, functions, classObject.name(), Function::Public);
 
@@ -220,17 +225,16 @@ QString Printer::Private::classHeader (const Class &classObject, bool publicMemb
     addFunctionHeaders( code, functions, classObject.name(), Function::Private );
     addFunctionHeaders( code, functions, classObject.name(), Function::Private | Function::Slot );
 
-    if ( !classObject.memberVariables().isEmpty() ) {
+    if (!classObject.memberVariables ().isEmpty ()) {
         Function::List::ConstIterator it;
         // Do we have any private function?
         bool hasPrivateFunc = false;
         bool hasPrivateSlot = false;
-        for ( it = functions.constBegin(); it != functions.constEnd(); ++it ) {
-            if ( (*it).access() == Function::Private ) {
+        for (it = functions.constBegin (); it != functions.constEnd (); ++it) {
+            if ( (*it).access() == Function::Private )
                 hasPrivateFunc = true;
-            } else if ( (*it).access() == (Function::Private | Function::Slot) ) {
+            else if ((*it).access () == (Function::Private | Function::Slot))
                 hasPrivateSlot = true;
-            }
         }
 
         if ( publicMembers )
@@ -617,17 +621,15 @@ QString Printer::functionSignature (const Function &function,
     return s;
 }
 
-QString Printer::creationWarning() const
+QString Printer::creationWarning () const
 {
     // Create warning about generated file
     QString str = "// This file is generated by " + d->_generator;
-    if ( !d->_sourceFile.isEmpty() )
+    if (!d->_sourceFile.isEmpty ())
         str += " from " + d->_sourceFile;
 
     str += ".\n";
-
     str += "// All changes you do to this file will be lost.";
-
     return str;
 }
 
@@ -659,43 +661,44 @@ QString Printer::licenseHeader( const File &file ) const
     return code.text();
 }
 
-static QStringList commonLeft(const QStringList& l1, const QStringList& l2) {
+static QStringList commonLeft (const QStringList& l1, const QStringList& l2)
+{
     QStringList r;
-    const int l = qMin(l1.size(), l2.size());
-    for ( int i = 0; i < l; ++i )
-        if (l1.at(i) == l2.at(i))
-            r.append(l1.at(i));
+    const int l = qMin (l1.size (), l2.size ());
+    for (int i = 0; i < l; ++i)
+        if (l1.at (i) == l2.at (i))
+            r.append (l1.at (i));
         else
             return r;
     return r;
 }
 
-void Printer::printHeader( const File &file )
+void Printer::printHeader (const File &file)
 {
     Code out;
 
-    if ( d->_creationWarning )
-        out += creationWarning();
+    if (d->_creationWarning)
+        out += creationWarning ();
 
-    out.addBlock( licenseHeader( file ) );
+    out.addBlock (licenseHeader (file));
 
     // Create include guard
-    QString className = file.filenameHeader();
-    QFileInfo headerInfo(className);
-    className = headerInfo.fileName(); // remove path, keep only filename
-    className.replace( '-', "_" );
+    QString className = file.filenameHeader ();
+    QFileInfo headerInfo (className);
+    className = headerInfo.fileName (); // remove path, keep only filename
+    className.replace ( '-', "_" );
 
     QString includeGuard;
-    if ( !file.nameSpace().isEmpty() )
-        includeGuard += file.nameSpace().toUpper() + '_';
+    if (!file.nameSpace ().isEmpty ())
+        includeGuard += file.nameSpace ().toUpper () + '_';
 
-    includeGuard += className.toUpper();
-    includeGuard.replace( '.', "_" );
+    includeGuard += className.toUpper ();
+    includeGuard.replace ( '.', "_" );
 
     out += "#ifndef " + includeGuard;
     out += "#define " + includeGuard;
 
-    out.newLine();
+    out.newLine ();
 
     // Create includes
     QSet<QString> processed;
@@ -720,11 +723,11 @@ void Printer::printHeader( const File &file )
         out.newLine();
 
     // Create enums
-    Enum::List enums = file.fileEnums();
+    Enum::List enums = file.fileEnums ();
     Enum::List::ConstIterator enumIt;
-    for ( enumIt = enums.constBegin(); enumIt != enums.constEnd(); ++enumIt ) {
-        out += (*enumIt).declaration();
-        out.newLine();
+    for (enumIt = enums.constBegin (); enumIt != enums.constEnd (); ++enumIt) {
+        out += (*enumIt).declaration ();
+        out.newLine ();
     }
 
     // Create forward declarations
@@ -734,13 +737,13 @@ void Printer::printHeader( const File &file )
         const QStringList decls = (*it).forwardDeclarations();
         processed += decls.toSet();
     }
-    QStringList fwdClasses = processed.toList();
-    fwdClasses.sort();
-    fwdClasses += QString(); //for proper closing of the namespace blocks below
+    QStringList fwdClasses = processed.toList ();
+    fwdClasses.sort ();
+    fwdClasses += QString (); //for proper closing of the namespace blocks below
 
     QStringList prevNS;
 
-    Q_FOREACH( const QString& fwd, fwdClasses ) {
+    Q_FOREACH (const QString& fwd, fwdClasses) {
         //handle namespaces by opening and closing namespace blocks accordingly
         //the sorting will ensure sensible grouping
         const QStringList seg = fwd.split(QLatin1String("::"));
@@ -768,24 +771,23 @@ void Printer::printHeader( const File &file )
         prevNS = ns;
     }
 
-    if ( !processed.isEmpty() )
-        out.newLine();
+    if (!processed.isEmpty ())
+        out.newLine ();
 
-
-    if ( !file.nameSpace().isEmpty() ) {
+    if (!file.nameSpace ().isEmpty ()) {
         out += "namespace " + file.nameSpace() + " {";
-        out.newLine();
+        out.newLine ();
     }
 
     // Create content
-    for ( it = classes.constBegin(); it != classes.constEnd(); ++it ) {
-        out.addBlock( d->classHeader( *it, false ) );
-        out.newLine();
+    for (it = classes.constBegin (); it != classes.constEnd (); ++it) {
+        out.addBlock (d->classHeader (*it, false));
+        out.newLine ();
     }
 
-    if ( !file.nameSpace().isEmpty() ) {
+    if (!file.nameSpace ().isEmpty ()) {
         out += '}';
-        out.newLine();
+        out.newLine ();
     }
 
     // Finish file

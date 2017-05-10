@@ -57,6 +57,7 @@ public:
     QStringList namespaces () const;
 
     ComplexType complexType (const Element &) const;
+    SimpleType simpleType (const Element &) const;
 
     SimpleType simpleType (const QName &) const;
 

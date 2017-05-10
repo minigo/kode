@@ -143,7 +143,7 @@ bool SimpleType::isAnonymous() const
     return d->_anonymous;
 }
 
-bool SimpleType::isValidFacet( const QString &facet )
+bool SimpleType::isValidFacet (const QString &facet)
 {
     if ( d->_baseTypeName.isEmpty() ) {
         qDebug( "isValidFacet:Unknown base type" );
@@ -289,6 +289,13 @@ int SimpleType::facetFractionDigits() const
 QString SimpleType::facetPattern() const
 {
     return d->mFacetValue.pattern;
+}
+
+bool SimpleType::isValid ()
+{
+    if (d->_baseTypeName.qname ().isEmpty () && name ().isEmpty ())
+        return false;
+    return true;
 }
 
 }

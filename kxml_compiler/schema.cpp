@@ -384,20 +384,23 @@ bool Element::hasElementRelations () const {
 }
 
 void Element::addAttributeRelation (const Relation &r) {
+    //if (name () == "ScenarioID") {
+    //    qDebug () << r.asString ();
+    //}
     _attributeRelations.append (r);
 }
 
 bool Element::hasAttributeRelation (const Attribute &attribute) const
 {
     Relation::List::ConstIterator it;
-    for (it = _attributeRelations.begin(); it != _attributeRelations.end(); ++it) {
-        if ((*it).target() == attribute.identifier())
+    for (it = _attributeRelations.begin (); it != _attributeRelations.end (); ++it) {
+        if ((*it).target() == attribute.identifier ())
             return true;
     }
     return false;
 }
 
-bool Element::hasAttributeRelation( const QString &identifier ) const
+bool Element::hasAttributeRelation (const QString &identifier) const
 {
     Relation::List::ConstIterator it;
     for( it = _attributeRelations.begin(); it != _attributeRelations.end(); ++it ) {
