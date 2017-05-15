@@ -48,9 +48,12 @@ protected:
     void setAnnotations (Schema::Annotatable &annotatable,
                          XSD::Annotation::List annotations);
 
-    void parseElement (const XSD::Element &element, const XSD::Types &types);
+    //------------------------------------------------
+    //-- старая версия
+    //void parseElement (const XSD::Element &element, const XSD::Types &types);
+    //------------------------------------------------
 
-    void parseElementV1 (const XSD::Element &element, const XSD::Types &types);
+    void parseElement (const XSD::Element &element, const XSD::Types &types);
     Schema::Node::Type defineXsType (const QString &value);
 
 private:

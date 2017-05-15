@@ -411,7 +411,7 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
 
         while (!childElement.isNull()) {
             QName childName = QName (childElement.tagName ());
-            if (childName.localName() == "complexType") {
+            if (childName.localName () == "complexType") {
                 ComplexType ct = parseComplexType (context, childElement);
 
                 ct.setName (newElement.name () + "Anonymous");
@@ -979,7 +979,7 @@ void Parser::printComplexTypeInfo (const QString &name) const
 
     if (i == d->_complexTypes.size()) {
         qWarning () << "[Parser][printComplexTypeInfo] Could noty find complex type"
-                   << name;
+                    << name;
         return;
     }
 

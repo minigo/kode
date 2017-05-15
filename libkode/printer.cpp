@@ -837,20 +837,20 @@ void Printer::printImplementation( const File &file, bool createHeaderInclude )
     for ( it2 = includes.constBegin(); it2 != includes.constEnd(); ++it2 )
         out += "#include <" + *it2 + '>';
 
-    if ( !includes.isEmpty() )
-        out.newLine();
+    if (!includes.isEmpty ())
+        out.newLine ();
 
     // Create class includes
     QStringList processed;
-    Class::List classes = file.classes();
+    Class::List classes = file.classes ();
     Class::List::ConstIterator it;
-    for ( it = classes.constBegin(); it != classes.constEnd(); ++it ) {
-        QStringList includes = (*it).includes();
+    for (it = classes.constBegin (); it != classes.constEnd (); ++it) {
+        QStringList includes = (*it).includes ();
         QStringList::ConstIterator it2;
-        for ( it2 = includes.constBegin(); it2 != includes.constEnd(); ++it2 ) {
-            if ( !processed.contains( *it2 ) ) {
+        for (it2 = includes.constBegin (); it2 != includes.constEnd (); ++it2) {
+            if (!processed.contains (*it2)) {
                 out += "#include <" + *it2 + '>';
-                processed.append( *it2 );
+                processed.append (*it2);
             }
         }
     }

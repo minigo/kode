@@ -132,6 +132,7 @@ SimpleType Types::simpleType (const Element &element) const
             return type;
     }
 
+    qCritical () << "[Types][simpleType] Type not found" << element.type ().qname ();
     return SimpleType ();
 }
 
