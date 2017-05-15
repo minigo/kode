@@ -31,6 +31,8 @@
 
 using namespace RNG;
 
+#define DEFINE_UNCOMPLETED_TYPE
+
 ParserXsd::ParserXsd ()
     : _verbose (false)
 {
@@ -631,10 +633,10 @@ void ParserXsd::parseElementV1 (const XSD::Element &element, const XSD::Types &t
             else if (complextype.contentModel () == XSD::XSDType::SIMPLE &&
                      !complextype.baseTypeName ().isEmpty ())
             {
-                if (element.name() == "version") {
-                    qDebug () << complextype.name();
-                    qDebug () << complextype.baseTypeName().qname();
-                }
+                //if (element.name() == "version") {
+                //    qDebug () << complextype.name();
+                //    qDebug () << complextype.baseTypeName().qname();
+                //}
 
                 Schema::Node::Type t = defineXsType (complextype.baseTypeName ().qname ());
                 if (t != Schema::Node::None) {
@@ -783,8 +785,6 @@ void ParserXsd::parseElementV1 (const XSD::Element &element, const XSD::Types &t
         if (!attribute.type ().isEmpty ()) {
             if (attribute.type ().qname () == "xs:string")
                 a.setType (Schema::Node::String);
-            if (attribute.type ().qname ().toLower () == "string")
-                a.setType (Schema::Node::String);
             if (attribute.type ().qname () == "xs:ID")
                 a.setType (Schema::Node::String);
             if (attribute.type().qname() == "xs:normalizedString")
@@ -858,46 +858,33 @@ Schema::Node::Type ParserXsd::defineXsType (const QString &value)
         rvalue = Schema::Node::Token;
     else if (value == "xs:date")
         rvalue = Schema::Node::Date;
+#ifdef DEFINE_UNCOMPLETED_TYPE
+    else if (value == "string")
+        rvalue = Schema::Node::String;
+    else if (value == "normalizedString")
+        rvalue = Schema::Node::NormalizedString;
+    else if (value == "int")
+        rvalue = Schema::Node::Integer;
+    else if (value == "integer")
+        rvalue = Schema::Node::Integer;
+    else if (value == "long")
+        rvalue = Schema::Node::Integer;
+    else if (value == "float")
+        rvalue = Schema::Node::Decimal;
+    else if (value == "double")
+        rvalue = Schema::Node::Decimal;
+    else if (value == "decimal")
+        rvalue = Schema::Node::Decimal;
+    else if (value == "boolean")
+        rvalue = Schema::Node::Boolean;
+    else if (value == "token")
+        rvalue = Schema::Node::Token;
+    else if (value == "date")
+        rvalue = Schema::Node::Date;
+#endif
 
     return rvalue;
 }
-
-//bool ParserXsd::defineBaseTypeV1 (const QString &value, Schema::Element &e)
-//{
-//    if (value == "xs:string")
-//        e.setBaseType (Schema::Node::String);
-//    else if (value == "String")
-//        e.setBaseType (Schema::Node::String);
-//    else if (value == "xs:normalizedString")
-//        e.setBaseType (Schema::Node::NormalizedString);
-//    else if (value == "xs:int")
-//        e.setBaseType (Schema::Node::Integer);
-//    else if (value == "xs:integer")
-//        e.setBaseType (Schema::Node::Integer);
-//    else if (value == "xs:long")
-//        e.setBaseType (Schema::Node::Integer);
-//    else if (value == "xs:float")
-//        e.setBaseType (Schema::Node::Decimal);
-//    else if (value == "xs:double")
-//        e.setBaseType (Schema::Node::Decimal);
-//    else if (value == "xs:decimal")
-//        e.setBaseType (Schema::Node::Decimal);
-//    else if (value == "decimal")
-//        e.setBaseType (Schema::Node::Decimal);
-//    else if (value == "xs:boolean")
-//        e.setBaseType (Schema::Node::Boolean);
-//    else if (value == "xs:token")
-//        e.setBaseType (Schema::Node::Token);
-//    else if (value == "token")
-//        e.setBaseType (Schema::Node::Token);
-//    else {
-//        qCritical () << "[ParserXsd][setBaseTypeV1] Could not detect base type"
-//                     << value;
-//        return false;
-//    }
-
-//    return true;
-//}
 
 void ParserXsd::setType (Schema::Node &node, const XSD::SimpleType &simpleType)
 {

@@ -269,8 +269,8 @@ ClassDescription Creator::createClassDescription (const Schema::Element &element
         }
         else if (targetElement.text () && !targetElement.hasAttributeRelations () && !r.isList ())
         {
-            if (_verbose)
-                qDebug() << "  FLATTEN";
+            //if (_verbose)
+            //    qDebug() << "  FLATTEN";
 
             if (targetElement.type () == Schema::Element::Integer) {
                 description.addProperty ("int", targetClassName);
