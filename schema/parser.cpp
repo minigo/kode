@@ -407,25 +407,31 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
         typeName.setNameSpace (context->namespaceManager()->uri (typeName.prefix()));
         newElement.setType (typeName);
     } else {
-        QDomElement childElement = element.firstChildElement();
+        QDomElement childElement = element.firstChildElement ();
 
-        while (!childElement.isNull()) {
+        while (!childElement.isNull ())
+        {
             QName childName = QName (childElement.tagName ());
-            if (childName.localName () == "complexType") {
+            if (childName.localName () == "complexType")
+            {
                 ComplexType ct = parseComplexType (context, childElement);
 
                 ct.setName (newElement.name () + "Anonymous");
                 d->_complexTypes.append (ct);
 
                 newElement.setType (ct.qualifiedName ());
-            } else if (childName.localName () == "simpleType") {
+            }
+            else if (childName.localName () == "simpleType")
+            {
                 SimpleType st = parseSimpleType (context, childElement);
 
                 st.setName (newElement.name () + "Anonymous");
                 d->_simpleTypes.append (st);
 
                 newElement.setType (st.qualifiedName ());
-            } else if (childName.localName() == "annotation") {
+            }
+            else if (childName.localName() == "annotation")
+            {
                 Annotation::List annotations = parseAnnotation (context, childElement);
                 newElement.setDocumentation (annotations.documentation ());
                 newElement.setAnnotations (annotations);
@@ -540,14 +546,14 @@ SimpleType Parser::parseSimpleType (ParserContext *context,
                                     const QDomElement &element)
 {
     SimpleType st (d->_nameSpace);
-
     st.setName (element.attribute ("name"));
 
     QDomElement childElement = element.firstChildElement ();
 
-    while (!childElement.isNull()) {
+    while (!childElement.isNull ()) {
         QName name = QName (childElement.tagName ());
-        if (name.localName() == "restriction") {
+        if (name.localName() == "restriction")
+        {
             st.setSubType (SimpleType::TypeRestriction);
 
             QName typeName (childElement.attribute ("base"));
@@ -556,23 +562,33 @@ SimpleType Parser::parseSimpleType (ParserContext *context,
             st.setBaseTypeName (typeName);
 
             parseRestriction (context, childElement, st);
-        } else if (name.localName() == "union") {
+        }
+        else if (name.localName() == "union")
+        {
             st.setSubType (SimpleType::TypeUnion);
             qDebug() << "[Parser][parseSimpleType] SimpleType::union not supported";
-        } else if (name.localName () == "list") {
-            st.setSubType(SimpleType::TypeList);
-            if (childElement.hasAttribute("itemType")) {
-                QName typeName(childElement.attribute("itemType"));
-                if (!typeName.prefix().isEmpty())
-                    typeName.setNameSpace(
-                                context->namespaceManager()->uri(typeName.prefix()));
+        }
+        else if (name.localName () == "list")
+        {
+            st.setSubType (SimpleType::TypeList);
+            if (childElement.hasAttribute ("itemType"))
+            {
+                QName typeName (childElement.attribute ("itemType"));
+                if (!typeName.prefix ().isEmpty ())
+                    typeName.setNameSpace (
+                                context->namespaceManager ()->uri (typeName.prefix()));
                 else
-                    typeName.setNameSpace(st.nameSpace());
-                st.setListTypeName(typeName);
-            } else {
-                // TODO: add support for anonymous types
+                    typeName.setNameSpace (st.nameSpace ());
+                st.setListTypeName (typeName);
             }
-        } else if (name.localName() == "annotation") {
+            else
+            {
+                // TODO: add support for anonymous types
+                qCritical () << "--------------------------> JOPA" << st.name ();
+            }
+        }
+        else if (name.localName () == "annotation")
+        {
             Annotation::List annotations = parseAnnotation (context, childElement);
             st.setDocumentation (annotations.documentation ());
             st.setAnnotations (annotations);

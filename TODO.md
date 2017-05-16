@@ -10,4 +10,10 @@
 
 5. Исправить лишнюю генерацию у некоторых объектов переменных notes и idtag 
 
-6. появление Anonymous
+6. Типы Anonymous
+
+Element Parser::parseElement (ParserContext *context, const QDomElement &element,
+                              const QString &nameSpace,
+                              const QDomElement &occurrenceElement)
+
+

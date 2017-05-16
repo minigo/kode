@@ -635,7 +635,7 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
             else if (complextype.contentModel () == XSD::XSDType::SIMPLE &&
                      !complextype.baseTypeName ().isEmpty ())
             {
-                //if (element.name() == "version") {
+                //if (element.name() == "modificationDate") {
                 //    qDebug () << complextype.name();
                 //    qDebug () << complextype.baseTypeName().qname();
                 //}
@@ -662,6 +662,7 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
                                 Schema::Node::Type t = defineXsType (lst[i].baseTypeName ().qname ());
                                 if (t != Schema::Node::None) {
                                     e.setBaseType (t);
+                                    e.setText (true);
                                     found = true;
                                 } else {
                                     qCritical () << "[ParserXsd][parseElement]   Could not define base type"
