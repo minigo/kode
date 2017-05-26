@@ -21,6 +21,7 @@
  */
 
 #include "simpletype.h"
+#include <QDebug>
 
 namespace XSD {
 
@@ -61,26 +62,29 @@ public:
         QString pattern;
     } FacetValueType;
 
-    FacetValueType mFacetValue;
+    FacetValueType _facetValue;
 };
 
-SimpleType::SimpleType()
-    : XSDType(), d(new Private)
+SimpleType::SimpleType ()
+    : XSDType ()
+    , d (new Private)
 {
 }
 
-SimpleType::SimpleType( const QString &nameSpace )
-    : XSDType( nameSpace ), d(new Private)
+SimpleType::SimpleType (const QString &nameSpace)
+    : XSDType (nameSpace)
+    , d (new Private)
 {
 }
 
-SimpleType::SimpleType( const SimpleType &other )
-    : XSDType( other ), d(new Private)
+SimpleType::SimpleType (const SimpleType &other)
+    : XSDType (other)
+    , d (new Private)
 {
     *d = *other.d;
 }
 
-SimpleType::~SimpleType()
+SimpleType::~SimpleType ()
 {
     delete d;
 }
@@ -182,49 +186,49 @@ bool SimpleType::isValidFacet (const QString &facet)
     return true;
 }
 
-void SimpleType::setFacetValue( const QString &value )
+void SimpleType::setFacetValue (const QString &value)
 {
     int number = -1;
 
-    if ( d->_facetId & ENUM ) {
-        d->_enums.append( value );
-    } else if ( d->_facetId & PATTERN ) {
-        d->mFacetValue.pattern = value;
-    } else if ( d->_facetId & WSP ) {
-        if ( value == "preserve" )
-            d->mFacetValue.wsp = PRESERVE;
-        else if ( value == "collapse" )
-            d->mFacetValue.wsp = COLLAPSE;
-        else if ( value == "replace" )
-            d->mFacetValue.wsp = REPLACE;
+    if (d->_facetId & ENUM) {
+        d->_enums.append (value);
+    } else if (d->_facetId & PATTERN) {
+        d->_facetValue.pattern = value;
+    } else if (d->_facetId & WSP) {
+        if (value == "preserve")
+            d->_facetValue.wsp = PRESERVE;
+        else if (value == "collapse")
+            d->_facetValue.wsp = COLLAPSE;
+        else if (value == "replace")
+            d->_facetValue.wsp = REPLACE;
         else {
-            qDebug( "Invalid facet value for whitespace" );
+            qDebug () << "[SimpleType][setFacetValue] Invalid facet value for whitespace";
             return;
         }
     } else {
-        number = value.toInt();
+        number = value.toInt ();
     }
 
-    if ( d->_facetId & MAXEX ) {
-        d->mFacetValue.valRange.maxex = number;
-    } else if ( d->_facetId & MAXINC ) {
-        d->mFacetValue.valRange.maxinc = number;
-    } else if ( d->_facetId & MININC ) {
-        d->mFacetValue.valRange.mininc = number;
-    } else if ( d->_facetId & MINEX ) {
-        d->mFacetValue.valRange.minex = number;
-    } else if ( d->_facetId & MAXEX ) {
-        d->mFacetValue.valRange.maxex = number;
-    } else if ( d->_facetId & LENGTH ) {
-        d->mFacetValue.length = number;
-    } else if ( d->_facetId & MINLEN ) {
-        d->mFacetValue.lenRange.minlen = number;
-    } else if ( d->_facetId & MAXLEN ) {
-        d->mFacetValue.lenRange.maxlen = number;
-    } else if ( d->_facetId & TOT ) {
-        d->mFacetValue.tot = number;
-    } else if ( d->_facetId & FRAC ) {
-        d->mFacetValue.frac = number;
+    if (d->_facetId & MAXEX) {
+        d->_facetValue.valRange.maxex = number;
+    } else if (d->_facetId & MAXINC) {
+        d->_facetValue.valRange.maxinc = number;
+    } else if (d->_facetId & MININC) {
+        d->_facetValue.valRange.mininc = number;
+    } else if (d->_facetId & MINEX) {
+        d->_facetValue.valRange.minex = number;
+    } else if (d->_facetId & MAXEX) {
+        d->_facetValue.valRange.maxex = number;
+    } else if (d->_facetId & LENGTH) {
+        d->_facetValue.length = number;
+    } else if (d->_facetId & MINLEN) {
+        d->_facetValue.lenRange.minlen = number;
+    } else if (d->_facetId & MAXLEN) {
+        d->_facetValue.lenRange.maxlen = number;
+    } else if (d->_facetId & TOT) {
+        d->_facetValue.tot = number;
+    } else if (d->_facetId & FRAC) {
+        d->_facetValue.frac = number;
     }
 }
 
@@ -232,63 +236,52 @@ int SimpleType::facetType () const {
     return d->_facetId;
 }
 
-int SimpleType::facetLength() const
-{
-    return d->mFacetValue.length;
+int SimpleType::facetLength () const {
+    return d->_facetValue.length;
 }
 
-int SimpleType::facetMinimumLength() const
-{
-    return d->mFacetValue.lenRange.minlen;
+int SimpleType::facetMinimumLength () const {
+    return d->_facetValue.lenRange.minlen;
 }
 
-int SimpleType::facetMaximumLength() const
-{
-    return d->mFacetValue.lenRange.maxlen;
+int SimpleType::facetMaximumLength () const {
+    return d->_facetValue.lenRange.maxlen;
 }
 
 QStringList SimpleType::facetEnums () const {
     return d->_enums;
 }
 
-SimpleType::WhiteSpaceType SimpleType::facetWhiteSpace() const
-{
-    return d->mFacetValue.wsp;
+SimpleType::WhiteSpaceType SimpleType::facetWhiteSpace () const {
+    return d->_facetValue.wsp;
 }
 
-int SimpleType::facetMinimumInclusive() const
-{
-    return d->mFacetValue.valRange.mininc;
+int SimpleType::facetMinimumInclusive () const {
+    return d->_facetValue.valRange.mininc;
 }
 
-int SimpleType::facetMaximumInclusive() const
-{
-    return d->mFacetValue.valRange.maxinc;
+int SimpleType::facetMaximumInclusive () const {
+    return d->_facetValue.valRange.maxinc;
 }
 
-int SimpleType::facetMinimumExclusive() const
-{
-    return d->mFacetValue.valRange.minex;
+int SimpleType::facetMinimumExclusive () const {
+    return d->_facetValue.valRange.minex;
 }
 
-int SimpleType::facetMaximumExclusive() const
-{
-    return d->mFacetValue.valRange.maxex;
+int SimpleType::facetMaximumExclusive () const {
+    return d->_facetValue.valRange.maxex;
 }
 
-int SimpleType::facetTotalDigits() const
-{
-    return d->mFacetValue.tot;
+int SimpleType::facetTotalDigits () const {
+    return d->_facetValue.tot;
 }
 
-int SimpleType::facetFractionDigits() const
-{
-    return d->mFacetValue.frac;
+int SimpleType::facetFractionDigits () const {
+    return d->_facetValue.frac;
 }
 
-QString SimpleType::facetPattern() const
-{
-    return d->mFacetValue.pattern;
+QString SimpleType::facetPattern () const {
+    return d->_facetValue.pattern;
 }
 
 bool SimpleType::isValid ()

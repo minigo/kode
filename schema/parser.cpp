@@ -153,7 +153,7 @@ bool Parser::parseSchemaTag (ParserContext *context, const QDomElement &root)
     context->setNamespaceManager (&namespaceManager);
 
     QDomNamedNodeMap attributes = root.attributes ();
-    for (int i = 0; i < attributes.count(); ++i) {
+    for (int i = 0; i < attributes.count (); ++i) {
         QDomAttr attribute = attributes.item (i).toAttr ();
         if (attribute.name ().startsWith (QLatin1String ("xmlns:"))) {
             QString prefix = attribute.name ().mid (6);
@@ -260,6 +260,10 @@ ComplexType Parser::parseComplexType (ParserContext *context, const QDomElement 
     ComplexType newType (d->_nameSpace);
     newType.setName (element.attribute ("name"));
 
+    //if (newType.name () == "String") {
+    //    newType.setName ("String");
+    //}
+
     if (element.hasAttribute ("mixed"))
         newType.setContentModel (XSDType::MIXED);
 
@@ -343,10 +347,14 @@ void Parser::parseCompositor (ParserContext *context, const QDomElement &element
             QName csName = QName (childElement.tagName ());
             if (csName.localName () == "element") {
                 Element newElement;
-                if (isChoice)
+                //TODO gim а почему это должно быть так?
+                // как в случае choice так и в случае sequence надо чтобы в качестве
+                // occurrenceElement передавался родительский элемент, а у автора
+                // это роисходит только тогда, когда мы работаем с элементом choice
+                //if (isChoice)
                     newElement = parseElement (context, childElement, ct.nameSpace (), element);
-                else
-                    newElement = parseElement (context, childElement, ct.nameSpace (), childElement);
+                //else
+                //    newElement = parseElement (context, childElement, ct.nameSpace (), childElement);
 
                 newElements.append (newElement);
                 compositor.addChild (csName);
@@ -374,6 +382,12 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
 {
     Element newElement (nameSpace);
     newElement.setName (element.attribute ("name"));
+
+//    if (newElement.name () == "MilitaryScenario")
+//    {
+//        newElement.setName ("MilitaryScenario");
+//    }
+
 
     if (element.hasAttribute ("form")) {
         if (element.attribute ("form") == "qualified")
@@ -406,6 +420,15 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
         QName typeName = QName (element.attribute ("type"));
         typeName.setNameSpace (context->namespaceManager()->uri (typeName.prefix()));
         newElement.setType (typeName);
+
+        QDomElement childElement = element.firstChildElement ();
+        QName childName = QName (childElement.tagName ());
+        if (childName.localName() == "annotation")
+        {
+            Annotation::List annotations = parseAnnotation (context, childElement);
+            newElement.setDocumentation (annotations.documentation ());
+            newElement.setAnnotations (annotations);
+        }
     } else {
         QDomElement childElement = element.firstChildElement ();
 
@@ -544,7 +567,7 @@ Attribute Parser::parseAttribute (ParserContext *context,
 
 SimpleType Parser::parseSimpleType (ParserContext *context,
                                     const QDomElement &element)
-{
+{   
     SimpleType st (d->_nameSpace);
     st.setName (element.attribute ("name"));
 
@@ -629,8 +652,8 @@ void Parser::parseComplexContent (ParserContext *context,
 {
     QName typeName;
 
-    if (element.attribute("mixed") == "true") {
-        qDebug("<complexContent>: No support for mixed=true");
+    if (element.attribute ("mixed") == "true") {
+        qDebug ("<complexContent>: No support for mixed=true");
         return;
     }
 

@@ -115,6 +115,12 @@ Schema::Document ParserXsd::parse (const XSD::Parser &parser)
     //            qDebug () << lst[i].name () << lst[i].nameSpace ();
     //    }
 
+//    QList<XSD::SimpleType> lst =  types.simpleTypes ();
+//    for (int i = 0; i < lst.size (); ++i) {
+//        if (lst[i].name () == "ApplicationDomainEnumerations")
+//              qDebug () << lst[i].facetEnums ();
+//    }
+
     foreach (XSD::Element element, types.elements ())
         parseElement (element, types);
 
@@ -569,23 +575,23 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
         qDebug() << "[ParserXsd][parseElement] Element:" << element.name ();
 
     Schema::Element e;
-    //    if (element.name () == "MilitaryScenario") {
-    //        e.setIdentifier ("MilitaryScenario");
-    //        e.setName ("MilitaryScenario");
-    //        qDebug () << element.type ().qname ();
-    //        qDebug () << element.groupId ();
-    //        qDebug () << element.qualifiedName().qname();
+//    if (element.name () == "ApplicationDomainEnumerations") {
+//        e.setIdentifier ("ApplicationDomainEnumerations");
+//        e.setName ("ApplicationDomainEnumerations");
+//        qDebug () << element.type ().qname ();
+//        qDebug () << element.groupId ();
+//        qDebug () << element.qualifiedName().qname();
 
-    //       XSD::ComplexType complextype = types.complexType (element);
-    //       qDebug() << complextype.name();
-    //       qDebug() << complextype.isValid();
-    //       qDebug() << complextype.qualifiedName().qname();
-    //       qDebug() << complextype.baseTypeName().qname();
+//        XSD::ComplexType complextype = types.complexType (element);
+//        qDebug() << complextype.name();
+//        qDebug() << complextype.isValid();
+//        qDebug() << complextype.qualifiedName().qname();
+//        qDebug() << complextype.baseTypeName().qname();
 
-    //    } else {
-    e.setIdentifier (element.name ());
-    e.setName (element.name ());
-    //    }
+//    } else {
+        e.setIdentifier (element.name ());
+        e.setName (element.name ());
+//    }
 
     //-- флаг что успешно определелили тип элемента
     bool found = false;
@@ -602,23 +608,23 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
         //-- ищем в списке комплексных типов
         XSD::ComplexType complextype = types.complexType (element);
 
-//        if (element.name() == "modificationDate")
-//        {
-//            qDebug() << element.type().localName();
-//            qDebug() << complextype.isValid();
-//            qDebug() << complextype.name();
+        //        if (element.name() == "modificationDate")
+        //        {
+        //            qDebug() << element.type().localName();
+        //            qDebug() << complextype.isValid();
+        //            qDebug() << complextype.name();
 
-//            XSD::ComplexType::List lst = types.complexTypes();
-//            for (int i = 0; i < lst.size(); ++i)
-//                qDebug() << lst[i].name();
+        //            XSD::ComplexType::List lst = types.complexTypes();
+        //            for (int i = 0; i < lst.size(); ++i)
+        //                qDebug() << lst[i].name();
 
-//            XSD::ComplexType complextype0 = types.complexType (element);
-//            qDebug() << complextype0.isValid();
+        //            XSD::ComplexType complextype0 = types.complexType (element);
+        //            qDebug() << complextype0.isValid();
 
-//            complextype = types.complexType (element);
-//            qDebug() << complextype.isValid();
-//            qDebug() << complextype.name();
-//        }
+        //            complextype = types.complexType (element);
+        //            qDebug() << complextype.isValid();
+        //            qDebug() << complextype.name();
+        //        }
 
         if (complextype.isValid ())
         {
@@ -635,16 +641,18 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
             else if (complextype.contentModel () == XSD::XSDType::SIMPLE &&
                      !complextype.baseTypeName ().isEmpty ())
             {
-                //if (element.name() == "modificationDate") {
-                //    qDebug () << complextype.name();
-                //    qDebug () << complextype.baseTypeName().qname();
-                //}
+//                if (element.name() == "useHistory") {
+//                    qDebug () << complextype.name();
+//                    qDebug () << complextype.baseTypeName().qname();
+//                }
 
                 //-- определение базового типа
                 Schema::Node::Type t = defineXsType (complextype.baseTypeName ().qname ());
-                if (t != Schema::Node::None)
+                if (t != Schema::Node::None) {
                     e.setBaseType (t);
-                else {
+                    e.setText (true);
+                    found = true;
+                } else {
                     //-- ищем в списке комплексных типов
                     XSD::ComplexType::List lst = types.complexTypes ();
                     for (int i = 0; i < lst.size (); ++i) {
@@ -701,6 +709,12 @@ void ParserXsd::parseElement (const XSD::Element &element, const XSD::Types &typ
             XSD::SimpleType simpletype = types.simpleType (element);
             if (simpletype.isValid ())
             {
+                if (simpletype.name () == "ApplicationDomainEnumerations")
+                {
+                    Schema::Node::Type t = defineXsType (simpletype.baseTypeName ().qname ());
+                    qDebug () << t;
+                }
+
                 Schema::Node::Type t = defineXsType (simpletype.baseTypeName ().qname ());
                 if (Schema::Node::None == t) {
                     e.setType (t);
@@ -851,6 +865,8 @@ Schema::Node::Type ParserXsd::defineXsType (const QString &value)
         rvalue = Schema::Node::Token;
     else if (value == "xs:date")
         rvalue = Schema::Node::Date;
+    else if (value == "xs:base64Binary")
+        rvalue = Schema::Node::Base64Binary;
 #ifdef DEFINE_UNCOMPLETED_TYPE
     else if (value == "string")
         rvalue = Schema::Node::String;

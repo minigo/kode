@@ -60,7 +60,7 @@ void ParserCreatorDom::createElementParser (KODE::Class &c, const Schema::Elemen
     else
         functionName = "parseElement";
 
-    KODE::Function parser( functionName, c.name() );
+    KODE::Function parser (functionName, c.name ());
     parser.setStatic (true);
     parser.setDocs ("Parse XML object from DOM element.");
 

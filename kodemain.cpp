@@ -61,7 +61,7 @@ void addPropertyFunctions( QString &out, const QString &type,
     KODE::Code code;
     code.setIndent( 4 );
     code += "/**";
-    code += "  Set .";
+    code += " Set .";
     code += "*/";
     code += "void set" + upper + "( " + argument + "v )";
     code += '{';

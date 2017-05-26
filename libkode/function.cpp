@@ -249,7 +249,7 @@ QString Function::docs () const {
 
 bool Function::hasArguments() const
 {
-    return !d->_arguments.isEmpty();
+    return !d->_arguments.isEmpty ();
 }
 
 void Function::setVirtualMode( Function::VirtualMode v )

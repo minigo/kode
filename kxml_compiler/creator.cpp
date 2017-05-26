@@ -280,6 +280,8 @@ ClassDescription Creator::createClassDescription (const Schema::Element &element
                 description.addProperty ("bool", targetClassName);
             } else if (targetElement.type () == Schema::Element::Date) {
                 description.addProperty ("QDate", targetClassName);
+            } else if (targetElement.type () == Schema::Element::Base64Binary) {
+                description.addProperty ("QByteArray", targetClassName);
             } else {
                 description.addProperty ("QString", targetClassName);
             }
@@ -347,6 +349,7 @@ void Creator::createClass (const Schema::Element &element)
 
     ClassDescription description = createClassDescription (element);
     KODE::Class c (className);
+    c.setDocs (element.documentation ());
 
     if (!_exportDeclaration.isEmpty ())
         c.setExportDeclaration (_exportDeclaration);
@@ -459,7 +462,7 @@ void Creator::createElementParser (KODE::Class &c, const Schema::Element &e)
         return;
     }
 
-    parserCreator->createElementParser( c, e );
+    parserCreator->createElementParser (c, e);
 
     delete parserCreator;
 }

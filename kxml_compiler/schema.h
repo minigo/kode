@@ -92,6 +92,7 @@ public:
     enum Type {
         None,
         String,
+        Base64Binary,
         NormalizedString,
         Token,
         Integer,

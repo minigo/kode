@@ -17,3 +17,11 @@ Element Parser::parseElement (ParserContext *context, const QDomElement &element
                               const QDomElement &occurrenceElement)
 
 
+- При генерации кода для классов со списком объектов добавить метод удаления объекта и возрат неконстантной ссылки! (возможно сделать возврат константной ссылки ?)
+
+- А в чем сраная разница в методах documentation и annotations в классе Element ?
+
+- В меоде parseElement вызов меода setAnnotations - в теории должен выставлять комментарии. Тег documentation может находиться внутри тега annotation. И самое главное для продолжения - у элемента MilitaryScenario нет ни тегов ни комментов!!!
+
+
+

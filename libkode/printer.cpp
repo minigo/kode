@@ -102,11 +102,16 @@ QString Printer::Private::classHeader (const Class &classObject, bool publicMemb
         code.indent ();
 
     if (!classObject.docs ().isEmpty ()) {
+        //-- author code
         code += "/**";
         code.indent ();
         code.addFormattedText (classObject.docs ());
-        code.unindent();
+        code.unindent ();
         code += " */";
+        //--------------
+        //code += "//!";
+        //code.addFormattedText ("//! \\brief " + classObject.docs ().replace (QChar ('\\n'), QChar (' ')));
+        //code += "//!";
     }
 
     QString txt = "class ";
@@ -208,7 +213,7 @@ QString Printer::Private::classHeader (const Class &classObject, bool publicMemb
 
     addFunctionHeaders (code, functions, classObject.name(), Function::Public);
 
-    if ( classObject.canBeCopied() && classObject.useDPointer() && !classObject.memberVariables().isEmpty() ) {
+    if (classObject.canBeCopied () && classObject.useDPointer () && !classObject.memberVariables ().isEmpty ()) {
         Function cc( classObject.name() );
         cc.addArgument( "const " + classObject.name() + '&' );
         Function op( "operator=", classObject.name() + '&' );
@@ -486,15 +491,20 @@ void Printer::Private::addFunctionHeaders( Code& code,
             if ( _labelsDefineIndent )
                 code.indent();
             if (!(*it).docs ().isEmpty ()) {
+                //-- author code
                 code += "/**";
                 code.indent ();
                 code.addFormattedText ((*it).docs ());
                 code.unindent ();
                 code += " */";
+                //--------------
+                //code += "//!";
+                //code += "//! \\brief " + (*it).docs ().replace (QChar ('\\n'), QChar (' '));
+                //code += "//!";
             }
-            code += _parent->functionSignature ( *it, className, false ) + ';';
-            if ( _labelsDefineIndent )
-                code.unindent();
+            code += _parent->functionSignature (*it, className, false) + ';';
+            if (_labelsDefineIndent)
+                code.unindent ();
             needNewLine = true;
         }
     }
@@ -505,8 +515,8 @@ void Printer::Private::addFunctionHeaders( Code& code,
 
 
 
-Printer::Printer()
-    : d( new Private( this ) )
+Printer::Printer ()
+    : d (new Private (this))
 {
 }
 
